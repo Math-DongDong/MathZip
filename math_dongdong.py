@@ -18,7 +18,7 @@ st.divider()
 if 'sign_dice' not in st.session_state:
     st.session_state.sign_dice = '❔'
 if 'number_dice' not in st.session_state:
-    st.session_state.number_dice = 0
+    st.session_state.number_dice = '❔'
 
 # --- 상단 영역: 부호 주사위 (+, -) ---
 st.write("## ➕부호 주사위➖")
