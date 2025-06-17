@@ -17,10 +17,13 @@ st.divider()
 # --- 상태 초기화 (State Initialization) ---
 if 'sign_dice' not in st.session_state:
     st.session_state.sign_dice = '❔'
+if 'calculation_dice' not in st.session_state:
+    st.session_state.number_dice = '❔'
 if 'number_dice' not in st.session_state:
     st.session_state.number_dice = '❔'
 
-# --- 상단 영역: 부호 주사위 (+, -) ---
+
+# --- 1영역: 부호 주사위 (+, -) ---
 st.write("## ➕부호 주사위➖")
 
 if st.button("던지기", key="sign_button"):
@@ -56,7 +59,10 @@ if st.button("던지기", key="sign_button"):
 else:
     st.markdown(f"<p style='text-align: center; font-size: 80px;'>{st.session_state.sign_dice}</p>", unsafe_allow_html=True)
 
-# --- 상단 영역: 연산 주사위 (+, -) ---
+# --- 구분선 ---
+st.divider()
+
+# --- 2영역: 연산 주사위 (+, -) ---
 st.write("## ✖️연산 주사위➗")
 
 if st.button("던지기", key="calculation_button"):
@@ -87,16 +93,16 @@ if st.button("던지기", key="calculation_button"):
     final_result = random.choice(signs)
     with placeholder.container():
         st.markdown(f"<p style='text-align: center; font-size: 80px;'>{final_result}</p>", unsafe_allow_html=True)
-    st.session_state.sign_dice = final_result
+    st.session_state.calculation_dice = final_result
 
 else:
-    st.markdown(f"<p style='text-align: center; font-size: 80px;'>{st.session_state.sign_dice}</p>", unsafe_allow_html=True)
+    st.markdown(f"<p style='text-align: center; font-size: 80px;'>{st.session_state.calculation_dice}</p>", unsafe_allow_html=True)
 
 
 # --- 구분선 ---
 st.divider()
 
-# --- 하단 영역: 숫자 주사위 (1-6) ---
+# --- 3영역: 숫자 주사위 (1-6) ---
 st.write("## 🔢숫자 주사위🎲")
 
 if st.button("던지기", key="number_button"):
