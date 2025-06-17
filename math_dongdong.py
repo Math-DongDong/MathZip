@@ -59,7 +59,7 @@ else:
 # --- 상단 영역: 연산 주사위 (+, -) ---
 st.write("## ✖️연산 주사위➗")
 
-if st.button("던지기", key="sign_button"):
+if st.button("던지기", key="calculation_button"):
     placeholder = st.empty()
     
     # *** 여기가 핵심 변경점 1: 애니메이션 지연 시간 설정 ***
