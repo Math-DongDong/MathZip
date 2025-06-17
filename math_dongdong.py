@@ -31,7 +31,7 @@ if st.button("던지기", key="sign_button"):
     end_delay = 0.4     # 애니메이션 끝날 때의 프레임 간격 (느림)
     total_steps = 20    # 총 애니메이션 스텝 수 (값을 조절해 전체 시간 변경 가능)
     
-    signs = ['➕', '➖']
+    signs = ['➕', '➖','✖️','➗']
     
     for i in range(total_steps):
         temp_result = random.choice(signs)
