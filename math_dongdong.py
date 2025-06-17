@@ -18,7 +18,7 @@ st.divider()
 if 'sign_dice' not in st.session_state:
     st.session_state.sign_dice = '❔'
 if 'calculation_dice' not in st.session_state:
-    st.session_state.number_dice = '❔'
+    st.session_state.calculation_dice = '❔'
 if 'number_dice' not in st.session_state:
     st.session_state.number_dice = '❔'
 
