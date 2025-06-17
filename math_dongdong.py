@@ -56,7 +56,7 @@ if st.button("던지기", key="sign_button"):
 else:
     st.markdown(f"<p style='text-align: center; font-size: 80px;'>{st.session_state.sign_dice}</p>", unsafe_allow_html=True)
 
-# --- 상단 영역: 부호 주사위 (+, -) ---
+# --- 상단 영역: 연산 주사위 (+, -) ---
 st.write("## ✖️연산 주사위➗")
 
 if st.button("던지기", key="sign_button"):
