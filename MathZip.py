@@ -6,7 +6,7 @@ import time
 
 # --- 페이지 기본 설정 ---
 st.set_page_config(
-    page_title="동동쌤의 홈페이지",
+    page_title="동동쌤의 웹페이지",
     layout="wide"
 )
 st.title("🎲주사위 놀이")
