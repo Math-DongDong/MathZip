@@ -110,7 +110,7 @@ if st.button("던지기", key="sign_button"):
         temp_result = random.choice(signs)
         NUMtemp_result = random.randint(1, 6)
         with placeholder.container():
-            st.markdown(f"<p style='text-align: center; font-size: 80px;'>{temp_result}{NUMtemp_result}</p>", unsafe_allow_html=True)
+            st.markdown(f"<p style='text-align: center; font-size: 100px;'>{temp_result}{NUMtemp_result}</p>", unsafe_allow_html=True)
         
         # *** 여기가 핵심 변경점 2: 진행도에 따라 지연 시간을 점차 늘림 ***
         # 현재 진행도 계산 (0.0에서 1.0 사이의 값)
