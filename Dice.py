@@ -125,8 +125,8 @@ if st.button("던지기", key="sign_button"):
     final_result = random.choice(signs)
     NUMfinal_result = random.randint(1, 6)
     with placeholder.container():
-        st.markdown(f"<p style='text-align: center; font-size: 80px;'>{final_result}{NUMfinal_result}</p>", unsafe_allow_html=True)
+        st.markdown(f"<p style='text-align: center; font-size: 100px;'>{final_result}{NUMfinal_result}</p>", unsafe_allow_html=True)
     st.session_state.sign_dice = final_result
 
 else:
-    st.markdown(f"<p style='text-align: center; font-size: 80px;'>{st.session_state.sign_dice}</p>", unsafe_allow_html=True)
+    st.markdown(f"<p style='text-align: center; font-size: 100px;'>{st.session_state.sign_dice}</p>", unsafe_allow_html=True)
