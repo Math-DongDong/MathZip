@@ -4,6 +4,7 @@ import streamlit as st
 # layout="wide"로 설정해야 상단 메뉴바가 제대로 표시됩니다.
 st.set_page_config(
     page_title="동동쌤의 수학모음",
+    page_icon="./images/동동이.PNG",
     layout="wide"
 )
 
