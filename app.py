@@ -5,6 +5,7 @@ import streamlit as st
 st.set_page_config(
     page_title="동동쌤의 수학모음",
     layout="wide"
+)
 
 
 # 2. 페이지들 정의
