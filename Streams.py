@@ -41,9 +41,7 @@ with col1:
 # 오른쪽 세 번째 컬럼: 뽑기 버튼
 with col2:
     is_disabled = (st.session_state.draw_count >= 20)
-    # st.button의 use_container_width=True를 사용하면 버튼이 컬럼 너비에 꽉 차게 만들어
-    # 양쪽 정렬 효과를 극대화할 수 있습니다.
-    if st.button("다음 숫자 뽑기", disabled=is_disabled, use_container_width=True):
+    if st.button("다음 숫자 뽑기", disabled=is_disabled):
         if st.session_state.pool:
             st.session_state.draw_count += 1
             new_number = st.session_state.pool.pop()
@@ -67,7 +65,7 @@ st.divider()
 
 # *** 여기가 핵심 변경점 2: 게임 규칙 정보 제공 ***
 # st.info를 사용하여 규칙을 눈에 띄게 표시합니다.
-st.info("ℹ️ **숫자 타일 규칙:** 1~10 (각 1개), 11~20 (각 2개), 21~30 (각 1개)")
+st.info("ℹ️ **숫자 타일 규칙:** 1 ~ 10 (각 1개), 11 ~ 20 (각 2개), 21 ~ 30 (각 1개)")
 
 st.write("지금까지 뽑은 숫자들:")
 formatted_history = "  ➡️  ".join(map(str, st.session_state.drawn_history))
