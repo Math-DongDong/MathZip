@@ -6,10 +6,10 @@ import time
 
 pages = {
     "기타": [
-        st.Page("Dice.py", title="주사위 모음"),
+        st.Page("Dice.py", title="주사위 모음")
     ],
     "보드게임": [
-        st.Page("Streams.py", title="스트림스"),
+        st.Page("Streams.py", title="스트림스")
     ],
 }
 
