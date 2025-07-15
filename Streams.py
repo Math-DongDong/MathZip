@@ -3,7 +3,7 @@
 import streamlit as st
 import random
 
-st.title("🔢 스트림스 카드 뽑기")
+st.markdown("<h1 style='text-align: center; margin-bottom: 10px;'>🔢 스트림스 카드 뽑기</h1>", unsafe_allow_html=True)
 # --- 구분선 ---
 st.divider()
 
