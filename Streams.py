@@ -1,24 +1,6 @@
 import streamlit as st
 import random
 
-pages = {
-    "기타": [
-        st.Page("Dice.py", title="주사위 모음")
-    ],
-    "보드게임": [
-        st.Page("Streams.py", title="스트림스")
-    ],
-}
-
-pg = st.navigation(pages, position="top")
-
-# --- 페이지 기본 설정 ---
-st.set_page_config(
-    page_title="동동쌤의 수학모음",
-    layout="wide"
-)
-
-# --- 페이지 기본 설정 ---
 st.title("🔢스트림스 카드 뽑기")
 # --- 구분선 ---
 st.divider()
