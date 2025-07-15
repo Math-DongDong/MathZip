@@ -49,7 +49,7 @@ if st.session_state.draw_count == 0:
 elif st.session_state.draw_count >= 20:
     st.header("🏁 수를 모두 뽑았습니다! 🏁")
 else:
-    st.header(f"🔢 {st.session_state.draw_count}번째 수")
+    st.header(f"{st.session_state.draw_count}번째 수")
 
 st.markdown(
     f"<p style='text-align: center; font-size: 150px; font-weight: bold;'>{st.session_state.current_number}</p>", 
@@ -62,7 +62,7 @@ st.divider()
 
 # 1. 정보 상자에 들어갈 각 부분의 텍스트를 정의합니다.
 rule_text = "ℹ️ **수 타일 구성:** 1 ~ 10 (각 1개), 11 ~ 20 (각 2개), 21 ~ 30 (각 1개)"
-history_title = "**지금까지 뽑은 수들:**"
+history_title = "**※ 지금까지 뽑은 수들:**"
 
 # 2. 뽑은 기록이 있을 때와 없을 때를 구분하여 텍스트를 준비합니다.
 if st.session_state.drawn_history:
