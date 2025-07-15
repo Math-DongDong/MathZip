@@ -27,10 +27,10 @@ if 'pool' not in st.session_state:
     initialize_game()
 
 # --- 상단 버튼 영역 ---
-col1, col_spacer, col2 = st.columns(3)
+col1, col_spacer, col2 = st.columns([1,2,1])
 
 with col1:
-    if st.button("처음부터 다시하기", type="primary"):
+    if st.button("  처음부터 다시하기  ", type="primary"):
         initialize_game()
         st.rerun()
 
