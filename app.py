@@ -36,4 +36,4 @@ pg = st.navigation(pages, position="top")
 # 4. 사용자가 선택한 페이지 실행
 # 이 명령어가 '사용자가 선택한 페이지의 파이썬 코드를 이제부터 실행해라!'고
 # 지시하는 핵심적인 역할을 합니다.
-pg.run(All_pages)
+pg.run()
