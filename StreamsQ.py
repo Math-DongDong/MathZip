@@ -12,7 +12,7 @@ Draw_sidebar()
 st.markdown("""
 <style>
 .stMarkdown .katex-display .katex {
-    font-size: 7em;  /* 이 값을 5, 6, 8 등으로 조절하여 원하시는 크기를 찾으세요. */
+    font-size: 6em;  /* 이 값을 5, 6, 8 등으로 조절하여 원하시는 크기를 찾으세요. */
 }
 </style>
 """, unsafe_allow_html=True)
@@ -80,7 +80,7 @@ if st.session_state.draw_count_Q == 0:
 elif is_disabled:
     st.header("🏁 20개의 유리수를 모두 뽑았습니다! 🏁")
 else:
-    st.header(f"{st.session_state.draw_count_Q}번째 수")
+    st.header(f"{st.session_state.draw_count_Q}번째 유리수")
 
 st.latex(st.session_state.current_number_Q)
 
