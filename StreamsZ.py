@@ -65,7 +65,7 @@ with col2:
             st.session_state.drawn_history.append(new_number)
 
 # --- 결과 표시 영역 ---
-if st.session_state.draw_count == 0:
+if st.session_state.draw_count >= 20:
     st.header("첫 번째 수를 뽑아주세요.")
 # is_disabled 변수를 여기서도 활용할 수 있습니다.
 elif is_disabled:
