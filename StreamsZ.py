@@ -47,7 +47,7 @@ with col2:
     max_draws = 20
     is_disabled = (st.session_state.draw_count_Z >= max_draws)
     
-    if st.button("다음 수 뽑기", disabled=is_disabled, use_container_width=True):
+    if st.button("다음 정수 뽑기", disabled=is_disabled, use_container_width=True):
         if st.session_state.pool_Z:
             st.session_state.draw_count_Z += 1
             new_number = st.session_state.pool_Z.pop()
@@ -56,11 +56,11 @@ with col2:
 
 # --- 결과 표시 영역 ---
 if st.session_state.draw_count_Z == 0:
-    st.header("첫 번째 수를 뽑아주세요.")
+    st.header("첫 번째 정수를 뽑아주세요.")
 elif is_disabled:
-    st.header("🏁 20개의 수를 모두 뽑았습니다! 🏁")
+    st.header("🏁 20개의 정수를 모두 뽑았습니다! 🏁")
 else:
-    st.header(f"{st.session_state.draw_count_Z}번째 수")
+    st.header(f"{st.session_state.draw_count_Z}번째 정수")
 
 st.markdown(
     f"<p style='text-align: center; font-size: 150px; font-weight: bold;'>{st.session_state.current_number_Z}</p>", 
@@ -73,14 +73,14 @@ st.divider()
 
 # --- 여기가 핵심 변경점 2 ---
 # 1. 정보 상자에 들어갈 규칙 텍스트를 정확한 내용으로 수정합니다.
-rule_text = "ℹ️ **수 타일 구성:** -15 ~ -5 (각 1개), -4 ~ 4 (각 2개), 5 ~ 15 (각 1개)"
-history_title = "**※ 지금까지 뽑은 수들:**"
+rule_text = "ℹ️ **정수 타일 구성:** -15 ~ -5 (각 1개), -4 ~ 4 (각 2개), 5 ~ 15 (각 1개)"
+history_title = "**※ 지금까지 뽑은 정수들:**"
 
 # 2. 뽑은 기록 텍스트를 준비합니다. (이 부분은 수정 없음)
 if st.session_state.drawn_history_Z:
     history_values = "  ➡️  ".join(map(str, st.session_state.drawn_history_Z))
 else:
-    history_values = "아직 뽑은 수가 없습니다."
+    history_values = "아직 뽑은 정수가 없습니다."
 
 # 3. 모든 텍스트를 하나의 문자열로 결합합니다.
 info_box_content = f"""{rule_text}

@@ -36,7 +36,7 @@ with col1:
 
 with col2:
     is_disabled = (st.session_state.draw_count >= 20)
-    if st.button("다음 수 뽑기", disabled=is_disabled, use_container_width=True):
+    if st.button("다음 숫자 뽑기", disabled=is_disabled, use_container_width=True):
         if st.session_state.pool:
             st.session_state.draw_count += 1
             new_number = st.session_state.pool.pop()
@@ -45,11 +45,11 @@ with col2:
 
 # --- 결과 표시 영역 ---
 if st.session_state.draw_count == 0:
-    st.header("첫 번째 수를 뽑아주세요.")
+    st.header("첫 번째 숫자를 뽑아주세요.")
 elif st.session_state.draw_count >= 20:
-    st.header("🏁 수를 모두 뽑았습니다! 🏁")
+    st.header("🏁 숫자를 모두 뽑았습니다! 🏁")
 else:
-    st.header(f"{st.session_state.draw_count}번째 수")
+    st.header(f"{st.session_state.draw_count}번째 숫자")
 
 st.markdown(
     f"<p style='text-align: center; font-size: 150px; font-weight: bold;'>{st.session_state.current_number}</p>", 
@@ -61,14 +61,14 @@ st.divider()
 # *** 여기가 핵심 변경점입니다: 규칙과 기록을 하나의 정보 상자에 통합 ***
 
 # 1. 정보 상자에 들어갈 각 부분의 텍스트를 정의합니다.
-rule_text = "ℹ️ **수 타일 구성:** 1 ~ 10 (각 1개), 11 ~ 20 (각 2개), 21 ~ 30 (각 1개)"
-history_title = "**※ 지금까지 뽑은 수들:**"
+rule_text = "ℹ️ **숫자 타일 구성:** 1 ~ 10 (각 1개), 11 ~ 20 (각 2개), 21 ~ 30 (각 1개)"
+history_title = "**※ 지금까지 뽑은 숫자들:**"
 
 # 2. 뽑은 기록이 있을 때와 없을 때를 구분하여 텍스트를 준비합니다.
 if st.session_state.drawn_history:
     history_values = "  ➡️  ".join(map(str, st.session_state.drawn_history))
 else:
-    history_values = "아직 뽑은 수가 없습니다."
+    history_values = "아직 뽑은 숫자가 없습니다."
 
 # 3. 모든 텍스트를 f-string과 Markdown 문법을 사용하여 하나의 문자열로 결합합니다.
 # \n\n 은 문단을 나누고, --- 는 수평선을 만듭니다.
