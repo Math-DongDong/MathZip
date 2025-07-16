@@ -1,7 +1,7 @@
 import streamlit as st
 import random
-# from StreamsSideBar import Draw_sidebar  # 사이드바 임포트 부분은 그대로 둡니다.
-# Draw_sidebar()
+from StreamsSideBar import Draw_sidebar  # 사이드바 임포트 부분은 그대로 둡니다.
+Draw_sidebar()
 
 st.title("🔢 스트림스 카드 뽑기")
 # --- 구분선 ---
