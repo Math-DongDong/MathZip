@@ -27,15 +27,11 @@ st.divider()
 def initialize_game_Q():
     """'유리수 버전'을 위한 게임 상태를 초기화합니다."""
     number_pool = []
-    # ... (게임 초기화 로직은 변경 없음) ...
-    for i in range(1, 11):
-        number_pool.append(f"\\frac{{{i}}}{{2}}")
-        number_pool.append(f"-\\frac{{{i}}}{{2}}")
+    for i in range(1, 11): number_pool.append(f"\\frac{{{i}}}{{2}}"); number_pool.append(f"-\\frac{{{i}}}{{2}}")
     for i in range(1, 6): number_pool.append(str(i)); number_pool.append(str(-i))
     number_pool.extend(["\\frac{5}{3}", "-\\frac{5}{3}", "\\frac{4}{3}", "-\\frac{4}{3}", "\\frac{2}{3}", "-\\frac{2}{3}", "\\frac{1}{3}", "-\\frac{1}{3}", "0", "0"])
     random.shuffle(number_pool)
     st.session_state.pool_Q, st.session_state.draw_count_Q, st.session_state.current_number_Q, st.session_state.drawn_history_Q = number_pool, 0, "❔", []
-
 
 # --- 메인 앱 로직 ---
 if 'pool_Q' not in st.session_state:
@@ -59,18 +55,21 @@ with col2:
             st.session_state.current_number_Q = new_number
             st.session_state.drawn_history_Q.append(new_number)
 
-# --- 여기가 핵심 변경점입니다: 결과 표시 영역을 2:1로 분할 ---
+# --- 여기가 핵심 변경점입니다: 새로운 레이아웃 적용 ---
+
+# 1. "몇 번째 수" 헤더는 분할하지 않고 상단에 표시합니다.
+if st.session_state.draw_count_Q == 0:
+    st.header("첫 번째 유리수를 뽑아주세요.")
+elif st.session_state.draw_count_Q >= 20:
+    st.header("🏁 20개의 유리수를 모두 뽑았습니다! 🏁")
+else:
+    st.header(f"{st.session_state.draw_count_Q}번째 유리수")
+
+# 2. "뽑힌 숫자"와 "규칙 설명"만 2:1로 분할합니다.
 left_col, right_col = st.columns([2, 1])
 
-# 왼쪽 컬럼 (비율 2): 뽑힌 숫자 표시
+# 왼쪽 컬럼: 뽑힌 숫자
 with left_col:
-    if st.session_state.draw_count_Q == 0:
-        st.header("첫 번째 유리수를 뽑아주세요.")
-    elif st.session_state.draw_count_Q >= 20:
-        st.header("🏁 20개의 유리수를 모두 뽑았습니다! 🏁")
-    else:
-        st.header(f"{st.session_state.draw_count_Q}번째 유리수")
-
     if st.session_state.current_number_Q == "❔":
         st.markdown(
             f"<p style='text-align: center; font-size: 150px; font-weight: bold;'>{st.session_state.current_number_Q}</p>", 
@@ -79,25 +78,27 @@ with left_col:
     else:
         st.latex(st.session_state.current_number_Q)
 
-# 오른쪽 컬럼 (비율 1): 규칙 및 기록 정보 표시
+# 오른쪽 컬럼: 규칙 설명
 with right_col:
     rule_text = r"""
     ℹ️ **유리수 타일 구성:**
-    - $0$ (2개)
-    - 절댓값이 $1 \sim 5$ 인 수
     - 절댓값이 $\frac{1}{2} \sim \frac{10}{2}$ 인 수
     - 절댓값이 $\frac{1}{3}, \frac{2}{3}, \frac{4}{3}, \frac{5}{3}$ 인 수
+    - 절댓값이 $1 \sim 5$ 인 수
+    - $0$ (2개)
     """
-    history_title = "**※ 지금까지 뽑은 유리수들:**"
+    # 규칙 설명만 st.info에 담아 표시합니다.
+    st.info(rule_text)
 
-    if st.session_state.drawn_history_Q:
-        history_values =  "  ➡️  ".join([f"${s}$" for s in st.session_state.drawn_history_Q])
-    else:
-        history_values = "아직 뽑은 유리수가 없습니다."
+# 3. "뽑은 기록"은 분할하지 않고 제일 하단에 표시합니다.
+st.divider() # 시각적인 구분을 위해 구분선을 추가합니다.
 
-    info_box_content = f"""{rule_text}
-    ---
-    {history_title} {history_values}
-    """
-    # 정보 상자를 오른쪽 컬럼에만 표시합니다.
-    st.info(info_box_content)
+history_title = "**※ 지금까지 뽑은 유리수들:**"
+
+if st.session_state.drawn_history_Q:
+    history_values =  "  ➡️  ".join([f"${s}$" for s in st.session_state.drawn_history_Q])
+else:
+    history_values = "아직 뽑은 유리수가 없습니다."
+
+# 뽑은 기록만 별도의 st.markdown으로 표시합니다.
+st.markdown(f"{history_title} {history_values}")
