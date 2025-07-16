@@ -7,6 +7,15 @@ from StreamsSideBar import Draw_sidebar
 # 사이드바를 활성화합니다.
 Draw_sidebar()
 
+# 유리수 latex를 키우기 위한 CSS문법 추가
+st.markdown("""
+<style>
+.stLatex .katex-display .katex {
+    font-size: 5.5em;  /* 이 값을 조절하여 원하는 크기를 맞추세요 (예: 6em, 7em) */
+}
+</style>
+""", unsafe_allow_html=True)
+
 st.title("유리수 스트림스 카드 뽑기")
 st.divider()
 
@@ -82,10 +91,7 @@ else:
 
 # --- 여기가 핵심 변경점 2: st.markdown 대신 st.latex 사용 ---
 # 폰트 크기 조절은 st.latex에서 직접 지원하지 않으므로, 기본 크기로 멋지게 표시됩니다.
-st.markdown(
-    f"<p style='text-align: center; font-size: 150px; font-weight: bold;'>st.latex(st.session_state.current_number_Q)</p>", 
-    unsafe_allow_html=True
-)
+st.latex(st.session_state.current_number_Q)
 
 st.divider()
 
