@@ -17,7 +17,7 @@ def initialize_game():
     number_pool.extend(list(range(21, 31)))
     random.shuffle(number_pool)
     
-    st.session_state.pool_Z_Z = number_pool
+    st.session_state.pool_Z = number_pool
     st.session_state.draw_count_Z = 0
     st.session_state.current_number_Z = "❔"
     st.session_state.drawn_history_Z = []
