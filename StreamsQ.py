@@ -77,7 +77,7 @@ with col2:
 # --- 결과 표시 영역 ---
 if st.session_state.draw_count_Q == 0:
     st.header("첫 번째 유리수를 뽑아주세요.")
-elif st.session_state.draw_count_Q >= 20
+elif st.session_state.draw_count_Q >= 20:
     st.header("🏁 20개의 유리수를 모두 뽑았습니다! 🏁")
 else:
     st.header(f"{st.session_state.draw_count_Q}번째 유리수")
@@ -87,7 +87,7 @@ st.latex(st.session_state.current_number_Q)
 st.divider()
 
 # --- 규칙 및 기록 표시 영역 ---
-rule_text = r"""
+rule_text = """
 ℹ️ **유리수 타일 구성:**절댓값이 $\frac{1}{2} \sim \frac{10}{2}$, $\frac{1}{3}, \frac{2}{3}, \frac{4}{3}, \frac{5}{3}, $\1 \sim \5$ 인 수, $0$ (2개)
 """
 history_title = "**※ 지금까지 뽑은 유리수들:**"
