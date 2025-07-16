@@ -32,9 +32,9 @@ def initialize_game_Q():
         number_pool.append(f"-\\frac{{{i}}}{{2}}")
 
     # 규칙 2: 분모가 3인 분수들 (총 8장)
-    number_pool.append( "\\frac{7}{3}"); number_pool.append("-\\frac{7}{3}")
     number_pool.append( "\\frac{5}{3}"); number_pool.append("-\\frac{5}{3}")
     number_pool.append( "\\frac{4}{3}"); number_pool.append("-\\frac{4}{3}")
+    number_pool.append( "\\frac{2}{3}"); number_pool.append("-\\frac{2}{3}")
     number_pool.append( "\\frac{1}{3}"); number_pool.append("-\\frac{1}{3}")
 
     # 규칙 3: ±5 ~ ±1 (각 1장씩, 총 10장)
@@ -89,23 +89,18 @@ st.divider()
 
 # --- 규칙 및 기록 표시 영역 ---
 rule_text = r"""
-ℹ️ **유리수 타일 구성 (총 40장)**
-- **분모 2:** $\pm\frac{10}{2} \sim \pm\frac{1}{2}$ (각 1장)
-- **분모 3:** $-\frac{7}{3}, \pm\frac{5}{3}, \pm\frac{4}{3}, \pm\frac{1}{3}, \frac{7}{3}$(조커) (각 1장)
-- **정수:** $\pm5 \sim \pm1$ (각 1장), $0$ (2장)
+ℹ️ **유리수 타일 구성:**절댓값이 $\frac{1}{2} \sim \frac{10}{2}$, $\frac{1}{3}, \frac{2}{3}, \frac{4}{3}, \frac{5}{3}, $\1 \sim \5$ 인 수, $0$ (2개)
 """
 history_title = "**※ 지금까지 뽑은 유리수들:**"
 
 if st.session_state.drawn_history_Q:
-    history_values = ", ".join([f"${s}$" for s in st.session_state.drawn_history_Q])
+    history_values =  "  ➡️  ".join([f"${s}$" for s in st.session_state.drawn_history_Q])
 else:
-    history_values = "아직 뽑은 유수가 없습니다."
+    history_values = "아직 뽑은 유리수가 없습니다."
 
 info_box_content = f"""{rule_text}
 ---
-{history_title}
-
-{history_values}
+{history_title} {history_values}
 """
 
 st.info(info_box_content)
