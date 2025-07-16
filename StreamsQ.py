@@ -1,26 +1,3 @@
-st.markdown("""
-<style>
-/* 1. 메인에 표시되는 큰 수식을 위한 스타일 (변경 없음) */
-.stMarkdown .katex-display .katex {
-    font-size: 6em;
-    margin-top: 0.5em;
-}
-
-/* 2. 정보 상자(st.info) 안의 모든 컨텐츠(텍스트와 수식)의 크기를 함께 키웁니다. */
-[data-testid="stAlertContentInfo"] {
-    font-size: 1.25em; /* 이 값을 1.5em, 1.8em 등으로 조절하여 원하시는 크기를 찾으세요. */
-}
-</style>
-""", unsafe_allow_html=True)```
-
----
-
-### 수정된 내용이 반영된 전체 코드
-
-아래는 위 수정 사항이 적용된 전체 코드입니다. 이 코드를 복사해서 `StreamsQ.py` 파일에 전체 붙여넣기 하시면 됩니다.
-
-```python
-# StreamsQ.py
 
 import streamlit as st
 import random
