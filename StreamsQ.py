@@ -11,7 +11,7 @@ Draw_sidebar()
 st.markdown("""
 <style>
 .stLatex .katex-display .katex {
-    font-size: 5.5em;  /* 이 값을 조절하여 원하는 크기를 맞추세요 (예: 6em, 7em) */
+    font-size: 15em;  /* 이 값을 조절하여 원하는 크기를 맞추세요 (예: 6em, 7em) */
 }
 </style>
 """, unsafe_allow_html=True)
