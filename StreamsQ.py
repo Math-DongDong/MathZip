@@ -15,7 +15,7 @@ st.markdown("""
     margin-top: 0.5em;
 }
 [data-testid="stAlertContentInfo"] {
-    font-size: 1.5em; /* 이 값을 1.5em, 1.8em 등으로 조절하여 원하시는 크기를 찾으세요. */
+    font-size: 2.5em; /* 이 값을 1.5em, 1.8em 등으로 조절하여 원하시는 크기를 찾으세요. */
 }
 </style>
 """, unsafe_allow_html=True)
