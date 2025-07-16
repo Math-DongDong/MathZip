@@ -87,7 +87,7 @@ st.latex(st.session_state.current_number_Q)
 st.divider()
 
 # --- 규칙 및 기록 표시 영역 ---
-rule_text = """
+rule_text = r"""
 ℹ️ **유리수 타일 구성:**절댓값이 $\frac{1}{2} \sim \frac{10}{2}$, $\frac{1}{3}, \frac{2}{3}, \frac{4}{3}, \frac{5}{3}, $\1 \sim \5$ 인 수, $0$ (2개)
 """
 history_title = "**※ 지금까지 뽑은 유리수들:**"
