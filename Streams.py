@@ -68,12 +68,11 @@ history_title = "**※ 지금까지 뽑은 수들:**"
 if st.session_state.drawn_history:
     history_values = "  ➡️  ".join(map(str, st.session_state.drawn_history))
 else:
-    history_values = "아직 뽑은 가 없습니다."
+    history_values = "아직 뽑은 수가 없습니다."
 
 # 3. 모든 텍스트를 f-string과 Markdown 문법을 사용하여 하나의 문자열로 결합합니다.
 # \n\n 은 문단을 나누고, --- 는 수평선을 만듭니다.
-info_box_content = f"""
-{rule_text}
+info_box_content = f"""{rule_text}
 ---
 {history_title} {history_values}
 """
