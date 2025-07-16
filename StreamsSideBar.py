@@ -1,4 +1,6 @@
 import streamlit as st
+with open("스트림스_게임판.pdf", "rb") as pdf_file:
+    PDFbyte = pdf_file.read()
 
 def Draw_sidebar():
     with st.sidebar:
@@ -9,8 +11,6 @@ def Draw_sidebar():
         st.page_link("StreamsZ.py", label="정수 버전")
         st.page_link("StreamsQ.py", label="유리수 버전")
         st.page_link("StreamsR.py", label="실수 버전")
-        with open("스트림스_게임판.pdf", "rb") as pdf_file:
-            PDFbyte = pdf_file.read()
         st.download_button(
             label="게임판 다운로드",
             data=PDFbyte,                       # 중요: 파일에서 읽어온 바이트 데이터를 그대로 전달
