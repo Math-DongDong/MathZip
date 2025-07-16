@@ -10,7 +10,7 @@ st.set_page_config(
 
 # 2. 모든 페이지 정의
 All_pages =[
-        st.Page("Streams.py", title="스트림스", default=True),
+        st.Page("Streams.py", title="스트림스"),
         st.Page("StreamsZ.py"),
         st.Page("StreamsQ.py"),
         st.Page("StreamsR.py"),
@@ -24,8 +24,8 @@ pages = {
         # 그룹의 첫 번째 페이지를 default=True로 설정하면 '보드게임' 클릭 시 이 페이지가 먼저 보입니다.
         st.Page("Streams.py", title="스트림스", default=True),
     ],
-    "기타": [
-        st.Page("Dice.py", title="주사위 모음")
+    "주사위 모음": [
+        st.Page("Dice.py", title="주사위 모음",default=True)
     ],
 }
 
