@@ -32,7 +32,7 @@ def initialize_game():
     st.session_state.drawn_history_Z = []
 
 # --- 메인 앱 로직 ---
-if 'pool' not in st.session_state:
+if 'pool_Z' not in st.session_state:
     initialize_game()
 
 # --- 상단 버튼 영역 ---
