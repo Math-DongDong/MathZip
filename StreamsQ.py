@@ -7,11 +7,11 @@ from StreamsSideBar import Draw_sidebar
 # 사이드바를 활성화합니다.
 Draw_sidebar()
 
-# --- 여기가 핵심 변경점입니다 ---
-# 유리수 latex 폰트 크기를 키우기 위한 CSS 코드입니다.
+# --- 여기가 핵심 변경점입니다: 올바른 CSS 선택자로 수정 ---
+# 유리수 latex를 키우기 위한 CSS문법 추가
 st.markdown("""
 <style>
-.stLatex .katex-display .katex {
+.stMarkdown .katex-display .katex {
     font-size: 7em;  /* 이 값을 5, 6, 8 등으로 조절하여 원하시는 크기를 찾으세요. */
 }
 </style>
