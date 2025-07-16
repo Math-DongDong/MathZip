@@ -22,6 +22,8 @@ pages = {
         st.Page("StreamsZ.py"),
         st.Page("StreamsQ.py"),
         st.Page("StreamsR.py"),
+        st.Page("StreamsExplanation.py"),
+        
     ],
 }
 
