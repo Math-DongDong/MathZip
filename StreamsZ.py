@@ -1,7 +1,5 @@
 import streamlit as st
 import random
-# --- 여기가 핵심 변경점 1 ---
-# 사이드바를 활성화하기 위해 주석을 해제합니다.
 from StreamsSideBar import Draw_sidebar  
 Draw_sidebar()
 
@@ -12,13 +10,12 @@ st.divider()
 # --- 게임 초기화 함수 ---
 def initialize_game():
     """스트림스 게임에 필요한 숫자 풀과 상태 변수들을 초기화합니다."""
-    # 숫자 풀을 만드는 로직은 그대로 유지합니다.
-    # 게임은 139개의 타일 중에서 20개만 뽑는 방식으로 진행됩니다.
     number_pool = []
     
-    # 규칙 1: -15부터 -5까지는 10개씩 추가
-    for num in range(-15, -4):
-        number_pool.extend([num] * 10)
+    # --- 여기가 핵심 변경점 1 ---
+    # 규칙 1: -15부터 -5까지는 1개씩 추가
+    # list(range(-15, -4))를 사용하여 각 숫자를 한 번씩만 리스트에 추가합니다.
+    number_pool.extend(list(range(-15, -4)))
         
     # 규칙 2: -4부터 4까지는 2개씩 추가
     for num in range(-4, 5):
@@ -47,8 +44,6 @@ with col1:
         st.rerun()
 
 with col2:
-    # --- 여기가 핵심 변경점 2 ---
-    # 최대 뽑기 횟수를 20으로 설정합니다.
     max_draws = 20
     is_disabled = (st.session_state.draw_count >= max_draws)
     
@@ -62,7 +57,6 @@ with col2:
 # --- 결과 표시 영역 ---
 if st.session_state.draw_count == 0:
     st.header("첫 번째 수를 뽑아주세요.")
-# is_disabled 변수를 사용하여 20번 뽑았는지 확인합니다.
 elif is_disabled:
     st.header("🏁 20개의 수를 모두 뽑았습니다! 🏁")
 else:
@@ -76,18 +70,23 @@ st.markdown(
 st.divider()
 
 # --- 규칙 및 기록 표시 영역 ---
-# 이 부분은 변경할 필요 없이 그대로 작동합니다.
-rule_text = "ℹ️ **수 타일 구성:** -15 ~ -5 (각 10개), -4 ~ 4 (각 2개), 5 ~ 15 (각 1개)"
+
+# --- 여기가 핵심 변경점 2 ---
+# 1. 정보 상자에 들어갈 규칙 텍스트를 정확한 내용으로 수정합니다.
+rule_text = "ℹ️ **수 타일 구성:** -15 ~ -5 (각 1개), -4 ~ 4 (각 2개), 5 ~ 15 (각 1개)"
 history_title = "**※ 지금까지 뽑은 수들:**"
 
+# 2. 뽑은 기록 텍스트를 준비합니다. (이 부분은 수정 없음)
 if st.session_state.drawn_history:
     history_values = "  ➡️  ".join(map(str, st.session_state.drawn_history))
 else:
     history_values = "아직 뽑은 수가 없습니다."
 
+# 3. 모든 텍스트를 하나의 문자열로 결합합니다.
 info_box_content = f"""{rule_text}
 ---
 {history_title} {history_values}
 """
 
+# 4. 완성된 문자열을 st.info() 위젯에 넣어줍니다.
 st.info(info_box_content)
