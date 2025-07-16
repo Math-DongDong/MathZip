@@ -7,7 +7,7 @@ from StreamsSideBar import Draw_sidebar
 # 사이드바를 활성화합니다.
 Draw_sidebar()
 
-st.title("★ 유리수 스트림스 ★")
+st.title("유리수 스트림스 카드 뽑기")
 st.divider()
 
 # --- '유리수 버전'만의 고유한 게임 초기화 함수 ---
@@ -23,8 +23,8 @@ def initialize_game_Q():
         number_pool.append(f"\\frac{{{i}}}{{2}}")
         number_pool.append(f"-\\frac{{{i}}}{{2}}")
 
-    # 규칙 2: 분모가 3인 분수들 (총 7장)
-    number_pool.append("-\\frac{7}{3}")  # -7/3
+    # 규칙 2: 분모가 3인 분수들 (총 8장)
+    number_pool.append( "\\frac{7}{3}"); number_pool.append("-\\frac{7}{3}")  # ±7/3
     number_pool.append( "\\frac{5}{3}"); number_pool.append("-\\frac{5}{3}")  # ±5/3
     number_pool.append( "\\frac{4}{3}"); number_pool.append("-\\frac{4}{3}")  # ±4/3
     number_pool.append( "\\frac{1}{3}"); number_pool.append("-\\frac{1}{3}")  # ±1/3
@@ -38,9 +38,6 @@ def initialize_game_Q():
     # 규칙 4: 0 (2장)
     number_pool.extend(["0", "0"])
 
-    # 규칙 5: 조커(★) 대신 7/3 (1장)
-    number_pool.append("\\frac{7}{3}")
-    
     # 생성된 숫자 풀을 무작위로 섞습니다.
     random.shuffle(number_pool)
     
@@ -68,7 +65,7 @@ with col2:
     max_draws = 20
     is_disabled = (st.session_state.draw_count_Q >= max_draws)
     
-    if st.button("다음 수 뽑기", disabled=is_disabled, use_container_width=True, key="draw_Q"):
+    if st.button("다음 유리수 뽑기", disabled=is_disabled, use_container_width=True, key="draw_Q"):
         if st.session_state.pool_Q:
             st.session_state.draw_count_Q += 1
             new_number = st.session_state.pool_Q.pop()
@@ -77,15 +74,18 @@ with col2:
 
 # --- 결과 표시 영역 ---
 if st.session_state.draw_count_Q == 0:
-    st.header("첫 번째 수를 뽑아주세요.")
+    st.header("첫 번째 유리수를 뽑아주세요.")
 elif is_disabled:
-    st.header("🏁 20개의 수를 모두 뽑았습니다! 🏁")
+    st.header("🏁 20개의 유리수를 모두 뽑았습니다! 🏁")
 else:
     st.header(f"{st.session_state.draw_count_Q}번째 수")
 
 # --- 여기가 핵심 변경점 2: st.markdown 대신 st.latex 사용 ---
 # 폰트 크기 조절은 st.latex에서 직접 지원하지 않으므로, 기본 크기로 멋지게 표시됩니다.
-st.latex(st.session_state.current_number_Q)
+st.markdown(
+    f"<p style='text-align: center; font-size: 150px; font-weight: bold;'>st.latex(st.session_state.current_number_Q)</p>", 
+    unsafe_allow_html=True
+)
 
 st.divider()
 
@@ -98,7 +98,7 @@ rule_text = r"""
 - **분모 3:** $-\frac{7}{3}, \pm\frac{5}{3}, \pm\frac{4}{3}, \pm\frac{1}{3}, \frac{7}{3}$(조커) (각 1장)
 - **정수:** $\pm5 \sim \pm1$ (각 1장), $0$ (2장)
 """
-history_title = "**※ 지금까지 뽑은 수들:**"
+history_title = "**※ 지금까지 뽑은 유리수들:**"
 
 # 기록 표시는 LaTeX 형식을 그대로 보여주면 됩니다.
 if st.session_state.drawn_history_Q:
@@ -106,7 +106,7 @@ if st.session_state.drawn_history_Q:
     # 각 LaTeX 문자열을 $...$로 감싸 인라인 수식처럼 보이게 합니다.
     history_values = ", ".join([f"${s}$" for s in st.session_state.drawn_history_Q])
 else:
-    history_values = "아직 뽑은 수가 없습니다."
+    history_values = "아직 뽑은 유수가 없습니다."
 
 info_box_content = f"""{rule_text}
 ---
