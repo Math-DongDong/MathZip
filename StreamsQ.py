@@ -14,6 +14,12 @@ st.markdown("""
 .stMarkdown .katex-display .katex {
     font-size: 6em;  /* 이 값을 5, 6, 8 등으로 조절하여 원하시는 크기를 찾으세요. */
     margin-top: 0.5em;
+
+/* 2. 정보 상자(st.info) 안의 인라인 수식을 위한 스타일 (이 부분이 추가됨) */
+.stAlert .katex {
+    font-size: 1.2em; /* 기본 텍스트보다 1.2배 크게 만듭니다. */
+}
+</style>    
 }
 </style>
 """, unsafe_allow_html=True)
@@ -87,9 +93,15 @@ st.latex(st.session_state.current_number_Q)
 st.divider()
 
 # --- 규칙 및 기록 표시 영역 ---
+# 가독성을 높이기 위해 목록(bullet point) 형식으로 변경하고, 모든 수식을 올바르게 수정합니다.
 rule_text = r"""
-ℹ️ **유리수 타일 구성:**절댓값이 $\frac{1}{2} \sim \frac{10}{2}$, $\frac{1}{3}, \frac{2}{3}, \frac{4}{3}, \frac{5}{3}, $\1 \sim \5$ 인 수, $0$ (2개)
+ℹ️ **유리수 타일 구성:**
+- 절댓값이 $\frac{1}{2} \sim \frac{10}{2}$ 인 수
+- 절댓값이 $\frac{1}{3}, \frac{2}{3}, \frac{4}{3}, \frac{5}{3}$ 인 수
+- 절댓값이 $1 \sim 5$ 인 수
+- $0$ (2개)
 """
+
 history_title = "**※ 지금까지 뽑은 유리수들:**"
 
 if st.session_state.drawn_history_Q:
