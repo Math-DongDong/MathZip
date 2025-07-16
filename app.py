@@ -8,16 +8,7 @@ st.set_page_config(
     layout="wide"
 )
 
-# 2. 모든 페이지 정의
-All_pages =[
-        st.Page("Streams.py", title="스트림스"),
-        st.Page("StreamsZ.py"),
-        st.Page("StreamsQ.py"),
-        st.Page("StreamsR.py"),
-        st.Page("Dice.py", title="주사위 모음")
-    ]
-
-# 3. 상단 페이지들 정의
+# 2. 상단 페이지들 정의
 # 각 페이지의 실제 콘텐츠는 별도의 파일에 존재합니다.
 pages = {
     "보드게임": [
@@ -27,13 +18,18 @@ pages = {
     "주사위 모음": [
         st.Page("Dice.py", title="주사위 모음")
     ],
+    "사이드바 모음": [
+        st.Page("StreamsZ.py"),
+        st.Page("StreamsQ.py"),
+        st.Page("StreamsR.py"),
+    ],
 }
 
-# 4. 네비게이션 UI 생성
+# 3. 네비게이션 UI 생성
 # position="top"으로 설정하여 상단에 메뉴가 나오도록 합니다.
 pg = st.navigation(pages, position="top")
 
 # 4. 사용자가 선택한 페이지 실행
 # 이 명령어가 '사용자가 선택한 페이지의 파이썬 코드를 이제부터 실행해라!'고
 # 지시하는 핵심적인 역할을 합니다.
-All_pages.run()
+pg.run()
