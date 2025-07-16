@@ -44,9 +44,7 @@ with col1:
         st.rerun()
 
 with col2:
-    max_draws = 20
-    is_disabled = (st.session_state.draw_count_Z >= max_draws)
-    
+    is_disabled = (st.session_state.draw_count_Z >= 20)
     if st.button("다음 정수 뽑기", disabled=is_disabled, use_container_width=True):
         if st.session_state.pool_Z:
             st.session_state.draw_count_Z += 1
@@ -57,7 +55,7 @@ with col2:
 # --- 결과 표시 영역 ---
 if st.session_state.draw_count_Z == 0:
     st.header("첫 번째 정수를 뽑아주세요.")
-elif is_disabled:
+elif st.session_state.draw_count_Z >= 20:
     st.header("🏁 20개의 정수를 모두 뽑았습니다! 🏁")
 else:
     st.header(f"{st.session_state.draw_count_Z}번째 정수")
