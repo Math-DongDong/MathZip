@@ -22,7 +22,6 @@ pages = {
     "_사이드_화면": [
         # st.page_link를 통해 이동할 수 있는 '공식 페이지'로 등록됩니다.
         st.Page("StreamsZ.py"),
-        st.Page("StreamsQ.py"),
         st.Page("StreamsR.py")
     ],
 
