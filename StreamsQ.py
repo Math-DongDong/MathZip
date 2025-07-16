@@ -15,7 +15,7 @@ st.markdown("""
     margin-top: 0.5em;
 }
 [data-testid="stAlertContainer"] .katex {
-    font-size: 2em; /* 크기를 더 키웠습니다. 이 값을 1.8, 2.0 등으로 조절하세요. */
+    font-size: 1.5em; /* 크기를 더 키웠습니다. 이 값을 1.8, 2.0 등으로 조절하세요. */
 }
 </style>
 """, unsafe_allow_html=True)
@@ -81,7 +81,7 @@ with left_col:
 # 오른쪽 컬럼: 규칙 설명
 with right_col:
     rule_text = r"""
-    $ℹ️ **유리수 타일 구성:**$
+    ℹ️ **$유리수 타일 구성:$**
     - $0 (2개)$
     - $절댓값이 1 \sim 5 인 수$
     - $절댓값이 \frac{1}{2} \sim \frac{10}{2} 인 수$
