@@ -25,7 +25,7 @@ pages = {
         st.Page("Streams.py", title="스트림스", default=True),
     ],
     "주사위 모음": [
-        st.Page("Dice.py", title="주사위 모음",default=True)
+        st.Page("Dice.py", title="주사위 모음")
     ],
 }
 
