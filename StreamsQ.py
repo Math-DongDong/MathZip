@@ -20,7 +20,7 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-st.title("🔢 유리수 스트림스 카드 뽑기")
+st.title("🔢 유리수 타일 뽑기")
 st.divider()
 
 # --- '유리수 버전'만의 고유한 게임 초기화 함수 ---

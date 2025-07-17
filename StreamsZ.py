@@ -3,7 +3,7 @@ import random
 from StreamsSideBar import Draw_sidebar  
 Draw_sidebar()
 
-st.title("🔢 정수 스트림스 카드 뽑기")
+st.title("🔢 정수 타일 뽑기")
 # --- 구분선 ---
 st.divider()
 
