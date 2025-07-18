@@ -95,7 +95,7 @@ else:
     st.header(f"{st.session_state.draw_count_R}번째 실수")
 
 # [핵심 수정 3] 유리수 버전처럼 좌우 레이아웃을 적용합니다.
-left_col, right_col = st.columns([1.5, 1])
+left_col, right_col = st.columns([1, 1])
 
 with left_col:
     # 현재 뽑힌 숫자를 표시하는 로직
