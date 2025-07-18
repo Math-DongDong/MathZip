@@ -61,7 +61,7 @@ elif st.session_state.draw_count_Q >= 20:
 else:
     st.header(f"{st.session_state.draw_count_Q}번째 유리수")
 
-left_col, right_col = st.columns([2, 1])
+left_col, right_col = st.columns([1, 1])
 
 with left_col:
     if st.session_state.current_number_Q == "❔":
