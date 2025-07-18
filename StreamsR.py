@@ -23,7 +23,7 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-st.title("🔢 실수 타일 뽑기")
+st.title("🔢 실수 뽑기")
 st.divider()
 
 # [핵심 수정 2] 새로운 실수 타일 구성에 맞게 게임 초기화 함수를 완전히 재작성합니다.

@@ -9,8 +9,8 @@ def Draw_sidebar():
         st.download_button(
             label="게임판 다운로드",
             data=PDFbyte,                       # 중요: 파일에서 읽어온 바이트 데이터를 그대로 전달
-            file_name="스트림스_게임판.pdf",    # 중요: 사용자가 다운로드할 때 제안될 파일 이름
-            mime="application/octet-stream"   # 중요: 모든 종류의 파일에 사용 가능한 범용적인 타입
+            file_name="스트림스_게임판.pdf",     # 중요: 사용자가 다운로드할 때 제안될 파일 이름
+            mime="application/octet-stream"     # 중요: 모든 종류의 파일에 사용 가능한 범용적인 타입
                                                 # 또는 "application/pdf"를 사용해도 됩니다.
         )        
         st.header("버전 설정")

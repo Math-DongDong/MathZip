@@ -23,7 +23,7 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-st.title("🔢 유리수 타일 뽑기")
+st.title("🔢 유리수 뽑기")
 st.divider()
 
 # --- 게임 초기화 로직 등 (변경 없음) ---
