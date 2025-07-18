@@ -7,15 +7,24 @@ from StreamsSideBar import Draw_sidebar
 # 사이드바를 활성화합니다.
 Draw_sidebar()
 
-# 유리수 latex를 키우기 위한 CSS문법 추가
+# --- 여기가 핵심 변경점 1 ---
+# 오른쪽 규칙 설명 부분만을 위한 새로운 CSS 클래스(.styled-rules)를 추가합니다.
 st.markdown("""
 <style>
+/* 메인에 표시되는 큰 수식 (변경 없음) */
 .stMarkdown .katex-display .katex {
     font-size: 6em;
     margin-top: 0.5em;
 }
+
+/* 오른쪽 열의 규칙 설명 텍스트와 수식을 위한 스타일 */
+.styled-rules {
+    font-size: 1.5em !important; /* 이 값을 1.8em, 2.0em 등으로 조절하세요. */
+}
+
+/* 정보 상자 안의 뽑은 기록 수식을 위한 스타일 (변경 없음) */
 [data-testid="stAlertContainer"] .katex {
-    font-size: 1.5em; /* 크기를 더 키웠습니다. 이 값을 1.8, 2.0 등으로 조절하세요. */
+    font-size: 1.5em; 
 }
 </style>
 """, unsafe_allow_html=True)
@@ -75,8 +84,7 @@ with left_col:
     else:
         st.latex(st.session_state.current_number_Q)
 
-# --- 여기가 핵심 변경점입니다 ---
-# 오른쪽 컬럼: 규칙 설명 (올바른 문법으로 수정)
+# 오른쪽 컬럼: 규칙 설명
 with right_col:
     rule_text = r"""
     ℹ️ **유리수 타일 구성:**
@@ -85,9 +93,12 @@ with right_col:
     - 절댓값이 $\frac{1}{2} \sim \frac{10}{2}$ 인 수
     - 절댓값이 $\frac{1}{3}, \frac{2}{3}, \frac{4}{3}, \frac{5}{3}$ 인 수
     """
-    st.markdown(rule_text)
+    # --- 여기가 핵심 변경점 2 ---
+    # HTML의 div 태그로 rule_text를 감싸고, 우리가 만든 CSS 클래스 'styled-rules'를 적용합니다.
+    st.markdown(f'<div class="styled-rules">{rule_text}</div>', unsafe_allow_html=True)
 
-# --- 뽑은 기록을 정보 상자에 담아 표시 ---
+
+# "뽑은 기록"은 정보 상자(st.info) 안에 표시합니다.
 st.divider() 
 
 history_title = "**※ 지금까지 뽑은 유리수들:**"
