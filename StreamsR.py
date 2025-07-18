@@ -18,7 +18,7 @@ st.markdown("""
 
 /* 오른쪽 정보 패널의 폰트 크기를 조절합니다. */
 .info-panel {
-    font-size: 2em; /* 텍스트가 너무 크면 1.0em 이나 1.1em으로 조정하세요. */
+    font-size: 1.5em; /* 텍스트가 너무 크면 1.0em 이나 1.1em으로 조정하세요. */
 }
 </style>
 """, unsafe_allow_html=True)
@@ -77,8 +77,8 @@ with col1:
         st.rerun()
 
 with col2:
-    # 모든 타일을 뽑으면 버튼이 비활성화됩니다.
-    is_disabled = (st.session_state.draw_count_R >= st.session_state.total_tiles_R)
+    # [수정된 부분] 20개를 뽑으면 버튼이 비활성화되도록 조건을 변경합니다.
+    is_disabled = (st.session_state.draw_count_R >= 19)
     if st.button("다음 실수 뽑기", disabled=is_disabled, use_container_width=True, key="draw_R"):
         if st.session_state.pool_R:
             st.session_state.draw_count_R += 1
@@ -89,8 +89,8 @@ with col2:
 # --- 결과 표시 헤더 ---
 if st.session_state.draw_count_R == 0:
     st.header("첫 번째 실수를 뽑아주세요.")
-elif st.session_state.draw_count_R >= st.session_state.total_tiles_R:
-    st.header(f"🏁 {st.session_state.total_tiles_R}개의 실수를 모두 뽑았습니다! 🏁")
+elif st.session_state.draw_count_R >= 20: # 이 부분도 20으로 맞춰주면 더 일관성 있습니다.
+    st.header(f"🏁 20개의 실수를 모두 뽑았습니다! 🏁")
 else:
     st.header(f"{st.session_state.draw_count_R}번째 실수")
 
