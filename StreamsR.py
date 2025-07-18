@@ -134,4 +134,4 @@ if st.session_state.drawn_history_R:
 else:
     history_values = "아직 뽑은 실수가 없습니다."
 
-st.info(f"{history_title}\n {history_values}")
+st.info(f"{history_title} {history_values}")
