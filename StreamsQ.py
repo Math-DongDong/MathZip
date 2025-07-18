@@ -8,7 +8,6 @@ from StreamsSideBar import Draw_sidebar
 Draw_sidebar()
 
 # --- 여기가 최종 핵심 변경점 1 ---
-# .rule-text-block 관련 CSS 코드를 모두 삭제했습니다.
 st.markdown("""
 <style>
 /* 메인에 표시되는 큰 수식 */
@@ -16,9 +15,6 @@ st.markdown("""
     font-size: 6em;
     margin-top: 0.5em;
 }
-
-/* 오른쪽 열 스타일을 제거했으므로 관련 클래스 정의가 없습니다. */
-
 </style>
 """, unsafe_allow_html=True)
 
@@ -73,11 +69,8 @@ with left_col:
 
 # --- 여기가 최종 핵심 변경점 2 ---
 with right_col:
-    # <div> 태그를 감싸던 st.markdown 두 줄을 제거했습니다.
-    # 이제 순수하게 st.write만 남아 기본 스타일로 출력됩니다.
-
     # "유리수 타일 구성" 텍스트
-    st.write(ℹ️ **유리수 타일 구성:**)
+    st.write("ℹ️ **유리수 타일 구성:**")
     st.write(r"- $0$ (2개)")
     st.write(r"- 절댓값이 $1 \sim 5$ 인 수")
     st.write(r"- 절댓값이 $\frac{1}{2} \sim \frac{10}{2}$ 인 수")
