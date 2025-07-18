@@ -1,11 +1,3 @@
-
----
-
-### 수정된 내용이 반영된 전체 코드
-
-아래는 위 수정 사항이 적용된 전체 코드입니다. 이 코드를 복사해서 `StreamsQ.py` 파일에 전체 붙여넣기 하시면 됩니다.
-
-```python
 # StreamsQ.py
 
 import streamlit as st
@@ -83,8 +75,8 @@ with left_col:
     else:
         st.latex(st.session_state.current_number_Q)
 
-# --- 여기가 핵심 변경점 1 ---
-# 오른쪽 컬럼: 규칙 설명 (정보 상자 없이 일반 텍스트로 표시)
+# --- 여기가 핵심 변경점입니다 ---
+# 오른쪽 컬럼: 규칙 설명 (올바른 문법으로 수정)
 with right_col:
     rule_text = r"""
     ℹ️ **유리수 타일 구성:**
@@ -93,11 +85,9 @@ with right_col:
     - 절댓값이 $\frac{1}{2} \sim \frac{10}{2}$ 인 수
     - 절댓값이 $\frac{1}{3}, \frac{2}{3}, \frac{4}{3}, \frac{5}{3}$ 인 수
     """
-
     st.markdown(rule_text)
 
-# --- 여기가 핵심 변경점 2 ---
-# "뽑은 기록"은 정보 상자(st.info) 안에 표시합니다.
+# --- 뽑은 기록을 정보 상자에 담아 표시 ---
 st.divider() 
 
 history_title = "**※ 지금까지 뽑은 유리수들:**"
@@ -107,5 +97,4 @@ if st.session_state.drawn_history_Q:
 else:
     history_values = "아직 뽑은 유리수가 없습니다."
 
-# st.markdown 대신 st.info를 사용하여 파란색 상자에 담습니다.
 st.info(f"{history_title} {history_values}")
