@@ -87,7 +87,7 @@ with right_col:
     - 절댓값이 $\frac{1}{2} \sim \frac{10}{2}$ 인 수
     - 절댓값이 $\frac{1}{3}, \frac{2}{3}, \frac{4}{3}, \frac{5}{3}$ 인 수
     """
-    st.info(rule_text) # 이제 파란 상자가 다시 보입니다.
+    st.write(rule_text) # 이제 파란 상자가 다시 보입니다.
 
 
 st.divider() 
