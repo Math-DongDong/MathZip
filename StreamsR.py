@@ -18,7 +18,7 @@ st.markdown("""
 
 /* 오른쪽 정보 패널의 폰트 크기를 조절합니다. */
 .info-panel {
-    font-size: 2.2em; /* 텍스트가 너무 크면 1.0em 이나 1.1em으로 조정하세요. */
+    font-size: 2em; /* 텍스트가 너무 크면 1.0em 이나 1.1em으로 조정하세요. */
 }
 </style>
 """, unsafe_allow_html=True)
@@ -118,11 +118,8 @@ with right_col:
     ℹ️ **실수 타일 구성:**
     - 절댓값이 $0 \sim 4$ 인 수
     - 절댓값이 $\sqrt{0} \sim \sqrt{9}$ 인 수
-    - $-2-\sqrt{5},\ -1-\sqrt{5}$
-    - $1-\sqrt{3},\ -2+\sqrt{3}$
-    - $2-\sqrt{3},\ -3+\sqrt{3}$
-    - $1+\sqrt{5},\ 2+\sqrt{5}$
-
+    - $-2-\sqrt{5},\ -1-\sqrt{5},\ 1+\sqrt{5},\ 2+\sqrt{5}$ 
+    - $1-\sqrt{3},\ -2+\sqrt{3},\ 2-\sqrt{3},\ -3+\sqrt{3}$
     </div>
     """, unsafe_allow_html=True)
 
