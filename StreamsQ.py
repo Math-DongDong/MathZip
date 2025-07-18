@@ -17,17 +17,14 @@ st.markdown("""
 }
 
 /* 오른쪽 열의 규칙 설명을 위한 스타일 */
-.styled-rules-container {
+/* 이제 st.info 안의 내용에 직접 스타일을 적용합니다. */
+[data-testid="stVerticalBlock"] [data-testid="stVerticalBlock"] [data-testid="stInfo"] {
     font-size: 1.5em !important;
 }
 
-/* 뽑은 기록을 위한 스타일 */
-.styled-history-container {
-    font-size: 1.2em !important;
-}
-.styled-history-container .katex {
-    font-size: 1em; /* 부모 크기에 맞춰 조정 */
-}
+/* 뽑은 기록을 위한 스타일 (st.info가 2개이므로 구별이 필요 없음) */
+/* [data-testid="stInfo"] { font-size: 1.2em !important; } */
+
 </style>
 """, unsafe_allow_html=True)
 
@@ -82,6 +79,7 @@ with left_col:
 
 # --- 여기가 최종 핵심 변경점 2 ---
 with right_col:
+    # st.info를 그대로 사용하면 Streamlit이 알아서 Markdown/LaTeX를 올바르게 렌더링합니다.
     rule_text = r"""
     ℹ️ **유리수 타일 구성:**
     - $0$ (2개)
@@ -89,8 +87,7 @@ with right_col:
     - 절댓값이 $\frac{1}{2} \sim \frac{10}{2}$ 인 수
     - 절댓값이 $\frac{1}{3}, \frac{2}{3}, \frac{4}{3}, \frac{5}{3}$ 인 수
     """
-    # 모든 내용을 하나의 f-string으로 묶어 단일 st.markdown 호출로 전달합니다.
-    st.markdown(f'<div class="styled-rules-container">{rule_text}</div>', unsafe_allow_html=True)
+    st.info(rule_text) # 이제 파란 상자가 다시 보입니다.
 
 
 st.divider() 
@@ -102,6 +99,5 @@ if st.session_state.drawn_history_Q:
 else:
     history_values = "아직 뽑은 유리수가 없습니다."
 
-# 뽑은 기록도 정보 상자 대신 스타일이 적용된 div로 감쌉니다.
-history_content = f"{history_title} {history_values}"
-st.markdown(f'<div class="styled-history-container">{history_content}</div>', unsafe_allow_html=True)
+# 제일 아래 뽑은 기록도 st.info를 사용하여 파란 상자에 담습니다.
+st.info(f"{history_title} {history_values}")
