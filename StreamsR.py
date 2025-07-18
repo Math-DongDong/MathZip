@@ -118,7 +118,7 @@ with right_col:
     ℹ️ **실수 타일 구성:**
     - 절댓값이 $0 \sim 4$ 인 수
     - 절댓값이 $\sqrt{0} \sim \sqrt{9}$ 인 수
-    - $-2-\sqrt{5},\ -1-\sqrt{5},\ 1+\sqrt{5},\ 2+\sqrt{5}$ 
+    - $-1-\sqrt{5},\ 1+\sqrt{5}$ 
     - $1-\sqrt{3},\ -2+\sqrt{3},\ 2-\sqrt{3},\ -3+\sqrt{3}$
     </div>
     """, unsafe_allow_html=True)
