@@ -13,8 +13,12 @@ st.markdown("""
 /* 메인에 표시되는 큰 수식 */
 .stMarkdown .katex-display .katex {
     font-size: 6em;
-    margin-top: 0.5em;
-    margin-bottom: 0.5em; /* 아래쪽 여백을 추가합니다. */
+    margin: 0.5em 0; 
+}
+
+/* [추가된 부분] 오른쪽 정보 패널의 폰트 크기를 조절합니다. */
+.info-panel [data-testid="stMarkdownContainer"] {
+    font-size: 1.2em; /* 원하시는 크기로 조절하세요. 예를 들어 2em, 1.5em 등 */
 }
 </style>
 """, unsafe_allow_html=True)
@@ -70,12 +74,17 @@ with left_col:
 
 # --- 여기가 최종 핵심 변경점 2 ---
 with right_col:
-    # "유리수 타일 구성" 텍스트
+    # [수정] 스타일을 적용할 영역을 지정하기 위해 사용자 정의 div로 감쌉니다.
+    st.markdown('<div class="info-panel">', unsafe_allow_html=True)
+    
     st.write("ℹ️ **유리수 타일 구성:**")
     st.write(r"- $0$ (2개)")
     st.write(r"- 절댓값이 $1 \sim 5$ 인 수")
     st.write(r"- 절댓값이 $\frac{1}{2} \sim \frac{10}{2}$ 인 수")
     st.write(r"- 절댓값이 $\frac{1}{3},\ \frac{2}{3},\ \frac{4}{3},\ \frac{5}{3}$ 인 수")              
+
+    # [수정] 스타일 영역을 닫습니다.
+    st.markdown('</div>', unsafe_allow_html=True)
     
 st.divider() 
 
