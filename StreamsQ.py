@@ -29,8 +29,8 @@ st.divider()
 # --- 게임 초기화 로직 등 (변경 없음) ---
 def initialize_game_Q():
     number_pool = []
-    for i in range(1, 11): number_pool.append(f"\\frac{{{i}}}{{2}}"); number_pool.append(f"-\\frac{{{i}}}{{2}}")
-    for i in range(1, 6): number_pool.append(str(i)); number_pool.append(str(-i))
+    for i in range(1, 9): number_pool.append(f"\\frac{{{i}}}{{2}}"); number_pool.append(f"-\\frac{{{i}}}{{2}}")
+    for i in range(1, 5): number_pool.append(str(i)); number_pool.append(str(-i))
     number_pool.extend(["\\frac{5}{3}", "-\\frac{5}{3}", "\\frac{4}{3}", "-\\frac{4}{3}", "\\frac{2}{3}", "-\\frac{2}{3}", "\\frac{1}{3}", "-\\frac{1}{3}", "0", "0"])
     random.shuffle(number_pool)
     st.session_state.pool_Q, st.session_state.draw_count_Q, st.session_state.current_number_Q, st.session_state.drawn_history_Q = number_pool, 0, "❔", []
@@ -81,8 +81,8 @@ with right_col:
 
     ℹ️ **유리수 타일 구성:**
     - $0$ (2개)
-    - 절댓값이 $1 \sim 5$ 인 수
-    - 절댓값이 $\frac{1}{2} \sim \frac{10}{2}$ 인 수
+    - 절댓값이 $1 \sim 4$ 인 수
+    - 절댓값이 $\frac{1}{2} \sim \frac{8}{2}$ 인 수
     - 절댓값이 $\frac{1}{3},\ \frac{2}{3},\ \frac{4}{3},\ \frac{5}{3}$ 인 수
 
     </div>
