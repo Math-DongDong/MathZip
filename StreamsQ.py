@@ -7,11 +7,10 @@ from StreamsSideBar import Draw_sidebar
 # 사이드바를 활성화합니다.
 Draw_sidebar()
 
-# --- 여기가 핵심 변경점 1 ---
-# CSS 스타일을 주입하는 부분과 컨텐츠를 분리합니다.
+# --- CSS 스타일 블록 (이전과 동일하게 유지) ---
 st.markdown("""
 <style>
-/* 메인에 표시되는 큰 수식 (변경 없음) */
+/* 메인에 표시되는 큰 수식 */
 .stMarkdown .katex-display .katex {
     font-size: 6em;
     margin-top: 0.5em;
@@ -20,6 +19,11 @@ st.markdown("""
 /* 오른쪽 열의 규칙 설명을 위한 스타일 */
 .styled-rules-container p, .styled-rules-container li {
     font-size: 1.5em !important; 
+}
+
+/* 정보 상자(st.info) 안의 뽑은 기록 수식을 위한 스타일 */
+[data-testid="stAlertContainer"] .katex {
+    font-size: 1.5em; 
 }
 </style>
 """, unsafe_allow_html=True)
@@ -73,13 +77,13 @@ with left_col:
     else:
         st.latex(st.session_state.current_number_Q)
 
-# --- 여기가 핵심 변경점 2 ---
-# 오른쪽 컬럼: 규칙 설명을 우리가 정의한 CSS 클래스로 감싸서 표시
+# --- 여기가 핵심 변경점입니다 ---
+# 오른쪽 컬럼: 규칙 설명을 st.markdown을 사용하여 표시합니다.
 with right_col:
     # 1. 스타일을 적용할 영역을 시작하는 div 태그를 먼저 출력합니다.
     st.markdown('<div class="styled-rules-container">', unsafe_allow_html=True)
 
-    # 2. 기존의 st.info 또는 st.markdown을 사용하여 내용을 그대로 렌더링합니다.
+    # 2. st.info 대신 st.markdown을 사용하여 내용을 렌더링합니다.
     rule_text = r"""
     ℹ️ **유리수 타일 구성:**
     - $0$ (2개)
@@ -87,6 +91,8 @@ with right_col:
     - 절댓값이 $\frac{1}{2} \sim \frac{10}{2}$ 인 수
     - 절댓값이 $\frac{1}{3}, \frac{2}{3}, \frac{4}{3}, \frac{5}{3}$ 인 수
     """
+    st.markdown(rule_text) # 파란 상자 없이 내용만 표시됩니다.
+
     # 3. 스타일 영역을 닫는 div 태그를 출력합니다.
     st.markdown('</div>', unsafe_allow_html=True)
 
@@ -100,4 +106,5 @@ if st.session_state.drawn_history_Q:
 else:
     history_values = "아직 뽑은 유리수가 없습니다."
 
+# 제일 아래 뽑은 기록은 st.info를 그대로 유지합니다.
 st.info(f"{history_title} {history_values}")
