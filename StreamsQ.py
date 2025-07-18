@@ -14,6 +14,7 @@ st.markdown("""
 .stMarkdown .katex-display .katex {
     font-size: 6em;
     margin-top: 0.5em;
+    margin-bottom: 0.5em; /* 아래쪽 여백을 추가합니다. */
 }
 </style>
 """, unsafe_allow_html=True)
@@ -74,7 +75,7 @@ with right_col:
     st.write(r"- $0$ (2개)")
     st.write(r"- 절댓값이 $1 \sim 5$ 인 수")
     st.write(r"- 절댓값이 $\frac{1}{2} \sim \frac{10}{2}$ 인 수")
-    st.write(r"- 절댓값이 $\frac{1}{3},\` \frac{2}{3},\` \frac{4}{3},\` \frac{5}{3}$ 인 수")              
+    st.write(r"- 절댓값이 $\frac{1}{3},\ \frac{2}{3},\ \frac{4}{3},\ \frac{5}{3}$ 인 수")              
     
 st.divider() 
 
