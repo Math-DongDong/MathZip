@@ -87,8 +87,6 @@ with right_col:
     - 절댓값이 $\frac{1}{2} \sim \frac{10}{2}$ 인 수
     - 절댓값이 $\frac{1}{3}, \frac{2}{3}, \frac{4}{3}, \frac{5}{3}$ 인 수
     """
-    st.info(rule_text) # 다시 st.info를 사용해도 좋습니다.
-
     # 3. 스타일 영역을 닫는 div 태그를 출력합니다.
     st.markdown('</div>', unsafe_allow_html=True)
 
