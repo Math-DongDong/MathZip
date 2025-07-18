@@ -74,7 +74,7 @@ with right_col:
     st.write(r"- $0$ (2개)")
     st.write(r"- 절댓값이 $1 \sim 5$ 인 수")
     st.write(r"- 절댓값이 $\frac{1}{2} \sim \frac{10}{2}$ 인 수")
-    st.write(r"- 절댓값이 $\frac{1}{3}, \frac{2}{3}, \frac{4}{3}, \frac{5}{3}$ 인 수")              
+    st.write(r"- 절댓값이 $\frac{1}{3},\` \frac{2}{3},\` \frac{4}{3},\` \frac{5}{3}$ 인 수")              
     
 st.divider() 
 
