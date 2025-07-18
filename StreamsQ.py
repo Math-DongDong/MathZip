@@ -77,18 +77,12 @@ with right_col:
     # 이제 순수하게 st.write만 남아 기본 스타일로 출력됩니다.
 
     # "유리수 타일 구성" 텍스트
-    rule_text = r"""
-    ℹ️ **유리수 타일 구성:**
-    - $0$ (2개)
-    - 절댓값이 $1 \sim 5$ 인 수
-    - 절댓값이 $\frac{1}{2} \sim \frac{10}{2}$ 인 수
-    - 절댓값이 $\frac{1}{3}, \frac{2}{3}, \frac{4}{3}, \frac{5}{3}$ 인 수
-    """
+    st.write(ℹ️ **유리수 타일 구성:**)
+    st.write(r"- $0$ (2개)")
+    st.write(r"- 절댓값이 $1 \sim 5$ 인 수")
+    st.write(r"- 절댓값이 $\frac{1}{2} \sim \frac{10}{2}$ 인 수")
+    st.write(r"- 절댓값이 $\frac{1}{3}, \frac{2}{3}, \frac{4}{3}, \frac{5}{3}$ 인 수")              
     
-    # st.write를 사용하여 내용을 기본 형태로 출력합니다.
-    st.write(rule_text)
-
-
 st.divider() 
 
 history_title = "**※ 지금까지 뽑은 유리수들:**"
