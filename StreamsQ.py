@@ -46,7 +46,7 @@ with col1:
         st.rerun()
 
 with col2:
-    is_disabled = (st.session_state.draw_count_Q > 20)
+    is_disabled = (st.session_state.draw_count_Q >= 19)
     if st.button("다음 유리수 뽑기", disabled=is_disabled, use_container_width=True, key="draw_Q"):
         if st.session_state.pool_Q:
             st.session_state.draw_count_Q += 1
