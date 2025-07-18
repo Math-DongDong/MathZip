@@ -19,7 +19,7 @@ st.markdown("""
 
 /* 오른쪽 열의 규칙 설명을 위한 사용자 정의 클래스 스타일 */
 .rule-text-block {
-    font-size: 1.2em !important;
+    font-size: 4em !important;
     line-height: 1.6;
 }
 </style>
