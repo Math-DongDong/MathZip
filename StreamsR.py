@@ -13,13 +13,12 @@ st.markdown("""
 <style>
 /* 메인에 표시되는 큰 수식 */
 .stMarkdown .katex-display .katex {
-    font-size: 6em;
-    margin: 0.5em 0; 
+    font-size: 8em;
 }
 
 /* 오른쪽 정보 패널의 폰트 크기를 조절합니다. */
 .info-panel {
-    font-size: 1.2em; /* 텍스트가 너무 크면 1.0em 이나 1.1em으로 조정하세요. */
+    font-size: 2.2em; /* 텍스트가 너무 크면 1.0em 이나 1.1em으로 조정하세요. */
 }
 </style>
 """, unsafe_allow_html=True)
@@ -96,7 +95,7 @@ else:
     st.header(f"{st.session_state.draw_count_R}번째 실수")
 
 # [핵심 수정 3] 유리수 버전처럼 좌우 레이아웃을 적용합니다.
-left_col, right_col = st.columns([2, 1])
+left_col, right_col = st.columns([1.5, 1])
 
 with left_col:
     # 현재 뽑힌 숫자를 표시하는 로직
