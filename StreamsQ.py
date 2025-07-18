@@ -16,9 +16,9 @@ st.markdown("""
     margin: 0.5em 0; 
 }
 
-/* [추가된 부분] 오른쪽 정보 패널의 폰트 크기를 조절합니다. */
-.info-panel [data-testid="stMarkdownContainer"] {
-    font-size: 1.2em; /* 원하시는 크기로 조절하세요. 예를 들어 2em, 1.5em 등 */
+/* [수정된 부분] 오른쪽 정보 패널의 폰트 크기를 조절합니다. */
+.info-panel {
+    font-size: 1.2em; /* 원하시는 크기로 조절하세요. 예를 들어 1.5em, 2em 등 */
 }
 </style>
 """, unsafe_allow_html=True)
@@ -74,18 +74,20 @@ with left_col:
 
 # --- 여기가 최종 핵심 변경점 2 ---
 with right_col:
-    # [수정] 스타일을 적용할 영역을 지정하기 위해 사용자 정의 div로 감쌉니다.
-    st.markdown('<div class="info-panel">', unsafe_allow_html=True)
-    
-    st.write("ℹ️ **유리수 타일 구성:**")
-    st.write(r"- $0$ (2개)")
-    st.write(r"- 절댓값이 $1 \sim 5$ 인 수")
-    st.write(r"- 절댓값이 $\frac{1}{2} \sim \frac{10}{2}$ 인 수")
-    st.write(r"- 절댓값이 $\frac{1}{3},\ \frac{2}{3},\ \frac{4}{3},\ \frac{5}{3}$ 인 수")              
+    # [수정] 여러 st.write를 하나의 st.markdown으로 통합하여
+    # 모든 콘텐츠를 'info-panel' div 안에 확실하게 넣습니다.
+    st.markdown(r"""
+    <div class="info-panel">
 
-    # [수정] 스타일 영역을 닫습니다.
-    st.markdown('</div>', unsafe_allow_html=True)
-    
+    ℹ️ **유리수 타일 구성:**
+    - $0$ (2개)
+    - 절댓값이 $1 \sim 5$ 인 수
+    - 절댓값이 $\frac{1}{2} \sim \frac{10}{2}$ 인 수
+    - 절댓값이 $\frac{1}{3},\ \frac{2}{3},\ \frac{4}{3},\ \frac{5}{3}$ 인 수
+
+    </div>
+    """, unsafe_allow_html=True)
+
 st.divider() 
 
 history_title = "**※ 지금까지 뽑은 유리수들:**"
