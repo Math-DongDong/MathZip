@@ -44,7 +44,7 @@ with col1:
         st.rerun()
 
 with col2:
-    is_disabled = (st.session_state.draw_count_Z >= 20)
+    is_disabled = (st.session_state.draw_count_Z > 20)
     if st.button("다음 정수 뽑기", disabled=is_disabled, use_container_width=True):
         if st.session_state.pool_Z:
             st.session_state.draw_count_Z += 1
