@@ -7,7 +7,8 @@ from StreamsSideBar import Draw_sidebar
 # 사이드바를 활성화합니다.
 Draw_sidebar()
 
-# --- 여기가 최종 핵심 변경점 1 (CSS 수정) ---
+# --- CSS 스타일 정의 부분 (변경 없음) ---
+# .rule-text-block 클래스는 그대로 사용합니다.
 st.markdown("""
 <style>
 /* 메인에 표시되는 큰 수식 */
@@ -18,8 +19,8 @@ st.markdown("""
 
 /* 오른쪽 열의 규칙 설명을 위한 사용자 정의 클래스 스타일 */
 .rule-text-block {
-    font-size: 1.2em !important; /* 글씨 크기를 1.2배로 설정합니다. */
-    line-height: 1.6;        /* 줄 간격을 살짝 넓혀 가독성을 높입니다. */
+    font-size: 1.2em !important;
+    line-height: 1.6;
 }
 </style>
 """, unsafe_allow_html=True)
@@ -73,9 +74,12 @@ with left_col:
     else:
         st.latex(st.session_state.current_number_Q)
 
-# --- 여기가 최종 핵심 변경점 2 (Python 코드 수정) ---
+# --- 여기가 최종 핵심 변경점입니다 ---
 with right_col:
-    # "유리수 타일 구성"에 대한 설명 텍스트 (Raw String으로 유지)
+    # 1. 스타일을 적용할 영역을 시작하는 div 태그를 먼저 삽입합니다.
+    st.markdown('<div class="rule-text-block">', unsafe_allow_html=True)
+
+    # "유리수 타일 구성" 텍스트 (이스케이프가 필요 없는 원본 r-string 그대로 사용)
     rule_text = r"""
     ℹ️ **유리수 타일 구성:**
     - $0$ (2개)
@@ -84,33 +88,12 @@ with right_col:
     - 절댓값이 $\frac{1}{3}, \frac{2}{3}, \frac{4}{3}, \frac{5}{3}$ 인 수
     """
     
-    # st.markdown을 사용하여 div 태그와 위에서 정의한 CSS 클래스를 직접 적용합니다.
-    # rule_text 내의 LaTeX 수식을 정상적으로 렌더링하기 위해,
-    # Markdown 형식으로 변환하는 과정이 필요합니다. Streamlit이 이 부분을 자동으로 처리해 줍니다.
-    # 다만, HTML 구조 안에 넣기 위해 약간의 트릭이 필요할 수 있습니다.
-    # Streamlit은 Markdown 콘텐츠를 HTML로 먼저 렌더링하므로, 아래 방식이 더 안정적일 수 있습니다.
-    # st.markdown(f'<div class="rule-text-block">{rule_text}</div>', unsafe_allow_html=True)
-    # 위 방식이 수식 렌더링에 문제를 일으킬 경우, st.write를 컨테이너 안에 넣는 방법도 고려할 수 있습니다.
-    # 하지만 이 경우, 가장 간단한 방법은 st.markdown으로 HTML을 직접 제어하는 것입니다.
-    # Streamlit의 Markdown 파서는 $...$를 LaTeX로 잘 처리하므로 f-string 방식이 정상 동작해야 합니다.
-    
-    # 더 안정적인 렌더링을 위해, 텍스트를 HTML p 태그로 감싸는 것이 좋습니다.
-    # Markdown의 리스트(-, *)를 HTML 태그(<ul>, <li>)로 변환해주는 것이 가장 좋습니다.
-    
-    # 최종 권장 코드:
-    html_rule_text = """
-    <div class="rule-text-block">
-        <p>ℹ️ <strong>유리수 타일 구성:</strong></p>
-        <ul>
-            <li>$0$ (2개)</li>
-            <li>절댓값이 $1 \sim 5$ 인 수</li>
-            <li>절댓값이 $\\frac{1}{2} \sim \\frac{10}{2}$ 인 수</li>
-            <li>절댓값이 $\\frac{1}{3}, \\frac{2}{3}, \\frac{4}{3}, \\frac{5}{3}$ 인 수</li>
-        </ul>
-    </div>
-    """
-    # 백슬래시를 이스케이프 처리해야 할 수 있으므로 \\frac으로 변경합니다.
-    st.markdown(html_rule_text, unsafe_allow_html=True)
+    # 2. st.write를 사용하여 내용을 출력합니다.
+    #    이제 Streamlit이 이 내용을 올바르게 파싱하여 수식을 예쁘게 렌더링합니다.
+    st.write(rule_text)
+
+    # 3. 위에서 열어두었던 div 태그를 닫아 스타일 적용 범위를 끝냅니다.
+    st.markdown('</div>', unsafe_allow_html=True)
 
 
 st.divider() 
@@ -122,5 +105,4 @@ if st.session_state.drawn_history_Q:
 else:
     history_values = "아직 뽑은 유리수가 없습니다."
 
-# 제일 아래 뽑은 기록도 st.info를 사용하여 파란 상자에 담습니다.
 st.info(f"{history_title} {history_values}")
