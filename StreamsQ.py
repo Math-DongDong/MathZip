@@ -20,11 +20,6 @@ st.markdown("""
 .styled-rules-container p, .styled-rules-container li {
     font-size: 1.5em !important; 
 }
-
-/* 정보 상자(st.info) 안의 뽑은 기록 수식을 위한 스타일 */
-[data-testid="stAlertContainer"] .katex {
-    font-size: 1.5em; 
-}
 </style>
 """, unsafe_allow_html=True)
 
