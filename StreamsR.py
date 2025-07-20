@@ -116,7 +116,7 @@ with right_col:
     <div class="info-panel">
 
     ℹ️ **실수 타일 구성(총 30개)**
-    - 절댓값이 $0 \sim 4$ 인 수
+    - 절댓값이 $0,\ 1,\ 2,\ 3.\dot{9}$ 인 수
     - 절댓값이 $\sqrt{0} \sim \sqrt{9}$ 인 수
     - $-1-\sqrt{5},\ 1+\sqrt{5}$ 
     - $1-\sqrt{3},\ -2+\sqrt{3},\ 2-\sqrt{3},\ -3+\sqrt{3}$
