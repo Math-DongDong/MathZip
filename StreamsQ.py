@@ -7,7 +7,7 @@ from StreamsSideBar import Draw_sidebar
 # 사이드바를 활성화합니다.
 Draw_sidebar()
 
-# --- 여기가 최종 핵심 변경점 1 ---
+# --- 스타일 정의 (변경 없음) ---
 st.markdown("""
 <style>
 /* 메인에 표시되는 큰 수식 */
@@ -26,14 +26,20 @@ st.markdown("""
 st.title("🔢 유리수 뽑기")
 st.divider()
 
-# --- 게임 초기화 로직 등 (변경 없음) ---
+# --- 게임 초기화 로직 (핵심 수정 부분) ---
 def initialize_game_Q():
     number_pool = []
-    for i in range(1, 9): number_pool.append(f"\\frac{{{i}}}{{2}}"); number_pool.append(f"-\\frac{{{i}}}{{2}}")
-    for i in range(1, 5): number_pool.append(str(i)); number_pool.append(str(-i))
+    for i in range(1, 7): number_pool.append(f"\\frac{{{i}}}{{2}}"); number_pool.append(f"-\\frac{{{i}}}{{2}}")
+    for i in range(1, 4): number_pool.append(str(i)); number_pool.append(str(-i))
+    
+    # --- [수정된 부분] 화면 규칙과 일치시키기 위해 누락된 숫자를 추가합니다. ---
+    number_pool.extend(["2.3", "-2.3", "2.7", "-2.7"])
+    
     number_pool.extend(["\\frac{5}{3}", "-\\frac{5}{3}", "\\frac{4}{3}", "-\\frac{4}{3}", "\\frac{2}{3}", "-\\frac{2}{3}", "\\frac{1}{3}", "-\\frac{1}{3}", "0", "0"])
     random.shuffle(number_pool)
     st.session_state.pool_Q, st.session_state.draw_count_Q, st.session_state.current_number_Q, st.session_state.drawn_history_Q = number_pool, 0, "❔", []
+
+# --- 이하 모든 코드는 변경 없음 ---
 
 if 'pool_Q' not in st.session_state:
     initialize_game_Q()
@@ -71,10 +77,7 @@ with left_col:
     else:
         st.latex(st.session_state.current_number_Q)
 
-# --- 여기가 최종 핵심 변경점 2 ---
 with right_col:
-    # [수정] 여러 st.write를 하나의 st.markdown으로 통합하여
-    # 모든 콘텐츠를 'info-panel' div 안에 확실하게 넣습니다.
     st.markdown(r"""
     <div class="info-panel">
 
