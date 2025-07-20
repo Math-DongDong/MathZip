@@ -60,15 +60,15 @@ with col2:
             st.session_state.current_number_Q = new_number
             st.session_state.drawn_history_Q.append(new_number)
 
-if st.session_state.draw_count_Q == 0:
-    st.header("첫 번째 유리수를 뽑아주세요.")
-elif st.session_state.draw_count_Q >= 20:
-    st.header("🏁 20개의 유리수를 모두 뽑았습니다! 🏁")
-else:
-    st.header(f"{st.session_state.draw_count_Q}번째 유리수")
-
 left_col, right_col = st.columns([1, 1])
 with left_col:
+    if st.session_state.draw_count_Q == 0:
+        st.header("첫 번째 유리수를 뽑아주세요.")
+    elif st.session_state.draw_count_Q >= 20:
+        st.header("🏁 20개의 유리수를 모두 뽑았습니다! 🏁")
+    else:
+        st.header(f"{st.session_state.draw_count_Q}번째 유리수")
+
     if st.session_state.current_number_Q == "❔":
         st.markdown(
             f"<p style='text-align: center; font-size: 150px; font-weight: bold;'>{st.session_state.current_number_Q}</p>", 
@@ -83,7 +83,8 @@ with right_col:
 
     ℹ️ **유리수 타일 구성(총 32개)**
     - $0$ (2개)
-    - 절댓값이 $1,\ 2.3,\ 2,\ 2.7,\ 3$ 인 수
+    - 절댓값이 $1,\ 2,\ 3$ 인 수
+    - 절댓값이 $2.3,\ 2.7$ 인 수
     - 절댓값이 $\frac{1}{2} \sim \frac{6}{2}$ 인 수
     - 절댓값이 $\frac{1}{3},\ \frac{2}{3},\ \frac{4}{3},\ \frac{5}{3}$ 인 수
 
