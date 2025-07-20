@@ -17,7 +17,7 @@ st.markdown("""
 
 /* 오른쪽 정보 패널의 폰트 크기를 조절합니다. */
 .info-panel {
-    font-size: 1.5em; 
+    font-size: 2.2em; 
 }
 </style>
 """, unsafe_allow_html=True)
