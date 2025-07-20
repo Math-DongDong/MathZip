@@ -37,7 +37,7 @@ def initialize_game_R():
         number_pool.append(str(-i))
     
     # [수정] '3' 대신 순환소수 '2.9...' 표현을, '-3'은 그대로 추가합니다.
-    number_pool.extend(["2.\\dot{9}", "-3"])
+    number_pool.extend(["2.\\dot{9}", "-2.\\dot{9}"])
 
     # 규칙 2: 절댓값이 √0 ~ √5, 그리고 √9인 수
     number_pool.append("\\sqrt{0}")
