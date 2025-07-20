@@ -80,9 +80,10 @@ with right_col:
     st.markdown(r"""
     <div class="info-panel">
 
-    ℹ️ **유리수 타일 구성:**
+    ℹ️ **유리수 타일 구성(총 34개)**
     - $0$ (2개)
-    - 절댓값이 $1 \sim 4$ 인 수
+    - 절댓값이 $1 \sim 3$ 인 수
+    - 절댓값이 $\frac{1}{2} \sim \frac{6}{2}$ 인 수
     - 절댓값이 $\frac{1}{2} \sim \frac{8}{2}$ 인 수
     - 절댓값이 $\frac{1}{3},\ \frac{2}{3},\ \frac{4}{3},\ \frac{5}{3}$ 인 수
 
