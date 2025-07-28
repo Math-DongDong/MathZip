@@ -15,7 +15,7 @@ st.markdown("---") # 구분선
 
 # --- 아이프레임으로 삽입할 Google Apps Script URL ---
 # 제공해주신 URL을 여기에 입력합니다.
-apps_script_url = "https://script.google.com/macros/s/AKfycbzk08KQCWx7xC-ZzoZwr8U4GQtWWXKDOejIJJ74Arw6hcyhz_QzoS27bCxzOR298sgxEw/exec"
+apps_script_url = "https://script.google.com/macros/s/AKfycbzOjKP_IHrzKcP2Mu-eFaOtZowc2D5ephpld6zvIvsWAl9QqmHBO__zSRv5SPQIWbEU/exec"
 
 # --- 아이프레임 생성 ---
 # st.components.v1.iframe을 사용하여 웹 앱을 아이프레임으로 임베드합니다.
