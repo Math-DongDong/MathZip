@@ -7,7 +7,7 @@ st.warning('흑백 이미지와 컬러 이미지 표현간 전환이 자유롭�
 
 # --- 아이프레임으로 삽입할 Google Apps Script URL ---
 # 제공해주신 URL을 여기에 입력합니다.
-apps_script_url = "https://script.google.com/macros/s/AKfycbyhYt7Z0bisZUdjPX0-iH4fXCmlvIgv2APAiYg_otxwX4oMSeIlMTPs7DDgOXeM099Odg/exec"
+apps_script_url = "https://script.google.com/macros/s/AKfycbxj5bESz9471BAmZaAyOmMkyD33uYCRMjlMUW9HLcO4xnH5JQDkoqRhh7xrKQfAXE8YUg/exec"
 
 # --- 아이프레임 생성 ---
 # st.components.v1.iframe을 사용하여 웹 앱을 아이프레임으로 임베드합니다.
