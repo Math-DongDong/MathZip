@@ -19,7 +19,7 @@ pages = {
         st.Page("Dice.py", title="주사위 모음")
     ],
     "인공지능 수학": [
-        st.Page("ImageExpression.py", title="이미지 표현")
+        st.Page("ImageExpression.py", title="이미지 자료의 표현")
     ],
     "사이드바 모음": [
         st.Page("StreamsZ.py"),
