@@ -12,4 +12,4 @@ apps_script_url = "https://script.google.com/macros/s/AKfycbxj5bESz9471BAmZaAyOm
 # --- 아이프레임 생성 ---
 # st.components.v1.iframe을 사용하여 웹 앱을 아이프레임으로 임베드합니다.
 # height 값을 조절하여 아이프레임의 세로 길이를 맞출 수 있습니다.
-components.iframe(apps_script_url, height=700, scrolling=True)
+components.iframe(apps_script_url, height=750, scrolling=True)
