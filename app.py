@@ -21,13 +21,6 @@ pages = {
     "인공지능 수학": [
         st.Page("ImageExpression.py", title="이미지 자료의 표현")
     ],
-    "사이드바 모음": [
-        st.Page("StreamsZ.py"),
-        st.Page("StreamsQ.py"),
-        st.Page("StreamsR.py"),
-        st.Page("StreamsExplanation.py"),
-        
-    ],
 }
 
 # 3. 네비게이션 UI 생성
