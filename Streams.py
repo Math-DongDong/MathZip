@@ -232,7 +232,7 @@ with tabs[4]:
                 new_number = st.session_state.pool_R.pop()
                 st.session_state.current_number_R = new_number
                 st.session_state.drawn_history_R.append(new_number)
-    left_col, right_col = st.columns([2, 3])
+    left_col, right_col = st.columns([1, 1])
     with left_col:
         if st.session_state.draw_count_R == 0: st.header("첫 번째 실수를 뽑아주세요.")
         elif st.session_state.draw_count_R >= 26: st.header("🏁 모든 실수를 모두 뽑았습니다! 🏁")
