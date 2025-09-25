@@ -1,4 +1,4 @@
-# pig_game_app_v5_final_fixed.py
+# pig_game_app_v14_final_header_size_fix.py
 
 import streamlit as st
 import pandas as pd
@@ -7,12 +7,35 @@ import random
 import time
 import plotly.graph_objects as go
 
-# --- 1. 페이지 기본 설정 ---
-st.set_page_config(
-    page_title="Pig Game",
-    page_icon="🎲",
-    layout="wide"
-)
+# --- 1. 페이지 기본 설정 및 커스텀 스타일 ---
+st.set_page_config(page_title="Pig Game", page_icon="🎲", layout="wide")
+
+# [핵심 수정] .stats-header의 font-size 값을 .stats-cell과 유사한 수준으로 키워 균형을 맞춥니다.
+st.markdown("""
+<style>
+.stats-table {
+    border: 1px solid #e0e0e0;
+    border-radius: 10px;
+    padding: 15px;
+    background-color: #fafafa;
+}
+.stats-header {
+    text-align: center;
+    font-weight: bold;
+    font-size: 2em !important; /* 헤더 폰트 크기 대폭 증가 */
+}
+.stats-row-header {
+    font-weight: bold;
+    font-size: 1.2em !important; 
+}
+.stats-cell {
+    text-align: center;
+    font-size: 1.4em !important; 
+    font-weight: bold; 
+}
+</style>
+""", unsafe_allow_html=True)
+
 
 # --- 2. 상단 게임 설정 패널 ---
 with st.expander("🎲 게임 설정 및 진행 방법 (클릭하여 열기/닫기)", expanded=('player_scores' not in st.session_state)):
@@ -31,9 +54,9 @@ with st.expander("🎲 게임 설정 및 진행 방법 (클릭하여 열기/닫�
             3. **하지만 주사위 눈이 `1`이 나오면...** 이번 라운드 점수는 **0점**이 되고, 즉시 다음 사람에게 차례가 넘어갑니다.
             4. `1`이 나오기 전에 '그만하기'를 누르면, 이번 라운드 점수가 '총 점수'에 더해지고 차례가 넘어갑니다.
         """)
-
+        
         submitted = st.form_submit_button("🚀 새 게임 시작")
-
+        
         if submitted:
             st.session_state.num_players = num_players
             st.session_state.winning_score = winning_score
@@ -48,7 +71,7 @@ with st.expander("🎲 게임 설정 및 진행 방법 (클릭하여 열기/닫�
             st.session_state.turn_over_message = ""
             st.rerun()
 
-# --- 3. 핵심 게임 로직 함수 (변경 없음) ---
+# --- 3. 핵심 게임 로직 함수 ---
 def next_turn():
     st.session_state.current_player = (st.session_state.current_player + 1) % st.session_state.num_players
     st.session_state.pending_score = 0
@@ -59,7 +82,6 @@ def roll_dice():
     roll = random.randint(1, 6)
     st.session_state.last_roll = roll
     st.session_state.roll_history.append(roll)
-    
     if roll == 1:
         st.session_state.pending_score = 0
         st.session_state.turn_over_message = f"앗! 1이 나왔습니다. 점수를 모두 잃고 턴이 넘어갑니다."
@@ -72,7 +94,6 @@ def hold():
     current_player_idx = st.session_state.current_player
     st.session_state.player_scores[current_player_idx] += st.session_state.pending_score
     st.session_state.turn_over_message = f"{st.session_state.pending_score}점을 획득했습니다!"
-
     if st.session_state.player_scores[current_player_idx] >= st.session_state.winning_score:
         st.session_state.game_over = True
         st.session_state.winner = st.session_state.player_names[current_player_idx]
@@ -85,58 +106,77 @@ if 'player_scores' not in st.session_state:
 else:
     active_player_name = st.session_state.player_names[st.session_state.current_player]
     st.header(f"👑 현재 차례: **{active_player_name}**")
-    
-    score_data = {
-        '모둠명': st.session_state.player_names,
-        '총 점수': st.session_state.player_scores,
-    }
-    pending_scores_display = ["-"] * st.session_state.num_players
-    if not st.session_state.game_over:
-        pending_scores_display[st.session_state.current_player] = f"+ {st.session_state.pending_score}"
-    score_data['획득 예정 점수'] = pending_scores_display
-    
-    score_df = pd.DataFrame(score_data)
-    st.dataframe(score_df.set_index('모둠명').T, use_container_width=True) 
-
     st.divider()
-    col1, col2 = st.columns([0.4, 0.6])
 
-    with col1:
+    main_col1, main_col2 = st.columns([0.4, 0.6])
+
+    with main_col1:
         st.markdown(f"<p style='text-align: center; font-size: 100px; font-weight: bold; margin: 0; line-height: 1;'>{st.session_state.last_roll}</p>", unsafe_allow_html=True)
         st.metric(label="이번 라운드 점수", value=f"{st.session_state.pending_score} 점")
         btn_cols = st.columns(2)
-        with btn_cols[0]:
-            st.button("주사위 던지기", on_click=roll_dice, use_container_width=True, disabled=st.session_state.game_over)
-        with btn_cols[1]:
-            st.button("그만하기", on_click=hold, use_container_width=True, disabled=st.session_state.game_over)
-        if st.session_state.turn_over_message:
-            st.info(st.session_state.turn_over_message)
+        with btn_cols[0]: st.button("주사위 던지기", on_click=roll_dice, use_container_width=True, disabled=st.session_state.game_over)
+        with btn_cols[1]: st.button("그만하기", on_click=hold, use_container_width=True, disabled=st.session_state.game_over)
+        if st.session_state.turn_over_message: st.info(st.session_state.turn_over_message)
 
-    with col2: 
-        st.subheader("📊 주사위 눈 비율 (부드러운 꺾은선)")
+    with main_col2:
+        st.subheader("scoreboard")
+        score_cols = st.columns(st.session_state.num_players)
+        
+        for i, col in enumerate(score_cols):
+            with col:
+                is_current_player = (i == st.session_state.current_player)
+                player_name = st.session_state.player_names[i]
+                header_text = f"👑 {player_name}" if is_current_player else player_name
+                st.markdown(f"**{header_text}**")
+                player_score = st.session_state.player_scores[i]
+                delta_score = st.session_state.pending_score if is_current_player and not st.session_state.game_over else 0
+                st.metric(label="총 점수", value=player_score, delta=f"{delta_score} 점" if delta_score > 0 else None)
+
+    st.divider()
+    stats_col1, stats_col2 = st.columns(2)
+
+    with stats_col1:
+        st.subheader("📊 주사위 눈 비율")
         if st.session_state.roll_history:
             roll_counts = pd.Series(st.session_state.roll_history).value_counts()
-            full_counts = pd.Series(index=range(1, 7), data=0, dtype=int)
-            full_counts.update(roll_counts)
-            
+            full_counts = pd.Series(index=range(1, 7), data=0, dtype=int); full_counts.update(roll_counts)
+            total_rolls = len(st.session_state.roll_history)
+            roll_ratio = full_counts / total_rolls
+            fig = go.Figure(); fig.add_trace(go.Scatter(x=roll_ratio.index, y=roll_ratio.values, mode='lines+markers', name='비율', line_shape='spline'))
+            fig.update_layout(xaxis_title="주사위 눈", yaxis_title="비율", yaxis_range=[0, 1]); st.plotly_chart(fig, use_container_width=True)
+        else: 
+            st.caption("아직 주사위를 던지지 않았습니다.")
+
+    with stats_col2:
+        st.subheader("📈 주사위 통계표")
+        if st.session_state.roll_history:
+            roll_counts = pd.Series(st.session_state.roll_history).value_counts()
+            full_counts = pd.Series(index=range(1, 7), data=0, dtype=int); full_counts.update(roll_counts)
             total_rolls = len(st.session_state.roll_history)
             roll_ratio = full_counts / total_rolls
 
-            fig = go.Figure()
-            fig.add_trace(go.Scatter(x=roll_ratio.index, y=roll_ratio.values, mode='lines+markers', name='비율', line_shape='spline'))
+            header_cols = st.columns([1, 1, 1, 1, 1, 1, 1])
+            headers = ["", "🎲 1", "🎲 2", "🎲 3", "🎲 4", "🎲 5", "🎲 6"]
+            for col, header in zip(header_cols, headers):
+                col.markdown(f'<p class="stats-header">{header}</p>', unsafe_allow_html=True)
             
-            # [핵심 수정] y_range를 yaxis_range로 변경합니다.
-            fig.update_layout(
-                xaxis_title="주사위 눈",
-                yaxis_title="비율",
-                yaxis_range=[0, 1] # Y축 범위를 0에서 1로 고정
-            )
-            st.plotly_chart(fig, use_container_width=True)
+            st.divider()
+
+            freq_cols = st.columns([1.5, 1, 1, 1, 1, 1, 1])
+            freq_cols[0].markdown('<p class="stats-row-header">빈도</p>', unsafe_allow_html=True)
+            for i in range(1, 7):
+                freq_cols[i].markdown(f'<p class="stats-cell">{full_counts.get(i, 0)}</p>', unsafe_allow_html=True)
+
+            ratio_cols = st.columns([1.5, 1, 1, 1, 1, 1, 1])
+            ratio_cols[0].markdown('<p class="stats-row-header">비율</p>', unsafe_allow_html=True)
+            for i in range(1, 7):
+                ratio_cols[i].markdown(f'<p class="stats-cell">{roll_ratio.get(i, 0.0):.3f}</p>', unsafe_allow_html=True)
             
-        else:
+            st.markdown('</div>', unsafe_allow_html=True)
+        else: 
             st.caption("아직 주사위를 던지지 않았습니다.")
 
     if st.session_state.game_over:
-        st.balloons()
+        st.balloons(); 
         st.success(f"🎉 **게임 종료! 승자는 {st.session_state.winner} 입니다!** 🎉")
         st.warning("새 게임을 시작하려면 상단 설정 패널에서 '새 게임 시작' 버튼을 누르세요.")
