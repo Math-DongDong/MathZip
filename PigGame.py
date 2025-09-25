@@ -98,6 +98,11 @@ def hold():
         next_turn()
 
 # --- 4. 메인 UI 렌더링 ---
+    if st.session_state.game_over:
+        st.balloons(); 
+        st.success(f"🎉 **게임 종료! 승자는 {st.session_state.winner} 입니다!** 🎉")
+        st.warning("새 게임을 시작하려면 상단 설정 패널에서 '새 게임 시작' 버튼을 누르세요.")
+
 if 'player_scores' not in st.session_state:
     st.info("☝️ 상단의 '게임 설정' 패널에서 설정을 마친 후 '새 게임 시작' 버튼을 눌러주세요.")
 else:
@@ -172,7 +177,3 @@ else:
         else: 
             st.caption("아직 주사위를 던지지 않았습니다.")
 
-    if st.session_state.game_over:
-        st.balloons(); 
-        st.success(f"🎉 **게임 종료! 승자는 {st.session_state.winner} 입니다!** 🎉")
-        st.warning("새 게임을 시작하려면 상단 설정 패널에서 '새 게임 시작' 버튼을 누르세요.")
