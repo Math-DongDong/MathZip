@@ -1,11 +1,11 @@
-# pig_game_app_v2.py
+# pig_game_app_v5_final_fixed.py
 
 import streamlit as st
 import pandas as pd
 import numpy as np
 import random
 import time
-import plotly.graph_objects as go # [추가] Plotly 라이브러리 임포트
+import plotly.graph_objects as go
 
 # --- 1. 페이지 기본 설정 ---
 st.set_page_config(
@@ -14,35 +14,32 @@ st.set_page_config(
     layout="wide"
 )
 
-# --- 2. 사이드바: 게임 설정 ---
-with st.sidebar:
-    st.header("🎲 게임 설정")
-    num_players = st.slider("모둠 수", min_value=2, max_value=10, value=2)
-    winning_score = st.number_input("목표 점수", min_value=20, max_value=500, value=100, step=10)
-    
-    # [수정] 플레이어 이름 입력을 제거하고, '새 게임 시작' 버튼만 남깁니다.
-    if st.button("🚀 새 게임 시작", type="primary"):
-        st.session_state.clear() 
-        st.session_state.num_players = num_players
-        st.session_state.winning_score = winning_score
-        
-        # [수정] 버튼 클릭 시, '1모둠', '2모둠'... 형식으로 플레이어 이름을 자동으로 생성합니다.
-        st.session_state.player_names = [f"{i+1}모둠" for i in range(num_players)]
-        st.rerun()
+# --- 2. 상단 게임 설정 패널 ---
+with st.expander("🎲 게임 설정 (클릭하여 열기/닫기)", expanded=('player_scores' not in st.session_state)):
+    with st.form(key="game_setup_form"):
+        col1, col2 = st.columns(2)
+        with col1:
+            num_players = st.slider("모둠 수", min_value=2, max_value=10, value=2)
+        with col2:
+            winning_score = st.number_input("목표 점수", min_value=20, max_value=500, value=100, step=10)
 
-# --- 3. 게임 상태 초기화 함수 (변경 없음) ---
-def initialize_game():
-    if 'player_scores' not in st.session_state:
-        st.session_state.player_scores = [0] * st.session_state.num_players
-        st.session_state.current_player = 0
-        st.session_state.pending_score = 0
-        st.session_state.last_roll = "🎲"
-        st.session_state.game_over = False
-        st.session_state.winner = None
-        st.session_state.roll_history = []
-        st.session_state.turn_over_message = ""
+        submitted = st.form_submit_button("🚀 새 게임 시작")
 
-# --- 4. 핵심 게임 로직 함수 (변경 없음) ---
+        if submitted:
+            st.session_state.num_players = num_players
+            st.session_state.winning_score = winning_score
+            st.session_state.player_names = [f"{i+1}모둠" for i in range(num_players)]
+            st.session_state.player_scores = [0] * num_players
+            st.session_state.current_player = 0
+            st.session_state.pending_score = 0
+            st.session_state.last_roll = "🎲"
+            st.session_state.game_over = False
+            st.session_state.winner = None
+            st.session_state.roll_history = []
+            st.session_state.turn_over_message = ""
+            st.rerun()
+
+# --- 3. 핵심 게임 로직 함수 (변경 없음) ---
 def next_turn():
     st.session_state.current_player = (st.session_state.current_player + 1) % st.session_state.num_players
     st.session_state.pending_score = 0
@@ -73,13 +70,11 @@ def hold():
     else:
         next_turn()
 
-# --- 5. 메인 UI 렌더링 ---
+# --- 4. 메인 UI 렌더링 ---
 if 'player_scores' not in st.session_state:
-    st.info("👈 사이드바에서 설정을 마친 후 '새 게임 시작' 버튼을 눌러주세요.")
+    st.info("☝️ 상단의 '게임 설정' 패널에서 설정을 마친 후 '새 게임 시작' 버튼을 눌러주세요.")
 else:
-    initialize_game()
     active_player_name = st.session_state.player_names[st.session_state.current_player]
-
     st.header(f"👑 현재 차례: **{active_player_name}**")
     
     score_data = {
@@ -119,35 +114,24 @@ else:
                 4. `1`이 나오기 전에 '그만하기'를 누르면, 이번 라운드 점수가 '총 점수'에 더해지고 차례가 넘어갑니다.
             """)
 
-        # --- [핵심 수정] 주사위 통계 차트 ---
         st.subheader("📊 주사위 눈 비율 (부드러운 꺾은선)")
         if st.session_state.roll_history:
-            # 1. 주사위 눈(1~6)에 대한 빈도 계산
             roll_counts = pd.Series(st.session_state.roll_history).value_counts()
-            # 2. 전체 주사위 눈(1~6)에 대한 데이터프레임 생성 (던져지지 않은 눈도 0으로 표시하기 위함)
             full_counts = pd.Series(index=range(1, 7), data=0, dtype=int)
             full_counts.update(roll_counts)
             
-            # 3. 빈도를 전체 던진 횟수로 나누어 '비율' 계산
             total_rolls = len(st.session_state.roll_history)
             roll_ratio = full_counts / total_rolls
 
-            # 4. Plotly를 사용하여 부드러운 꺾은선 그래프 생성
             fig = go.Figure()
-            fig.add_trace(go.Scatter(
-                x=roll_ratio.index, 
-                y=roll_ratio.values, 
-                mode='lines+markers', 
-                name='비율',
-                line_shape='spline'  # 이 옵션이 선을 부드럽게 만듭니다!
-            ))
-            # 5. 차트 레이아웃 설정
+            fig.add_trace(go.Scatter(x=roll_ratio.index, y=roll_ratio.values, mode='lines+markers', name='비율', line_shape='spline'))
+            
+            # [핵심 수정] y_range를 yaxis_range로 변경합니다.
             fig.update_layout(
                 xaxis_title="주사위 눈",
                 yaxis_title="비율",
                 yaxis_range=[0, 1] # Y축 범위를 0에서 1로 고정
             )
-            # 6. st.plotly_chart로 스트림릿에 표시
             st.plotly_chart(fig, use_container_width=True)
             
         else:
@@ -156,4 +140,4 @@ else:
     if st.session_state.game_over:
         st.balloons()
         st.success(f"🎉 **게임 종료! 승자는 {st.session_state.winner} 입니다!** 🎉")
-        st.warning("새 게임을 시작하려면 사이드바에서 '새 게임 시작' 버튼을 누르세요.")
+        st.warning("새 게임을 시작하려면 상단 설정 패널에서 '새 게임 시작' 버튼을 누르세요.")
