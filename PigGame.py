@@ -7,9 +7,6 @@ import random
 import time
 import plotly.graph_objects as go
 
-# --- 1. 페이지 기본 설정 및 커스텀 스타일 ---
-st.set_page_config(page_title="Pig Game", page_icon="🎲", layout="wide")
-
 # [핵심 수정] .stats-header의 font-size 값을 .stats-cell과 유사한 수준으로 키워 균형을 맞춥니다.
 st.markdown("""
 <style>
@@ -38,13 +35,13 @@ st.markdown("""
 
 
 # --- 2. 상단 게임 설정 패널 ---
-with st.expander("🎲 게임 설정 및 진행 방법 (클릭하여 열기/닫기)", expanded=('player_scores' not in st.session_state)):
+with st.expander("⚙️ 게임 설정 및 진행 방법 (클릭하여 열기/닫기)", expanded=('player_scores' not in st.session_state)):
     with st.form(key="game_setup_form"):
         col1, col2 = st.columns(2)
         with col1:
             num_players = st.slider("모둠 수", min_value=2, max_value=10, value=2)
         with col2:
-            winning_score = st.number_input("목표 점수", min_value=20, max_value=500, value=100, step=10)
+            winning_score = st.number_input("목표 점수", min_value=20, max_value=100, value=100, step=10)
 
         st.markdown(f"""
         - **승리조건:** 먼저 **목표점수**에 도달하세요!
@@ -64,7 +61,7 @@ with st.expander("🎲 게임 설정 및 진행 방법 (클릭하여 열기/닫�
             st.session_state.player_scores = [0] * num_players
             st.session_state.current_player = 0
             st.session_state.pending_score = 0
-            st.session_state.last_roll = "🎲"
+            st.session_state.last_roll = "🐷"
             st.session_state.game_over = False
             st.session_state.winner = None
             st.session_state.roll_history = []
@@ -75,7 +72,7 @@ with st.expander("🎲 게임 설정 및 진행 방법 (클릭하여 열기/닫�
 def next_turn():
     st.session_state.current_player = (st.session_state.current_player + 1) % st.session_state.num_players
     st.session_state.pending_score = 0
-    st.session_state.last_roll = "🎲"
+    st.session_state.last_roll = "🐷"
     time.sleep(0.5) 
 
 def roll_dice():
@@ -108,15 +105,13 @@ else:
     st.header(f"👑 현재 차례: **{active_player_name}**")
     st.divider()
 
-    main_col1, main_col2 = st.columns([0.4, 0.6])
-
+    main_col1, main_col2 = st.columns([0.3, 0.7])
     with main_col1:
-        st.markdown(f"<p style='text-align: center; font-size: 100px; font-weight: bold; margin: 0; line-height: 1;'>{st.session_state.last_roll}</p>", unsafe_allow_html=True)
+        st.markdown(f"<p style='text-align: center; font-size: 110px; font-weight: bold; margin: 0; line-height: 1;'>{st.session_state.last_roll}</p>", unsafe_allow_html=True)
         st.metric(label="이번 라운드 점수", value=f"{st.session_state.pending_score} 점")
         btn_cols = st.columns(2)
         with btn_cols[0]: st.button("주사위 던지기", on_click=roll_dice, use_container_width=True, disabled=st.session_state.game_over)
         with btn_cols[1]: st.button("그만하기", on_click=hold, use_container_width=True, disabled=st.session_state.game_over)
-        if st.session_state.turn_over_message: st.info(st.session_state.turn_over_message)
 
     with main_col2:
         st.subheader("scoreboard")
@@ -131,12 +126,13 @@ else:
                 player_score = st.session_state.player_scores[i]
                 delta_score = st.session_state.pending_score if is_current_player and not st.session_state.game_over else 0
                 st.metric(label="총 점수", value=player_score, delta=f"{delta_score} 점" if delta_score > 0 else None)
+        if st.session_state.turn_over_message: st.info(st.session_state.turn_over_message)
 
     st.divider()
     stats_col1, stats_col2 = st.columns(2)
 
     with stats_col1:
-        st.subheader("📊 주사위 눈 비율")
+        st.subheader("📊 주사위 눈의 비율")
         if st.session_state.roll_history:
             roll_counts = pd.Series(st.session_state.roll_history).value_counts()
             full_counts = pd.Series(index=range(1, 7), data=0, dtype=int); full_counts.update(roll_counts)
@@ -148,7 +144,7 @@ else:
             st.caption("아직 주사위를 던지지 않았습니다.")
 
     with stats_col2:
-        st.subheader("📈 주사위 통계표")
+        st.subheader("📈 주사위 눈의 통계표")
         if st.session_state.roll_history:
             roll_counts = pd.Series(st.session_state.roll_history).value_counts()
             full_counts = pd.Series(index=range(1, 7), data=0, dtype=int); full_counts.update(roll_counts)
@@ -160,14 +156,14 @@ else:
             for col, header in zip(header_cols, headers):
                 col.markdown(f'<p class="stats-header">{header}</p>', unsafe_allow_html=True)
             
-            st.divider()
+            #st.divider()
 
-            freq_cols = st.columns([1.5, 1, 1, 1, 1, 1, 1])
+            freq_cols = st.columns([1, 1, 1, 1, 1, 1, 1])
             freq_cols[0].markdown('<p class="stats-row-header">빈도</p>', unsafe_allow_html=True)
             for i in range(1, 7):
                 freq_cols[i].markdown(f'<p class="stats-cell">{full_counts.get(i, 0)}</p>', unsafe_allow_html=True)
 
-            ratio_cols = st.columns([1.5, 1, 1, 1, 1, 1, 1])
+            ratio_cols = st.columns([1, 1, 1, 1, 1, 1, 1])
             ratio_cols[0].markdown('<p class="stats-row-header">비율</p>', unsafe_allow_html=True)
             for i in range(1, 7):
                 ratio_cols[i].markdown(f'<p class="stats-cell">{roll_ratio.get(i, 0.0):.3f}</p>', unsafe_allow_html=True)
