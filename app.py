@@ -15,6 +15,12 @@ pages = {
         # 그룹의 첫 번째 페이지를 default=True로 설정하면 '중1 수학' 클릭 시 이 페이지가 먼저 보입니다.
         st.Page("rotation.py", title="회전체 탐구", default=True),
     ],
+    "중2 수학": [
+        st.Page("Exponents.py", title="지수법칙"),
+    ],
+    "알지오매스": [
+        st.Page("AlgeoMath_1.py", title="중1수학"),
+    ],
     "보드게임": [
         st.Page("Streams.py", title="스트림스"),
         st.Page("PigGame.py", title="Pig Game"),
