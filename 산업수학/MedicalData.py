@@ -5,137 +5,202 @@ import matplotlib.pyplot as plt
 from ripser import ripser
 from persim import plot_diagrams
 
-# --------------------------------------------------------------------------------
-# 1. 페이지 설정 및 스타일
-# --------------------------------------------------------------------------------
 st.markdown("""
 <style>
-    .main-header { font-size: 2.5rem; color: #4B4B4B; text-align: center; margin-bottom: 1rem; }
-    .sub-header { font-size: 1.5rem; color: #007BFF; margin-top: 1rem; margin-bottom: 1rem; }
+    .step-header { font-size: 1.3rem; font-weight: bold; color: #007BFF; margin-top: 20px; margin-bottom: 10px; }            
+    .info-box { background-color: #f0f2f6; padding: 15px; border-radius: 10px; margin-bottom: 15px; }
 </style>
 """, unsafe_allow_html=True)
 
-st.markdown('<div class="main-header">🧬 TDA: 지속구간 다이어그램(Persistence Diagram) 실습</div>', unsafe_allow_html=True)
-st.info("데이터 분포의 위상적 특징(구멍, 연결 성분 등)을 시각화하여 데이터의 모양을 분석해 봅시다.")
+st.title("🧬 의료 데이터 지속구간 다이어그램 분석")
 
-# --------------------------------------------------------------------------------
-# 2. 데이터 초기화 및 입력 (Normal 10개, High BP 10개)
-# --------------------------------------------------------------------------------
-col_input1, col_input2 = st.columns(2)
+# 탭 생성
+tab1, tab2 = st.tabs(["🩸 고혈압 판정", "🍬 당뇨 판정"])
 
-# 기본 데이터 생성 (예시: 정상군은 (2,2) 근처, 고혈압군은 (6,6) 근처에 군집)
-default_normal = pd.DataFrame({
-    'x': [1.8, 2.1, 2.5, 1.5, 2.9, 3.1, 2.2, 1.9, 2.8, 2.0],
-    'y': [2.2, 1.9, 2.8, 2.1, 2.5, 3.2, 3.0, 1.8, 2.1, 2.4]
-})
+# ==============================================================================
+# [TAB 1] 고혈압 판정 (기존 코드 - 2D, maxdim=1)
+# ==============================================================================
+with tab1:
+    # 1. 기본 데이터 입력
+    empty_df_2d = pd.DataFrame({'x': pd.Series(dtype='float'), 'y': pd.Series(dtype='float')})
 
-default_high_bp = pd.DataFrame({
-    'x': [5.8, 6.1, 6.5, 5.5, 6.9, 7.1, 6.2, 5.9, 6.8, 6.0],
-    'y': [6.2, 5.9, 6.8, 6.1, 6.5, 7.2, 7.0, 5.8, 6.1, 6.4]
-})
+    with st.expander("📊 고혈압 판정 기초 데이터 입력 (정상군 / 고혈압군)", expanded=True):
+        col_set1, col_set2 = st.columns(2)
+        with col_set1:
+            st.markdown("**🟢 정상군 데이터 입력**")
+            df_normal = st.data_editor(
+                empty_df_2d, num_rows="dynamic", key="base_normal", use_container_width=True, height=300, hide_index=True,
+                column_config={"x": st.column_config.NumberColumn("X좌표", required=True), "y": st.column_config.NumberColumn("Y좌표", required=True)}
+            )
+        with col_set2:
+            st.markdown("**🔴 고혈압군 데이터 입력**")
+            df_high_bp = st.data_editor(
+                empty_df_2d, num_rows="dynamic", key="base_high_bp", use_container_width=True, height=300, hide_index=True,
+                column_config={"x": st.column_config.NumberColumn("X좌표", required=True), "y": st.column_config.NumberColumn("Y좌표", required=True)}
+            )
 
-with col_input1:
-    st.markdown("### 🟢 정상군 데이터 (10개)")
-    df_normal = st.data_editor(default_normal, num_rows="dynamic", key="normal_data", height=300)
+    # 2. 분석 및 추가 데이터
+    col_control, col_display = st.columns([1, 2])
 
-with col_input2:
-    st.markdown("### 🔴 고혈압군 데이터 (10개)")
-    df_high_bp = st.data_editor(default_high_bp, num_rows="dynamic", key="high_bp_data", height=300)
-
-# --------------------------------------------------------------------------------
-# 3. 데이터 병합 및 1차 분석 (기본 데이터)
-# --------------------------------------------------------------------------------
-st.divider()
-st.markdown('<div class="sub-header">1️⃣ 기본 데이터 분석 결과</div>', unsafe_allow_html=True)
-
-# 데이터프레임을 Numpy 배열로 변환
-try:
-    X_normal = df_normal.to_numpy()
-    X_high = df_high_bp.to_numpy()
-    
-    # 두 집합 합치기
-    X_original = np.vstack([X_normal, X_high])
-    
-    col_res1, col_res2 = st.columns(2)
-
-    # (1) 산점도 그리기
-    with col_res1:
-        st.write("##### 📊 데이터 산점도 (Scatter Plot)")
-        fig1, ax1 = plt.subplots(figsize=(5, 5))
-        ax1.scatter(X_normal[:, 0], X_normal[:, 1], c='green', label='Normal')
-        ax1.scatter(X_high[:, 0], X_high[:, 1], c='red', label='High BP')
-        ax1.legend()
-        ax1.set_title("Data Distribution")
-        ax1.grid(True, linestyle='--', alpha=0.6)
-        st.pyplot(fig1)
-
-    # (2) 지속구간 다이어그램 그리기
-    with col_res2:
-        st.write("##### 🕸️ 지속구간 다이어그램 (Persistence Diagram)")
-        # Ripser 실행 (maxdim=1: 0차원(연결성분), 1차원(구멍/루프) 까지 계산)
-        diagrams_original = ripser(X_original, maxdim=1)['dgms']
+    with col_control:
+        st.markdown('<div class="step-header">분석 대상 선택 및 데이터 추가하기</div>', unsafe_allow_html=True)
+        st.write("###### 1. 분석할 그룹 선택")
+        target_group = st.radio("분석 그룹 선택", ("정상군", "고혈압군"), label_visibility="collapsed",key="radio_bp")
         
-        fig2, ax2 = plt.subplots(figsize=(5, 5))
-        plot_diagrams(diagrams_original, show=False, ax=ax2)
-        ax2.set_title("Persistence Diagram (Original)")
-        st.pyplot(fig2)
+        st.write("---")
+        st.write("###### 2. 데이터 추가하기")
+        single_row_df = pd.DataFrame({'x': [None], 'y': [None]}, dtype='float')
+        df_added = st.data_editor(
+            single_row_df, num_rows="fixed", key="added_data_bp", use_container_width=True, hide_index=True,
+            column_config={"x": st.column_config.NumberColumn("추가 X", required=True), "y": st.column_config.NumberColumn("추가 Y", required=True)}
+        )
+        st.caption("좌표를 입력하면 오른쪽 그래프에 반영됩니다.")
+
+    with col_display:
+        if target_group == "정상군":
+            df_target = df_normal
+            base_label = "정상군"
+        else:
+            df_target = df_high_bp
+            base_label = "고혈압군"
+
+        df_target_clean = df_target.dropna()
         
-        st.caption("""
-        - **H0 (파란 점)**: 연결 성분 (데이터 덩어리)
-        - **H1 (주황 점)**: 구멍 (Loop)
-        """)
+        if len(df_target_clean) < 2:
+            st.warning("⚠️ 기초 데이터를 2개 이상 입력해주세요.")
+        else:
+            try:
+                X_base = df_target_clean.to_numpy(dtype=float)
 
-except Exception as e:
-    st.error(f"데이터 형식이 올바르지 않습니다. 숫자만 입력해주세요. ({e})")
+                if df_added.isnull().values.any():
+                    X_combined = None
+                else:
+                    X_new_point = df_added.to_numpy(dtype=float)
+                    X_combined = np.vstack([X_base, X_new_point])
 
-# --------------------------------------------------------------------------------
-# 4. 추가 데이터 입력 및 2차 분석
-# --------------------------------------------------------------------------------
-st.divider()
-st.markdown('<div class="sub-header">2️⃣ 추가 데이터 입력 및 변화 확인</div>', unsafe_allow_html=True)
+                st.write(f"#### 📈 {target_group} 지속구간 다이어그램")
+                col_plot1, col_plot2 = st.columns(2)
 
-st.write("아래 표에 **새로운 데이터**를 추가해보세요. 위상적 구조(H0, H1)가 어떻게 변하는지 확인합니다.")
+                # Ripser maxdim=1
+                with col_plot1:
+                    dgm_base = ripser(X_base, maxdim=1)['dgms']
+                    fig1, ax1 = plt.subplots(figsize=(4, 4))
+                    plot_diagrams(dgm_base, show=False, ax=ax1)
+                    ax1.set_title("Original Data", fontsize=10)
+                    st.pyplot(fig1)
 
-# 추가 데이터 초기값 (빈 데이터프레임)
-default_new = pd.DataFrame({'x': [4.0], 'y': [4.0]}) # 예시로 중간값 하나 넣어둠
-df_new = st.data_editor(default_new, num_rows="dynamic", key="new_data")
+                with col_plot2:
+                    if X_combined is None:
+                        st.info("👈 추가할 점의 좌표를 입력해주세요.")
+                    else:
+                        dgm_combined = ripser(X_combined, maxdim=1)['dgms']
+                        fig2, ax2 = plt.subplots(figsize=(4, 4))
+                        plot_diagrams(dgm_combined, show=False, ax=ax2)
+                        ax2.set_title("Original + Added Data", fontsize=10)
+                        st.pyplot(fig2)
+                
+            except Exception as e:
+                st.error(f"오류 발생: {e}")
 
-if not df_new.empty:
-    try:
-        X_new_points = df_new.to_numpy()
+
+# ==============================================================================
+# [TAB 2] 당뇨 판정 (신규 코드 - 3D, maxdim=2)
+# ==============================================================================
+with tab2:
+    # 1. 기본 데이터 입력 (3차원)
+    empty_df_3d = pd.DataFrame({
+        'x': pd.Series(dtype='float'), 
+        'y': pd.Series(dtype='float'),
+        'z': pd.Series(dtype='float')
+    })
+
+    with st.expander("📊 당뇨 판정 기초 데이터 입력 (정상군 / 당뇨군)", expanded=True):
+        col_set1_d, col_set2_d = st.columns(2)
+        with col_set1_d:
+            st.markdown("**🟢 정상군 데이터 입력**")
+            df_normal_diab = st.data_editor(
+                empty_df_3d, num_rows="dynamic", key="base_normal_diab", use_container_width=True, height=300, hide_index=True,
+                column_config={
+                    "x": st.column_config.NumberColumn("X좌표", required=True),
+                    "y": st.column_config.NumberColumn("Y좌표", required=True),
+                    "z": st.column_config.NumberColumn("Z좌표", required=True)
+                }
+            )
+        with col_set2_d:
+            st.markdown("**🔴 당뇨군 데이터 입력**")
+            df_diab_group = st.data_editor(
+                empty_df_3d, num_rows="dynamic", key="base_diab_group", use_container_width=True, height=300, hide_index=True,
+                column_config={
+                    "x": st.column_config.NumberColumn("X좌표", required=True),
+                    "y": st.column_config.NumberColumn("Y좌표", required=True),
+                    "z": st.column_config.NumberColumn("Z좌표", required=True)
+                }
+            )
+
+    # 2. 분석 및 추가 데이터 (3차원)
+    col_control_d, col_display_d = st.columns([1, 2])
+
+    with col_control_d:
+        st.markdown('<div class="step-header">분석 대상 선택 및 데이터 추가하기</div>', unsafe_allow_html=True)
+        st.write("###### 1. 분석할 그룹 선택")
+        target_group_diab = st.radio("분석 그룹 선택", ("정상군", "당뇨군"),label_visibility="collapsed", key="radio_diab")
         
-        # 기존 데이터 + 새로운 데이터 병합
-        X_final = np.vstack([X_original, X_new_points])
+        st.write("---")
+        st.write("###### 2. 데이터 추가하기")
+        single_row_df_3d = pd.DataFrame({'x': [None], 'y': [None], 'z': [None]}, dtype='float')
+        df_added_diab = st.data_editor(
+            single_row_df_3d, num_rows="fixed", key="added_data_diab", use_container_width=True, hide_index=True,
+            column_config={
+                "x": st.column_config.NumberColumn("추가 X", required=True),
+                "y": st.column_config.NumberColumn("추가 Y", required=True),
+                "z": st.column_config.NumberColumn("추가 Z", required=True)
+            }
+        )
+        st.caption("좌표를 입력하면 오른쪽 그래프에 반영됩니다.")
+
+    with col_display_d:
+        if target_group_diab == "정상군":
+            df_target_d = df_normal_diab
+            base_label_d = "정상군"
+        else:
+            df_target_d = df_diab_group
+            base_label_d = "당뇨군"
+
+        df_target_clean_d = df_target_d.dropna()
         
-        col_new1, col_new2 = st.columns(2)
+        if len(df_target_clean_d) < 3: # 3D 계산을 위해 최소 3개 권장
+            st.warning("⚠️ 기초 데이터를 3개 이상 입력해주세요.")
+        else:
+            try:
+                X_base_d = df_target_clean_d.to_numpy(dtype=float)
 
-        # (1) 업데이트된 산점도
-        with col_new1:
-            st.write("##### 📊 업데이트된 산점도")
-            fig3, ax3 = plt.subplots(figsize=(5, 5))
-            ax3.scatter(X_normal[:, 0], X_normal[:, 1], c='green', label='Normal', alpha=0.3)
-            ax3.scatter(X_high[:, 0], X_high[:, 1], c='red', label='High BP', alpha=0.3)
-            # 새로운 데이터는 파란색 별모양으로 강조
-            ax3.scatter(X_new_points[:, 0], X_new_points[:, 1], c='blue', marker='*', s=200, label='New Data')
-            ax3.legend()
-            ax3.set_title("Data Distribution (Updated)")
-            ax3.grid(True, linestyle='--', alpha=0.6)
-            st.pyplot(fig3)
+                if df_added_diab.isnull().values.any():
+                    X_combined_d = None
+                else:
+                    X_new_point_d = df_added_diab.to_numpy(dtype=float)
+                    X_combined_d = np.vstack([X_base_d, X_new_point_d])
 
-        # (2) 업데이트된 지속구간 다이어그램
-        with col_new2:
-            st.write("##### 🕸️ 업데이트된 지속구간 다이어그램")
-            diagrams_final = ripser(X_final, maxdim=1)['dgms']
-            
-            fig4, ax4 = plt.subplots(figsize=(5, 5))
-            plot_diagrams(diagrams_final, show=False, ax=ax4)
-            ax4.set_title("Persistence Diagram (Final)")
-            st.pyplot(fig4)
-            
-            st.success("새로운 데이터가 추가되어 위상적 특징이 다시 계산되었습니다!")
+                st.write(f"#### 📈 {target_group_diab} 지속구간 다이어그램")
+                col_plot1_d, col_plot2_d = st.columns(2)
 
-    except Exception as e:
-        st.error(f"추가 데이터 오류: {e}")
+                # Ripser maxdim=2 (H0, H1, H2 계산)
+                with col_plot1_d:
+                    # maxdim=2 설정
+                    dgm_base_d = ripser(X_base_d, maxdim=2)['dgms']
+                    fig1_d, ax1_d = plt.subplots(figsize=(4, 4))
+                    plot_diagrams(dgm_base_d, show=False, ax=ax1_d)
+                    ax1_d.set_title("Original Data", fontsize=10)
+                    st.pyplot(fig1_d)
 
-else:
-    st.warning("추가 데이터를 입력하면 그래프가 생성됩니다.")
+                with col_plot2_d:
+                    if X_combined_d is None:
+                        st.info("👈 추가할 점의 X, Y, Z 좌표를 입력해주세요.")
+                    else:
+                        dgm_combined_d = ripser(X_combined_d, maxdim=2)['dgms']
+                        fig2_d, ax2_d = plt.subplots(figsize=(4, 4))
+                        plot_diagrams(dgm_combined_d, show=False, ax=ax2_d)
+                        ax2_d.set_title("Original + Added Data", fontsize=10)
+                        st.pyplot(fig2_d)
+                
+            except Exception as e:
+                st.error(f"오류 발생: {e}")
