@@ -2,7 +2,7 @@ import streamlit as st
 import streamlit.components.v1 as components
 
 st.title("🔄 회전체 탐구")
-st.caption("왼쪽 캔버스에 마우스를 클릭하여 다각형을 그리고, '회전체 생성' 버튼을 눌러보세요.")
+st.caption("캔버스에 마우스를 클릭하여 다각형을 그리고, '회전체 생성' 버튼을 눌러보세요.")
 
 # 3. HTML/JS/CSS 코드 정의
 # 제공해주신 코드를 그대로 활용하되, 스트림릿 컴포넌트 환경에 맞게 변수에 담습니다.

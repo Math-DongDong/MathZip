@@ -18,12 +18,9 @@ pages = {
     "중2 수학": [
         st.Page("Exponents.py", title="지수법칙"),
     ],
-    "알지오매스": [
-        st.Page("AlgeoMath_1.py", title="중1수학"),
-    ],
     "보드게임": [
-        st.Page("Streams.py", title="스트림스"),
-        st.Page("PigGame.py", title="Pig Game"),
+        st.Page("./보드게임/스트림스/Streams.py", title="스트림스"),
+        st.Page("./보드게임/피그게임/PigGame.py", title="Pig Game"),
     ],
     "주사위 모음": [
         st.Page("Dice.py", title="주사위 모음")
@@ -31,6 +28,10 @@ pages = {
     "인공지능 수학": [
         st.Page("ImageExpression.py", title="이미지 자료의 표현")
     ],
+    "산업수학": [
+        st.Page("./산업수학/MedicalData.py", title="의료 데이터와 건강 상태"),
+        #st.Page("AlgeoMath_1.py", title="원자력 발전소 기중기의 이동 경로 최적"),
+    ],    
 }
 
 # 3. 네비게이션 UI 생성
