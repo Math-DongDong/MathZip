@@ -16,7 +16,7 @@ pages = {
         st.Page("rotation.py", title="회전체 탐구", default=True),
     ],
     "중2 수학": [
-        st.Page("Exponents.py", title="지수법칙"),
+        st.Page("./중2 수학/Exponents.py", title="지수법칙"),
     ],
     "보드게임": [
         st.Page("./보드게임/스트림스/Streams.py", title="스트림스"),

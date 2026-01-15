@@ -29,6 +29,8 @@ except FileNotFoundError:
     # PDF 파일이 없어도 앱이 멈추지 않도록 처리
     pass
 
+st.title("🔢 스트림스")
+
 # --- 탭 구성 ---
 tabs = st.tabs([
     "게임방법", "기본 버전", "정수 버전", "유리수 버전", "실수 버전"
@@ -36,7 +38,6 @@ tabs = st.tabs([
 
 # --- 1. 게임방법 탭 ---
 with tabs[0]:
-    st.title("🔢 스트림스 규칙 소개")
     st.video("https://youtu.be/gq4UmK0MRbE?si=caJJ4gh-hdnC8OvL")
     st.divider()
     if PDFbyte:
@@ -48,12 +49,11 @@ with tabs[0]:
         )
     else:
         st.warning("게임판 PDF 파일('스트림스_게임판.pdf')을 찾을 수 없습니다.")
+#    st.pdf("스트림스_게임판.pdf")
 
 
 # --- 2. 기본 버전 탭 ---
 with tabs[1]:
-    st.title("🔢 숫자 뽑기")
-    st.divider()
     def initialize_game():
         number_pool = []
         number_pool.extend(list(range(1, 11)))
@@ -99,8 +99,6 @@ with tabs[1]:
 
 # --- 3. 정수 버전 탭 ---
 with tabs[2]:
-    st.title("🔢 정수 뽑기")
-    st.divider()
     def initialize_game_Z():
         number_pool = []
         number_pool.extend(list(range(-15, -4)))
@@ -146,8 +144,6 @@ with tabs[2]:
 
 # --- 4. 유리수 버전 탭 ---
 with tabs[3]:
-    st.title("🔢 유리수 뽑기")
-    st.divider()
     def initialize_game_Q():
         number_pool = []
         for i in range(1, 7): number_pool.append(f"\\frac{{{i}}}{{2}}"); number_pool.append(f"-\\frac{{{i}}}{{2}}")
@@ -203,8 +199,6 @@ with tabs[3]:
 
 # --- 5. 실수 버전 탭 ---
 with tabs[4]:
-    st.title("🔢 실수 뽑기")
-    st.divider()
     def initialize_game_R():
         number_pool = []
         number_pool.append("0")
