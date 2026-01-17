@@ -19,7 +19,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # 게임판 PDF 파일 읽기
-pdf_path = "./보드게임/스트림스/스트림스_게임판.pdf"
+pdf_path = "./기타/스트림스_게임판.pdf"
 PDFbyte = None
 # 파일이 없을 경우를 대비해 try-except 구문으로 감싸는 것이 더 안정적입니다.
 try:
@@ -49,8 +49,6 @@ with tabs[0]:
         )
     else:
         st.warning("게임판 PDF 파일('스트림스_게임판.pdf')을 찾을 수 없습니다.")
-#    st.pdf("스트림스_게임판.pdf")
-
 
 # --- 2. 기본 버전 탭 ---
 with tabs[1]:

@@ -4,7 +4,7 @@ import streamlit as st
 # layout="wide"로 설정 For 상단 메뉴바 표시
 st.set_page_config(
     page_title="동동쌤의 수학모음",
-    page_icon="./images/동동이.PNG",
+    page_icon="./기타/동동이.PNG",
     layout="wide"
 )
 
@@ -18,8 +18,8 @@ pages = {
         st.Page("./중2 수학/Exponents.py", title="지수법칙"),
     ],
     "보드게임": [
-        st.Page("./보드게임/스트림스/Streams.py", title="스트림스"),
-        st.Page("./보드게임/피그게임/PigGame.py", title="Pig Game"),
+        st.Page("./보드게임/Streams.py", title="스트림스"),
+        st.Page("./보드게임/PigGame.py", title="Pig Game"),
     ],
     "주사위 모음": [
         st.Page("Dice.py", title="주사위 모음")
@@ -36,5 +36,5 @@ pages = {
 # 3. 네비게이션 UI 생성(메뉴바 위치)
 pg = st.navigation(pages, position="top")
 
-# 4. 사용자가 선택한 페이지 실행ㅁ
+# 4. 사용자가 선택한 페이지 실행
 pg.run()
