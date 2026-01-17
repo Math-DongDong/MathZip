@@ -86,7 +86,7 @@ with tab1:
         st.subheader("1. 가중 그래프")
         
         image_path = "./기타/외판원_문제.jpg"
-        st.image(image_path,use_container_width=True)
+        st.image(image_path,width='stretch')
 
     # [오른쪽 컬럼] 행렬 입력 + 버튼 + 결과 출력
     with col_input:
@@ -98,7 +98,7 @@ with tab1:
             
         with btn_col:
             # 버튼을 우측 상단에 배치
-            run_btn = st.button("🚀 경로 계산하기", type="primary", use_container_width=True)
+            run_btn = st.button("🚀 경로 계산하기", type="primary", width='stretch')
 
         st.caption(f"A, B, C, D {NUM_CITIES}개 도시 간의 거리를 입력해주세요.")
 
@@ -115,7 +115,7 @@ with tab1:
         edited_df = st.data_editor(
             st.session_state.matrix_df,
             key="editor",
-            use_container_width=True,
+            width='stretch',
             height=178,      
             num_rows="fixed" 
         )
