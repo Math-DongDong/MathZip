@@ -11,8 +11,6 @@ st.title("🏗️ 원자력 발전소 기중기의 이동 경로 최적화")
 tab1, tab2 = st.tabs(["🚚 외판원 문제 ", "🏗️ 원자력 발전소 기중기의 이동 경로"])
 
 with tab1:
-    st.markdown("왼쪽의 예시 이미지를 참고하여, 오른쪽 행렬에 **4개 도시** 간의 거리를 입력하세요.")
-
     # -----------------------------------------------------------
     # 상수 설정 (도시 개수 4개 고정)
     # -----------------------------------------------------------
@@ -26,20 +24,14 @@ with tab1:
 
     # [왼쪽 컬럼] 이미지 출력
     with col_img:
-        st.subheader("1. 문제 예시 이미지")
+        st.subheader("1. 가중 그래프")
         
-        image_path = "./기타/외판원_문제.jpg"
-        
-        if os.path.exists(image_path):
-            st.image(image_path, caption="외판원 문제 (4개 도시)", use_container_width=True)
-        else:
-            st.warning(f"⚠️ 이미지를 찾을 수 없습니다.\n경로: {image_path}")
-            # 이미지가 없을 때를 위한 플레이스홀더 텍스트
-            st.info("이미지가 없어도 우측의 입력 기능을 통해 계산 가능합니다.")
+        image_path = "./기타/외판원_문제.jpg"        
+        st.image(image_path, caption="외판원 문제 (4개 도시)", use_container_width=True)
 
     # [오른쪽 컬럼] 행렬 입력
     with col_input:
-        st.subheader("2. 거리 행렬 입력")
+        st.subheader("2. 가중치행렬")
         st.caption(f"A, B, C, D {NUM_CITIES}개 도시 간의 거리를 입력해주세요.")
 
         # 데이터프레임 초기화 (최초 실행 시 4x4 0행렬 생성)
