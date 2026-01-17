@@ -6,103 +6,91 @@ import os
 from ortools.constraint_solver import routing_enums_pb2
 from ortools.constraint_solver import pywrapcp
 
+# 페이지 설정
 st.title("🏗️ 원자력 발전소 기중기의 이동 경로 최적화")
+
 # 탭 생성
 tab1, tab2 = st.tabs(["🚚 외판원 문제 ", "🏗️ 원자력 발전소 기중기의 이동 경로"])
 
 # -----------------------------------------------------------
-# TSP 알고리즘 함수 (출력 부분 수정: 행렬 제거, 단순화)
+# [Tab 1] 외판원 문제 (보내주신 코드 유지)
 # -----------------------------------------------------------
-def solve_tsp_and_display(distance_matrix, city_names):
-    distance_matrix = np.asarray(distance_matrix, dtype=int)
-    
-    # 데이터 모델
-    data = {
-        "distance_matrix": distance_matrix,
-        "num_vehicles": 1,
-        "depot": 0,
-    }
-
-    # OR-Tools 매니저 및 라우팅 모델 설정
-    manager = pywrapcp.RoutingIndexManager(
-        len(data["distance_matrix"]), data["num_vehicles"], data["depot"]
-    )
-    routing = pywrapcp.RoutingModel(manager)
-
-    def distance_callback(from_index, to_index):
-        from_node = manager.IndexToNode(from_index)
-        to_node = manager.IndexToNode(to_index)
-        return data["distance_matrix"][from_node][to_node]
-
-    transit_callback_index = routing.RegisterTransitCallback(distance_callback)
-    routing.SetArcCostEvaluatorOfAllVehicles(transit_callback_index)
-
-    search_parameters = pywrapcp.DefaultRoutingSearchParameters()
-    search_parameters.first_solution_strategy = (
-        routing_enums_pb2.FirstSolutionStrategy.PATH_CHEAPEST_ARC
-    )
-
-    solution = routing.SolveWithParameters(search_parameters)
-
-    # 결과 처리
-    if solution:
-        index = routing.Start(0)
-        route_path = []
-        
-        while not routing.IsEnd(index):
-            from_node = manager.IndexToNode(index)
-            route_path.append(city_names[from_node])
-            index = solution.Value(routing.NextVar(index))
-            
-        last_node = manager.IndexToNode(index)
-        route_path.append(city_names[last_node])
-        
-        total_distance = solution.ObjectiveValue()
-
-        # [수정됨] 오른쪽 열 안에서 간결하게 결과 출력
-        st.subheader("📍 **최적 이동 경로**")
-        st.code(" -> ".join(route_path), language="text")
-        
-        st.metric(label="총 이동 거리", value=total_distance)
-        
-    else:
-        st.error("해를 찾지 못했습니다. 입력된 거리 행렬을 다시 확인해주세요.")
-
-
 with tab1:
     # -----------------------------------------------------------
-    # 상수 설정 (도시 개수 4개 고정)
+    # TSP 알고리즘 함수 (Tab 1 전용)
+    # -----------------------------------------------------------
+    def solve_tsp_and_display_tab1(distance_matrix, city_names):
+        distance_matrix = np.asarray(distance_matrix, dtype=int)
+        
+        data = {
+            "distance_matrix": distance_matrix,
+            "num_vehicles": 1,
+            "depot": 0,
+        }
+
+        manager = pywrapcp.RoutingIndexManager(
+            len(data["distance_matrix"]), data["num_vehicles"], data["depot"]
+        )
+        routing = pywrapcp.RoutingModel(manager)
+
+        def distance_callback(from_index, to_index):
+            from_node = manager.IndexToNode(from_index)
+            to_node = manager.IndexToNode(to_index)
+            return data["distance_matrix"][from_node][to_node]
+
+        transit_callback_index = routing.RegisterTransitCallback(distance_callback)
+        routing.SetArcCostEvaluatorOfAllVehicles(transit_callback_index)
+
+        search_parameters = pywrapcp.DefaultRoutingSearchParameters()
+        search_parameters.first_solution_strategy = (
+            routing_enums_pb2.FirstSolutionStrategy.PATH_CHEAPEST_ARC
+        )
+
+        solution = routing.SolveWithParameters(search_parameters)
+
+        if solution:
+            index = routing.Start(0)
+            route_path = []
+            while not routing.IsEnd(index):
+                from_node = manager.IndexToNode(index)
+                route_path.append(city_names[from_node])
+                index = solution.Value(routing.NextVar(index))
+            last_node = manager.IndexToNode(index)
+            route_path.append(city_names[last_node])
+            
+            total_distance = solution.ObjectiveValue()
+
+            st.subheader("📍 **최적 이동 경로**")
+            st.code(" -> ".join(route_path), language="text")
+            st.metric(label="총 이동 거리", value=total_distance)
+        else:
+            st.error("해를 찾지 못했습니다. 입력된 가중치행렬을 다시 확인해주세요.")
+
+    # -----------------------------------------------------------
+    # UI Layout (Tab 1)
     # -----------------------------------------------------------
     NUM_CITIES = 4
-    CITY_NAMES = list(string.ascii_uppercase)[:NUM_CITIES]  # ['A', 'B', 'C', 'D']
+    CITY_NAMES = list(string.ascii_uppercase)[:NUM_CITIES]
 
-    # -----------------------------------------------------------
-    # 메인 레이아웃 분할 (2열)
-    # -----------------------------------------------------------
-    col_img, col_input = st.columns([1, 1])  # 1:1 비율로 분할
+    col_img, col_input = st.columns([1, 1])
 
-    # [왼쪽 컬럼] 이미지 출력
     with col_img:
         st.subheader("1. 가중 그래프")
-        
         image_path = "./기타/외판원_문제.jpg"
-        st.image(image_path,width='stretch')
+        if os.path.exists(image_path):
+            st.image(image_path, width=None, use_container_width=True)
+        else:
+            st.warning("이미지 파일을 찾을 수 없습니다.")
 
-    # [오른쪽 컬럼] 행렬 입력 + 버튼 + 결과 출력
     with col_input:
-        # 1. 헤더와 버튼 배치
         header_col, btn_col = st.columns([7, 3])
-        
         with header_col:
             st.subheader("2. 가중치행렬")
-            
         with btn_col:
-            # 버튼을 우측 상단에 배치
-            run_btn = st.button("🚀 경로 계산하기", type="primary", width='stretch')
+            run_btn = st.button("🚀 경로 계산하기", type="primary", use_container_width=True)
 
         st.caption(f"A, B, C, D {NUM_CITIES}개 도시 간의 거리를 입력해주세요.")
 
-        # 데이터프레임 초기화
         if "matrix_df" not in st.session_state:
             default_matrix = np.zeros((NUM_CITIES, NUM_CITIES), dtype=int)
             st.session_state.matrix_df = pd.DataFrame(
@@ -111,23 +99,177 @@ with tab1:
                 index=CITY_NAMES
             )
 
-        # 2. 행렬 입력창 (높이 4줄 고정)
         edited_df = st.data_editor(
             st.session_state.matrix_df,
-            key="editor",
-            width='stretch',
+            key="editor_tab1",
+            use_container_width=True,
             height=178,      
             num_rows="fixed" 
         )
         
         distance_matrix_input = edited_df.to_numpy()
 
-        # 3. 결과 출력 로직 (오른쪽 컬럼 내부에서 실행)
         if run_btn:
-            # 대각선 0 체크
             if np.any(np.diag(distance_matrix_input) != 0):
-                st.warning("⚠️ 주의: 자기 자신으로의 거리(대각선)가 0이 아닙니다.")
-            
+                st.warning("⚠️ 주의: 자기 자신으로의 거리(대각성분)가 0이 아닙니다.")
             with st.spinner("계산 중..."):
-                # 함수 호출 시 CITY_NAMES도 함께 전달
-                solve_tsp_and_display(distance_matrix_input, CITY_NAMES)
+                solve_tsp_and_display_tab1(distance_matrix_input, CITY_NAMES)
+
+
+# -----------------------------------------------------------
+# [Tab 2] 원자력 발전소 기중기 이동 경로
+# -----------------------------------------------------------
+with tab2:
+    # 상수 설정: 5행 5열
+    NUM_ROWS_2 = 5
+    ROW_LABELS = [f"A{i+1}" for i in range(NUM_ROWS_2)] # A1 ~ A5
+    COL_LABELS = [f"B{i+1}" for i in range(NUM_ROWS_2)] # B1 ~ B5
+
+    # 레이아웃 분할
+    t2_col_left, t2_col_right = st.columns([1, 1])
+
+    # -------------------------------------------------------
+    # 왼쪽 열: 변수 입력 + (결과 표시 영역)
+    # -------------------------------------------------------
+    with t2_col_left:
+        st.subheader("1. 입력 설정")
+        st.markdown("""
+        **입력 가이드:**
+        - 행렬의 각 성분에 **숫자**뿐만 아니라 **수식**과 **변수**(m)도 입력할 수 있습니다.
+        - 예: `np.sqrt(2)`, `10 + 5`, `m * 2` , `m`
+        """)
+        
+        # 변수 m 입력 받기
+        st.write("🔽 **변수 설정**")
+        m_input_str = st.text_input("m =", value="10", key="m_input")
+        
+        # m 값 파싱 (오류 방지)
+        try:
+            m_value = float(m_input_str)
+        except ValueError:
+            st.error("m에는 숫자만 입력해주세요.")
+            m_value = 0.0
+        
+        # 결과가 표시될 컨테이너 (버튼 클릭 후 여기에 내용을 채움)
+        result_container = st.container()
+
+    # -------------------------------------------------------
+    # 오른쪽 열: 행렬 입력 + 버튼 + (변환된 행렬 표시)
+    # -------------------------------------------------------
+    with t2_col_right:
+        # 헤더와 버튼 배치
+        h_col_2, b_col_2 = st.columns([7, 3])
+        with h_col_2:
+            st.subheader("2. 가중치행렬")
+        with b_col_2:
+            run_btn_2 = st.button("🚀 경로 계산하기", key="btn_tab2", type="primary", use_container_width=True)
+
+        st.caption("행렬 성분에 `np.sqrt(2)` 또는 `m` 같은 값을 입력할 수 있습니다.")
+
+        # 데이터프레임 초기화 (수식 입력을 위해 문자열로 초기화)
+        if "matrix_df_2" not in st.session_state:
+            # 5x5 초기값 "0"
+            default_data_2 = [["0" for _ in range(NUM_ROWS_2)] for _ in range(NUM_ROWS_2)]
+            st.session_state.matrix_df_2 = pd.DataFrame(
+                default_data_2, 
+                index=ROW_LABELS, 
+                columns=COL_LABELS
+            )
+
+        # 행렬 에디터
+        # 높이 조절: 5줄 + 헤더 고려 (약 215px)
+        edited_df_2 = st.data_editor(
+            st.session_state.matrix_df_2,
+            key="editor_tab2",
+            use_container_width=True,
+            height=215,
+            num_rows="fixed"
+        )
+        
+        # -------------------------------------------------------
+        # 계산 로직
+        # -------------------------------------------------------
+        if run_btn_2:
+            # 1. m 변수 파싱
+            try:
+                m_val = float(m_input_str)
+            except ValueError:
+                st.error("⚠️ m 값은 숫자여야 합니다.")
+                st.stop()
+
+            # 2. 행렬 수식 파싱 (eval 사용)
+            eval_ctx = {"np": np, "sqrt": np.sqrt, "m": m_val, "__builtins__": {}}
+            final_matrix = np.zeros((NUM_ROWS_2, NUM_ROWS_2), dtype=float)
+            
+            parse_error = False
+            for r in range(NUM_ROWS_2):
+                for c in range(NUM_ROWS_2):
+                    cell_val = str(edited_df_2.iloc[r, c])
+                    try:
+                        # 수식 계산
+                        calc_val = eval(cell_val, eval_ctx)
+                        final_matrix[r, c] = float(calc_val)
+                    except Exception as e:
+                        st.error(f"수식 오류 ({ROW_LABELS[r]}, {COL_LABELS[c]}): {e}")
+                        parse_error = True
+            
+            # 파싱 성공 시 TSP 수행
+            if not parse_error:
+                # OR-Tools는 정수 입력을 선호하므로 변환 (필요시 스케일링)
+                matrix_int = final_matrix.astype(int)
+
+                # TSP 데이터 모델
+                data = {
+                    "distance_matrix": matrix_int,
+                    "num_vehicles": 1,
+                    "depot": 0,
+                }
+                
+                # 솔버 초기화
+                manager = pywrapcp.RoutingIndexManager(len(matrix_int), 1, 0)
+                routing = pywrapcp.RoutingModel(manager)
+
+                def distance_callback_2(from_idx, to_idx):
+                    from_n = manager.IndexToNode(from_idx)
+                    to_n = manager.IndexToNode(to_idx)
+                    return data["distance_matrix"][from_n][to_n]
+
+                transit_idx = routing.RegisterTransitCallback(distance_callback_2)
+                routing.SetArcCostEvaluatorOfAllVehicles(transit_idx)
+
+                search_params = pywrapcp.DefaultRoutingSearchParameters()
+                search_params.first_solution_strategy = (
+                    routing_enums_pb2.FirstSolutionStrategy.PATH_CHEAPEST_ARC
+                )
+
+                solution = routing.SolveWithParameters(search_params)
+
+                # ---------------------------------------------------
+                # 결과 출력 분기
+                # ---------------------------------------------------
+                if solution:
+                    # 경로 추출
+                    index = routing.Start(0)
+                    route_path = []
+                    while not routing.IsEnd(index):
+                        node_idx = manager.IndexToNode(index)
+                        route_path.append(ROW_LABELS[node_idx]) # A1, A2... 이름 사용
+                        index = solution.Value(routing.NextVar(index))
+                    route_path.append(ROW_LABELS[manager.IndexToNode(index)])
+                    
+                    total_dist = solution.ObjectiveValue()
+
+                    # [왼쪽 열] 경로 및 이동 거리 표시
+                    with result_container:
+                        st.subheader("📍 최적 이동 경로")
+                        st.code(" -> ".join(route_path), language="text")
+                        st.metric("총 이동 비용 (정수 변환값)", total_dist)
+
+                    # [오른쪽 열] 변환된 수식 행렬 표시
+                    st.caption("가중치행렬 수식 변환 결과")
+                    st.dataframe(
+                        pd.DataFrame(final_matrix, index=ROW_LABELS, columns=COL_LABELS),
+                        use_container_width=True
+                    )
+                else:
+                    st.error("해를 찾을 수 없습니다.")                    
