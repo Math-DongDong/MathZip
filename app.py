@@ -1,15 +1,14 @@
 import streamlit as st
 
-# 1. 페이지 레이아웃 설정 (가장 먼저 실행되어야 할 명령어!)
-# layout="wide"로 설정해야 상단 메뉴바가 제대로 표시됩니다.
+# 1. 페이지 레이아웃 설정
+# layout="wide"로 설정 For 상단 메뉴바 표시
 st.set_page_config(
     page_title="동동쌤의 수학모음",
     page_icon="./images/동동이.PNG",
     layout="wide"
 )
 
-# 2. 상단 페이지들 정의
-# 각 페이지의 실제 콘텐츠는 별도의 파일에 존재합니다.
+# 2. 메뉴바 설정(각 페이지의 실제 콘텐츠는 별도의 파일에 존재).
 pages = {
     "중1 수학": [
         # 그룹의 첫 번째 페이지를 default=True로 설정하면 '중1 수학' 클릭 시 이 페이지가 먼저 보입니다.
@@ -30,15 +29,12 @@ pages = {
     ],
     "산업수학": [
         st.Page("./산업수학/MedicalData.py", title="의료 데이터와 건강 상태"),
-        #st.Page("AlgeoMath_1.py", title="원자력 발전소 기중기의 이동 경로 최적"),
+        st.Page("./산업수학/DistanceOptimization.py", title="원자력 발전소 기중기의 이동 경로 최적화"),
     ],    
 }
 
-# 3. 네비게이션 UI 생성
-# position="top"으로 설정하여 상단에 메뉴가 나오도록 합니다.
+# 3. 네비게이션 UI 생성(메뉴바 위치)
 pg = st.navigation(pages, position="top")
 
 # 4. 사용자가 선택한 페이지 실행
-# 이 명령어가 '사용자가 선택한 페이지의 파이썬 코드를 이제부터 실행해라!'고
-# 지시하는 핵심적인 역할을 합니다.
 pg.run()
