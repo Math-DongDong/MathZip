@@ -36,5 +36,5 @@ pages = {
 # 3. 네비게이션 UI 생성(메뉴바 위치)
 pg = st.navigation(pages, position="top")
 
-# 4. 사용자가 선택한 페이지 실행
+# 4. 사용자가 선택한 페이지 실행ㅁ
 pg.run()
