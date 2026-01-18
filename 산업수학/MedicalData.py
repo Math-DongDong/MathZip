@@ -18,13 +18,23 @@ st.title("🧬 의료 데이터 지속구간 다이어그램 분석")
 tab1, tab2 = st.tabs(["🩸 고혈압 판정", "🍬 당뇨 판정"])
 
 # ==============================================================================
-# [TAB 1] 고혈압 판정 (기존 코드 - 2D, maxdim=1)
+# [TAB 1] 고혈압 판정 (2D 데이터)
 # ==============================================================================
 with tab1:
     # 1. 기본 데이터 입력
     empty_df_2d = pd.DataFrame({'x': pd.Series(dtype='float'), 'y': pd.Series(dtype='float')})
 
     with st.expander("📊 고혈압 판정 기초 데이터 입력 (정상군 / 고혈압군)", expanded=True):
+        # [수정] 차원 입력 추가 (Expander 내부 최상단)
+        max_dim_1 = st.number_input(
+            "지속구간 다이어그램의 최대 차원", 
+            min_value=0, 
+            value=None, 
+            step=1,
+            key="dim_input_tab1",
+            placeholder="0 이상의 정수만 적어주세요."
+        )
+        
         col_set1, col_set2 = st.columns(2)
         with col_set1:
             st.markdown("**🟢 정상군 데이터 입력**")
@@ -66,8 +76,10 @@ with tab1:
 
         df_target_clean = df_target.dropna()
         
-        if len(df_target_clean) < 2:
-            st.warning("⚠️ 기초 데이터를 2개 이상 입력해주세요.")
+        if max_dim_1 is None: # [추가된 로직] 차원 입력 확인
+            st.warning("⚠️ 지속구간 다이어그램의 최대 차원을 적어주세요")
+        elif len(df_target_clean) < 2:
+            st.warning('⚠️ 기초 데이터를 2개 이상 입력해주세요.')
         else:
             try:
                 X_base = df_target_clean.to_numpy(dtype=float)
@@ -81,9 +93,9 @@ with tab1:
                 st.write(f"#### 📈 {target_group} 지속구간 다이어그램")
                 col_plot1, col_plot2 = st.columns(2)
 
-                # Ripser maxdim=1
+                # [수정] Ripser maxdim 설정 변수 사용
                 with col_plot1:
-                    dgm_base = ripser(X_base, maxdim=1)['dgms']
+                    dgm_base = ripser(X_base, maxdim=max_dim_1)['dgms']
                     fig1, ax1 = plt.subplots(figsize=(4, 4))
                     plot_diagrams(dgm_base, show=False, ax=ax1)
                     ax1.set_title("Original Data", fontsize=10)
@@ -93,7 +105,7 @@ with tab1:
                     if X_combined is None:
                         st.info("👈 추가할 점의 좌표를 입력해주세요.")
                     else:
-                        dgm_combined = ripser(X_combined, maxdim=1)['dgms']
+                        dgm_combined = ripser(X_combined, maxdim=max_dim_1)['dgms']
                         fig2, ax2 = plt.subplots(figsize=(4, 4))
                         plot_diagrams(dgm_combined, show=False, ax=ax2)
                         ax2.set_title("Original + Added Data", fontsize=10)
@@ -104,7 +116,7 @@ with tab1:
 
 
 # ==============================================================================
-# [TAB 2] 당뇨 판정 (신규 코드 - 3D, maxdim=2)
+# [TAB 2] 당뇨 판정 (3D 데이터)
 # ==============================================================================
 with tab2:
     # 1. 기본 데이터 입력 (3차원)
@@ -115,6 +127,17 @@ with tab2:
     })
 
     with st.expander("📊 당뇨 판정 기초 데이터 입력 (정상군 / 당뇨군)", expanded=True):
+        # [수정] 차원 입력 추가 (Expander 내부 최상단)
+        max_dim_2 = st.number_input(
+            "지속구간 다이어그램의 최대 차원", 
+            min_value=0, 
+            value=None, 
+            step=1,
+            key="dim_input_tab2",
+            placeholder="0 이상의 정수만 적어주세요."
+
+        )
+
         col_set1_d, col_set2_d = st.columns(2)
         with col_set1_d:
             st.markdown("**🟢 정상군 데이터 입력**")
@@ -168,7 +191,9 @@ with tab2:
 
         df_target_clean_d = df_target_d.dropna()
         
-        if len(df_target_clean_d) < 3: # 3D 계산을 위해 최소 3개 권장
+        if max_dim_2 is None: # [추가된 로직] 차원 입력 확인 
+            st.warning("⚠️ 지속구간 다이어그램의 최대 차원을 적어주세요")
+        elif len(df_target_clean_d) < 3:
             st.warning("⚠️ 기초 데이터를 3개 이상 입력해주세요.")
         else:
             try:
@@ -183,10 +208,9 @@ with tab2:
                 st.write(f"#### 📈 {target_group_diab} 지속구간 다이어그램")
                 col_plot1_d, col_plot2_d = st.columns(2)
 
-                # Ripser maxdim=2 (H0, H1, H2 계산)
+                # [수정] Ripser maxdim 설정 변수 사용
                 with col_plot1_d:
-                    # maxdim=2 설정
-                    dgm_base_d = ripser(X_base_d, maxdim=2)['dgms']
+                    dgm_base_d = ripser(X_base_d, maxdim=max_dim_2)['dgms']
                     fig1_d, ax1_d = plt.subplots(figsize=(4, 4))
                     plot_diagrams(dgm_base_d, show=False, ax=ax1_d)
                     ax1_d.set_title("Original Data", fontsize=10)
@@ -196,7 +220,7 @@ with tab2:
                     if X_combined_d is None:
                         st.info("👈 추가할 점의 X, Y, Z 좌표를 입력해주세요.")
                     else:
-                        dgm_combined_d = ripser(X_combined_d, maxdim=2)['dgms']
+                        dgm_combined_d = ripser(X_combined_d, maxdim=max_dim_2)['dgms']
                         fig2_d, ax2_d = plt.subplots(figsize=(4, 4))
                         plot_diagrams(dgm_combined_d, show=False, ax=ax2_d)
                         ax2_d.set_title("Original + Added Data", fontsize=10)
