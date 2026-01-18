@@ -24,17 +24,7 @@ with tab1:
     # 1. 기본 데이터 입력
     empty_df_2d = pd.DataFrame({'x': pd.Series(dtype='float'), 'y': pd.Series(dtype='float')})
 
-    with st.expander("📊 고혈압 판정 기초 데이터 입력 (정상군 / 고혈압군)", expanded=True):
-        # [수정] 차원 입력 추가 (Expander 내부 최상단)
-        max_dim_1 = st.number_input(
-            "지속구간 다이어그램의 최대 차원", 
-            min_value=0, 
-            value=None, 
-            step=1,
-            key="dim_input_tab1",
-            placeholder="0 이상의 정수만 적어주세요."
-        )
-        
+    with st.expander("📊 고혈압 판정 기초 데이터 입력 (정상군 / 고혈압군)", expanded=True):        
         col_set1, col_set2 = st.columns(2)
         with col_set1:
             st.markdown("**🟢 정상군 데이터 입력**")
@@ -52,8 +42,18 @@ with tab1:
     # 2. 분석 및 추가 데이터
     col_control, col_display = st.columns([1, 2])
 
-    with col_control:
+    with col_control:        
         st.markdown('<div class="step-header">분석 대상 선택 및 데이터 추가하기</div>', unsafe_allow_html=True)
+
+        max_dim_1 = st.number_input(
+            "지속구간 다이어그램의 최대 차원 설정", 
+            min_value=0, 
+            value=None, 
+            step=1,
+            key="dim_input_tab1",
+            placeholder="0 이상의 정수만 적어주세요."
+        )
+
         st.write("###### 1. 분석할 그룹 선택")
         target_group = st.radio("분석 그룹 선택", ("정상군", "고혈압군"), label_visibility="collapsed",key="radio_bp")
         
@@ -76,10 +76,10 @@ with tab1:
 
         df_target_clean = df_target.dropna()
         
-        if max_dim_1 is None: # [추가된 로직] 차원 입력 확인
+        if len(df_target_clean) < 2:
+            st.warning("⚠️ 기초 데이터를 2개 이상 입력해주세요.")
+        elif max_dim_1 is None: # [추가된 로직] 차원 입력 확인
             st.warning("⚠️ 지속구간 다이어그램의 최대 차원을 적어주세요")
-        elif len(df_target_clean) < 2:
-            st.warning('⚠️ 기초 데이터를 2개 이상 입력해주세요.')
         else:
             try:
                 X_base = df_target_clean.to_numpy(dtype=float)
@@ -127,17 +127,6 @@ with tab2:
     })
 
     with st.expander("📊 당뇨 판정 기초 데이터 입력 (정상군 / 당뇨군)", expanded=True):
-        # [수정] 차원 입력 추가 (Expander 내부 최상단)
-        max_dim_2 = st.number_input(
-            "지속구간 다이어그램의 최대 차원", 
-            min_value=0, 
-            value=None, 
-            step=1,
-            key="dim_input_tab2",
-            placeholder="0 이상의 정수만 적어주세요."
-
-        )
-
         col_set1_d, col_set2_d = st.columns(2)
         with col_set1_d:
             st.markdown("**🟢 정상군 데이터 입력**")
@@ -165,6 +154,16 @@ with tab2:
 
     with col_control_d:
         st.markdown('<div class="step-header">분석 대상 선택 및 데이터 추가하기</div>', unsafe_allow_html=True)
+        max_dim_2 = st.number_input(
+            "지속구간 다이어그램의 최대 차원 설정", 
+            min_value=0, 
+            value=None, 
+            step=1,
+            key="dim_input_tab2",
+            placeholder="0 이상의 정수만 적어주세요."
+        )
+
+
         st.write("###### 1. 분석할 그룹 선택")
         target_group_diab = st.radio("분석 그룹 선택", ("정상군", "당뇨군"),label_visibility="collapsed", key="radio_diab")
         
@@ -191,10 +190,10 @@ with tab2:
 
         df_target_clean_d = df_target_d.dropna()
         
-        if max_dim_2 is None: # [추가된 로직] 차원 입력 확인 
-            st.warning("⚠️ 지속구간 다이어그램의 최대 차원을 적어주세요")
-        elif len(df_target_clean_d) < 3:
+        if len(df_target_clean_d) < 3:
             st.warning("⚠️ 기초 데이터를 3개 이상 입력해주세요.")
+        elif max_dim_2 is None: # [추가된 로직] 차원 입력 확인
+            st.warning("⚠️ 지속구간 다이어그램의 최대 차원을 적어주세요")
         else:
             try:
                 X_base_d = df_target_clean_d.to_numpy(dtype=float)
