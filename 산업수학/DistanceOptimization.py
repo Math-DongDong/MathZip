@@ -1,3 +1,4 @@
+
 import streamlit as st
 import pandas as pd
 import numpy as np
@@ -6,7 +7,6 @@ import os
 from ortools.constraint_solver import routing_enums_pb2
 from ortools.constraint_solver import pywrapcp
 
-# 페이지 설정
 st.title("🏗️ 원자력 발전소 기중기의 이동 경로 최적화")
 
 # 탭 생성
@@ -89,7 +89,7 @@ with tab1:
         with btn_col:
             run_btn = st.button("🚀 경로 계산하기", type="primary", width='stretch')
 
-        st.caption(f"A, B, C, D {NUM_CITIES}개 도시 간의 거리를 입력해주세요.")
+        st.caption(f"{NUM_CITIES}개의 도시 A, B, C, D 간의 거리를 입력해주세요.")
 
         if "matrix_df" not in st.session_state:
             default_matrix = np.zeros((NUM_CITIES, NUM_CITIES), dtype=int)
@@ -117,16 +117,23 @@ with tab1:
 
 
 # -----------------------------------------------------------
-# [Tab 2] 원자력 발전소 기중기 이동 경로 (스케일링 제거 버전)
+# [Tab 2] 원자력 발전소 기중기 이동 경로 (10x10 수정됨)
 # -----------------------------------------------------------
 with tab2:
-    # 상수 설정: 5행 5열
-    NUM_ROWS_2 = 5
-    ROW_LABELS = [f"A{i+1}" for i in range(NUM_ROWS_2)] # A1 ~ A5
-    COL_LABELS = [f"B{i+1}" for i in range(NUM_ROWS_2)] # B1 ~ B5
+    # -------------------------------------------------------
+    # 상수 설정: 10행 10열 (A1~A5, B1~B5)
+    # -------------------------------------------------------
+    NUM_ROWS_2 = 10
     
-    # [수정됨] 스케일링 팩터 제거
-    # SCALE_FACTOR = 10000 
+    # 라벨 생성 로직: 앞 5개는 A, 뒤 5개는 B
+    LABEL_PART_A = [f"A{i+1}" for i in range(5)]
+    LABEL_PART_B = [f"B{i+1}" for i in range(5)]
+    
+    # 행과 열 모두 동일한 라벨 적용 (거리 행렬이므로)
+    ALL_LABELS = LABEL_PART_A + LABEL_PART_B # ['A1',...,'A5', 'B1',...,'B5']
+    
+    ROW_LABELS = ALL_LABELS
+    COL_LABELS = ALL_LABELS
 
     # 레이아웃 분할
     t2_col_left, t2_col_right = st.columns([1, 1])
@@ -163,20 +170,22 @@ with tab2:
         st.caption("행렬 성분에 `np.sqrt(2)` 또는 `m` 같은 수식이나 변수를 입력할 수 있습니다.")
 
         # 데이터프레임 초기화
-        if "matrix_df_2" not in st.session_state:
+        if "matrix_df_2_v2" not in st.session_state: # 키 이름 변경하여 초기화 유도
+            # 10x10 초기값 "0"
             default_data_2 = [["0" for _ in range(NUM_ROWS_2)] for _ in range(NUM_ROWS_2)]
-            st.session_state.matrix_df_2 = pd.DataFrame(
+            st.session_state.matrix_df_2_v2 = pd.DataFrame(
                 default_data_2, 
                 index=ROW_LABELS, 
                 columns=COL_LABELS
             )
 
         # 행렬 에디터
+        # 높이 조절: 10줄이므로 약 400px 정도로 설정
         edited_df_2 = st.data_editor(
-            st.session_state.matrix_df_2,
-            key="editor_tab2",
+            st.session_state.matrix_df_2_v2,
+            key="editor_tab2_v2",
             width='stretch',
-            height=215,
+            height=400, 
             num_rows="fixed"
         )
         
@@ -210,12 +219,9 @@ with tab2:
             
             # 파싱 성공 시 TSP 수행
             if not parse_error:
-                # [핵심 수정] 정수 변환 및 스케일링 제거
-                # final_matrix는 Float형태의 numpy array입니다.
-                # OR-Tools에 이를 그대로 넘깁니다. (오류 발생 가능성 있음)
-                
+                # 스케일링/정수변환 없이 Float 그대로 전달 (경고 무시)
                 data = {
-                    "distance_matrix": final_matrix, # Float 행렬 그대로 전달
+                    "distance_matrix": final_matrix, 
                     "num_vehicles": 1,
                     "depot": 0,
                 }
@@ -227,7 +233,6 @@ with tab2:
                 def distance_callback_2(from_idx, to_idx):
                     from_n = manager.IndexToNode(from_idx)
                     to_n = manager.IndexToNode(to_idx)
-                    # 여기서 Float 값을 반환하게 됩니다.
                     return data["distance_matrix"][from_n][to_n]
 
                 transit_idx = routing.RegisterTransitCallback(distance_callback_2)
@@ -240,9 +245,7 @@ with tab2:
 
                 solution = routing.SolveWithParameters(search_params)
 
-                # ---------------------------------------------------
-                # 결과 출력 분기
-                # ---------------------------------------------------
+                # 결과 출력
                 if solution:
                     index = routing.Start(0)
                     route_path = []
@@ -252,7 +255,6 @@ with tab2:
                         index = solution.Value(routing.NextVar(index))
                     route_path.append(ROW_LABELS[manager.IndexToNode(index)])
                     
-                    # 스케일링 복원 과정 제거 (그대로 출력)
                     total_dist = solution.ObjectiveValue()
 
                     with result_container:
@@ -269,3 +271,4 @@ with tab2:
                     )
                 else:
                     st.error("해를 찾을 수 없습니다.")
+                
