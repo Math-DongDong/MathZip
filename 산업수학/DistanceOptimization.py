@@ -13,7 +13,7 @@ st.title("🏗️ 원자력 발전소 기중기의 이동 경로 최적화")
 tab1, tab2 = st.tabs(["🚚 외판원 문제 ", "🏗️ 원자력 발전소 기중기의 이동 경로"])
 
 # -----------------------------------------------------------
-# [Tab 1] 외판원 문제 (보내주신 코드 유지)
+# [Tab 1] 외판원 문제 (수정 없음)
 # -----------------------------------------------------------
 with tab1:
     # -----------------------------------------------------------
@@ -78,7 +78,7 @@ with tab1:
         st.subheader("1. 가중 그래프")
         image_path = "./기타/외판원_문제.jpg"
         if os.path.exists(image_path):
-            st.image(image_path, width=None, use_container_width=True)
+            st.image(image_path, width='stretch')
         else:
             st.warning("이미지 파일을 찾을 수 없습니다.")
 
@@ -87,7 +87,7 @@ with tab1:
         with header_col:
             st.subheader("2. 가중치행렬")
         with btn_col:
-            run_btn = st.button("🚀 경로 계산하기", type="primary", use_container_width=True)
+            run_btn = st.button("🚀 경로 계산하기", type="primary", width='stretch')
 
         st.caption(f"A, B, C, D {NUM_CITIES}개 도시 간의 거리를 입력해주세요.")
 
@@ -102,7 +102,7 @@ with tab1:
         edited_df = st.data_editor(
             st.session_state.matrix_df,
             key="editor_tab1",
-            use_container_width=True,
+            width='stretch',
             height=178,      
             num_rows="fixed" 
         )
@@ -117,13 +117,16 @@ with tab1:
 
 
 # -----------------------------------------------------------
-# [Tab 2] 원자력 발전소 기중기 이동 경로
+# [Tab 2] 원자력 발전소 기중기 이동 경로 (스케일링 제거 버전)
 # -----------------------------------------------------------
 with tab2:
     # 상수 설정: 5행 5열
     NUM_ROWS_2 = 5
     ROW_LABELS = [f"A{i+1}" for i in range(NUM_ROWS_2)] # A1 ~ A5
     COL_LABELS = [f"B{i+1}" for i in range(NUM_ROWS_2)] # B1 ~ B5
+    
+    # [수정됨] 스케일링 팩터 제거
+    # SCALE_FACTOR = 10000 
 
     # 레이아웃 분할
     t2_col_left, t2_col_right = st.columns([1, 1])
@@ -135,22 +138,15 @@ with tab2:
         st.subheader("1. 입력 설정")
         st.markdown("""
         **입력 가이드:**
-        - 행렬의 각 성분에 **숫자**뿐만 아니라 **수식**과 **변수**(m)도 입력할 수 있습니다.
+        - 행렬의 각 성분에 **숫자**, **수식**, **변수**(m)를 입력할 수 있습니다.
         - 예: `np.sqrt(2)`, `10 + 5`, `m * 2` , `m`
         """)
         
         # 변수 m 입력 받기
         st.write("🔽 **변수 설정**")
-        m_input_str = st.text_input("m =", value="10", key="m_input")
+        m_input_str = st.text_input("m =", value="", key="m_input", placeholder="비어있으면 0으로 처리됩니다.")
         
-        # m 값 파싱 (오류 방지)
-        try:
-            m_value = float(m_input_str)
-        except ValueError:
-            st.error("m에는 숫자만 입력해주세요.")
-            m_value = 0.0
-        
-        # 결과가 표시될 컨테이너 (버튼 클릭 후 여기에 내용을 채움)
+        # 결과가 표시될 컨테이너
         result_container = st.container()
 
     # -------------------------------------------------------
@@ -162,13 +158,12 @@ with tab2:
         with h_col_2:
             st.subheader("2. 가중치행렬")
         with b_col_2:
-            run_btn_2 = st.button("🚀 경로 계산하기", key="btn_tab2", type="primary", use_container_width=True)
+            run_btn_2 = st.button("🚀 경로 계산하기", key="btn_tab2", type="primary", width='stretch')
 
-        st.caption("행렬 성분에 `np.sqrt(2)` 또는 `m` 같은 값을 입력할 수 있습니다.")
+        st.caption("행렬 성분에 `np.sqrt(2)` 또는 `m` 같은 수식이나 변수를 입력할 수 있습니다.")
 
-        # 데이터프레임 초기화 (수식 입력을 위해 문자열로 초기화)
+        # 데이터프레임 초기화
         if "matrix_df_2" not in st.session_state:
-            # 5x5 초기값 "0"
             default_data_2 = [["0" for _ in range(NUM_ROWS_2)] for _ in range(NUM_ROWS_2)]
             st.session_state.matrix_df_2 = pd.DataFrame(
                 default_data_2, 
@@ -177,11 +172,10 @@ with tab2:
             )
 
         # 행렬 에디터
-        # 높이 조절: 5줄 + 헤더 고려 (약 215px)
         edited_df_2 = st.data_editor(
             st.session_state.matrix_df_2,
             key="editor_tab2",
-            use_container_width=True,
+            width='stretch',
             height=215,
             num_rows="fixed"
         )
@@ -190,14 +184,16 @@ with tab2:
         # 계산 로직
         # -------------------------------------------------------
         if run_btn_2:
-            # 1. m 변수 파싱
+            # 1. m 변수 파싱 (비어있거나 에러 시 0 처리)
             try:
-                m_val = float(m_input_str)
+                if m_input_str.strip() == "":
+                    m_val = 0.0
+                else:
+                    m_val = float(m_input_str)
             except ValueError:
-                st.error("⚠️ m 값은 숫자여야 합니다.")
-                st.stop()
+                m_val = 0.0
 
-            # 2. 행렬 수식 파싱 (eval 사용)
+            # 2. 행렬 수식 파싱
             eval_ctx = {"np": np, "sqrt": np.sqrt, "m": m_val, "__builtins__": {}}
             final_matrix = np.zeros((NUM_ROWS_2, NUM_ROWS_2), dtype=float)
             
@@ -206,7 +202,6 @@ with tab2:
                 for c in range(NUM_ROWS_2):
                     cell_val = str(edited_df_2.iloc[r, c])
                     try:
-                        # 수식 계산
                         calc_val = eval(cell_val, eval_ctx)
                         final_matrix[r, c] = float(calc_val)
                     except Exception as e:
@@ -215,23 +210,24 @@ with tab2:
             
             # 파싱 성공 시 TSP 수행
             if not parse_error:
-                # OR-Tools는 정수 입력을 선호하므로 변환 (필요시 스케일링)
-                matrix_int = final_matrix.astype(int)
-
-                # TSP 데이터 모델
+                # [핵심 수정] 정수 변환 및 스케일링 제거
+                # final_matrix는 Float형태의 numpy array입니다.
+                # OR-Tools에 이를 그대로 넘깁니다. (오류 발생 가능성 있음)
+                
                 data = {
-                    "distance_matrix": matrix_int,
+                    "distance_matrix": final_matrix, # Float 행렬 그대로 전달
                     "num_vehicles": 1,
                     "depot": 0,
                 }
                 
                 # 솔버 초기화
-                manager = pywrapcp.RoutingIndexManager(len(matrix_int), 1, 0)
+                manager = pywrapcp.RoutingIndexManager(len(final_matrix), 1, 0)
                 routing = pywrapcp.RoutingModel(manager)
 
                 def distance_callback_2(from_idx, to_idx):
                     from_n = manager.IndexToNode(from_idx)
                     to_n = manager.IndexToNode(to_idx)
+                    # 여기서 Float 값을 반환하게 됩니다.
                     return data["distance_matrix"][from_n][to_n]
 
                 transit_idx = routing.RegisterTransitCallback(distance_callback_2)
@@ -248,28 +244,28 @@ with tab2:
                 # 결과 출력 분기
                 # ---------------------------------------------------
                 if solution:
-                    # 경로 추출
                     index = routing.Start(0)
                     route_path = []
                     while not routing.IsEnd(index):
                         node_idx = manager.IndexToNode(index)
-                        route_path.append(ROW_LABELS[node_idx]) # A1, A2... 이름 사용
+                        route_path.append(ROW_LABELS[node_idx])
                         index = solution.Value(routing.NextVar(index))
                     route_path.append(ROW_LABELS[manager.IndexToNode(index)])
                     
+                    # 스케일링 복원 과정 제거 (그대로 출력)
                     total_dist = solution.ObjectiveValue()
 
-                    # [왼쪽 열] 경로 및 이동 거리 표시
                     with result_container:
                         st.subheader("📍 최적 이동 경로")
                         st.code(" -> ".join(route_path), language="text")
-                        st.metric("총 이동 비용 (정수 변환값)", total_dist)
+                        
+                        st.metric("총 이동 비용", total_dist)
+                        
 
-                    # [오른쪽 열] 변환된 수식 행렬 표시
                     st.caption("가중치행렬 수식 변환 결과")
                     st.dataframe(
                         pd.DataFrame(final_matrix, index=ROW_LABELS, columns=COL_LABELS),
-                        use_container_width=True
+                        width='stretch'
                     )
                 else:
-                    st.error("해를 찾을 수 없습니다.")                    
+                    st.error("해를 찾을 수 없습니다.")
