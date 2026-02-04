@@ -7,7 +7,7 @@ import io # 이미지를 바이트 형태로 변환하여 다운로드하기 위
 st.title("이미지 데이터의 표현")
 
 # 탭 생성
-tab1, tab2, tab3 = st.tabs(["🖼️ 이미지 해상도", "흑백 이미지", "컬러 이미지"])
+tab1, tab2, tab3, tap4 = st.tabs(["🖼️ 이미지 해상도", "흑백 이미지", "명암 표현" , "컬러 이미지"])
 # ==============================================================================
 # [TAB 1] 이미지 해상도
 # ==============================================================================
@@ -93,80 +93,80 @@ with tab2:
         <head>
             <meta charset="UTF-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>비트맵 에디터</title>
             <script src="https://cdn.tailwindcss.com"></script>
         </head>
-        <body class="bg-gray-100 flex flex-col items-center min-h-screen p-4 sm:p-8 font-sans justify-center">
+        <body class="bg-white font-sans text-gray-800">
 
-            <!-- 메인 컨테이너 -->
-            <div class="w-full max-w-5xl mx-auto bg-white rounded-xl shadow-lg p-6 sm:p-8">
+            <!-- 
+                메인 컨테이너 
+                - w-full: 부모(body) 너비에 맞게 100% 사용
+                - px-4: 모바일에서 내용이 화면 끝에 붙지 않도록 최소한의 좌우 여백만 줌
+                - max-w-none: 너비 제한 제거
+                - shadow/rounded 제거: 배경이 흰색이므로 카드 스타일 제거
+            -->
+            <div class="w-full px-4 py-6">
                 
-                <!-- 그리드 레이아웃: 모바일(1열) -> 데스크탑(2열) -->
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-start">
+                <!-- 그리드 레이아웃 -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 items-start">
                     
-                    <!-- [왼쪽 컬럼] 입력 및 그림 그리기 -->
+                    <!-- [왼쪽] 입력 섹션 -->
                     <div class="flex flex-col w-full">
-                        <h2 class="text-lg font-bold text-gray-700 mb-4 flex items-center gap-2">
-                            <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">Step 1</span> 
-                            그림 그리기
-                        </h2>
+                        <!-- 헤더 -->
+                        <div class="mb-2 flex items-center gap-2">
+                            <span class="bg-blue-100 text-blue-800 text-xs font-bold px-2 py-1 rounded">Step 1</span> 
+                            <span class="font-bold text-gray-700">그림 그리기</span>
+                        </div>
 
                         <!-- 컨트롤 패널 (회색 박스) -->
-                        <div class="flex flex-wrap items-center gap-3 mb-6 p-4 bg-gray-50 rounded-lg border border-gray-100">
+                        <div class="flex flex-wrap items-center gap-3 mb-4 p-3 bg-gray-50 border border-gray-200 rounded">
                             <div class="flex items-center gap-2">
-                                <label class="text-sm font-medium text-gray-600">가로</label>
-                                <!-- 최댓값 10으로 수정 -->
-                                <input type="number" id="cols" value="5" min="1" max="10" class="w-14 p-2 border border-gray-300 rounded text-center focus:ring-2 focus:ring-blue-500 outline-none text-sm">
+                                <label class="text-sm font-medium text-gray-600">가로 픽셀</label>
+                                <input type="number" id="cols" value="7" min="1" max="10" class="w-12 p-1 border border-gray-300 rounded text-center focus:outline-none focus:border-blue-500 text-sm">
                             </div>
                             <div class="flex items-center gap-2">
-                                <label class="text-sm font-medium text-gray-600">세로</label>
-                                <!-- 최댓값 10으로 수정 -->
-                                <input type="number" id="rows" value="5" min="1" max="10" class="w-14 p-2 border border-gray-300 rounded text-center focus:ring-2 focus:ring-blue-500 outline-none text-sm">
+                                <label class="text-sm font-medium text-gray-600">세로 픽셀</label>
+                                <input type="number" id="rows" value="7" min="1" max="10" class="w-12 p-1 border border-gray-300 rounded text-center focus:outline-none focus:border-blue-500 text-sm">
                             </div>
-                            <button id="create-btn" class="ml-auto bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition-colors duration-200 text-sm shadow-sm whitespace-nowrap">
+                            <button id="create-btn" class="ml-auto bg-blue-600 hover:bg-blue-700 text-white font-bold py-1.5 px-3 rounded text-sm whitespace-nowrap">
                                 표 만들기
                             </button>
                         </div>
 
-                        <!-- 입력 그리드 -->
-                        <div id="grid-container" class="flex justify-center bg-white">
+                        <!-- 입력 그리드 영역 -->
+                        <div id="grid-container" class="flex justify-center p-4 border border-dashed border-gray-300 rounded">
                             <!-- JS로 생성됨 -->
                         </div>
                     </div>
 
-                    <!-- 모바일용 구분선 -->
-                    <hr class="border-gray-100 w-full lg:hidden">
+                    <!-- [오른쪽] 결과 섹션 -->
+                    <div class="flex flex-col w-full h-full">
+                        <!-- 헤더 -->
+                        <div class="mb-2 flex items-center gap-2">
+                            <span class="bg-green-100 text-green-800 text-xs font-bold px-2 py-1 rounded">Step 2</span>
+                            <span class="font-bold text-gray-700">행렬 표현</span>
+                        </div>
 
-                    <!-- [오른쪽 컬럼] 결과 확인 -->
-                    <div class="flex flex-col w-full">
-                        <h2 class="text-lg font-bold text-gray-700 mb-4 flex items-center gap-2">
-                            <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded">Step 2</span>
-                            결과 확인
-                        </h2>
-
-                        <!-- [수정됨] 버튼 영역: 왼쪽 컨트롤 패널과 높이 균형을 맞추기 위해 별도 영역으로 분리 -->
-                        <!-- 회색 박스 밖으로 버튼을 꺼내고 상단에 배치 -->
-                        <div class="flex items-center mb-6 p-4 h-[74px] sm:h-auto"> 
-                            <!-- h-[74px]는 왼쪽 컨트롤 패널의 높이와 시각적으로 맞추기 위함 -->
-                            <button id="show-matrix-btn" class="w-full bg-gray-800 hover:bg-gray-900 text-white font-bold py-2 px-4 rounded transition-colors duration-200 shadow-md flex items-center justify-center gap-2">
-                                <span>🔢</span> 행렬 변환 결과 보기
+                        <!-- 버튼 영역 (왼쪽 컨트롤 패널과 높이 맞춤) -->
+                        <div class="flex items-center mb-4 p-3 h-[58px] sm:h-auto border border-transparent"> 
+                            <button id="show-matrix-btn" class="w-full bg-gray-800 hover:bg-gray-900 text-white font-bold py-1.5 px-4 rounded text-sm flex items-center justify-center gap-2">
+                                행렬 변환 결과 보기
                             </button>
                         </div>
 
-                        <!-- 결과 표시 영역 (버튼이 빠져나감) -->
-                        <div class="w-full flex flex-col items-center bg-gray-50 rounded-xl border border-gray-200 p-6 min-h-[300px] justify-center relative">
+                        <!-- 결과 표시 영역 (회색 박스) -->
+                        <!-- h-full과 min-h 설정으로 왼쪽 그리드 영역과 균형 맞춤 -->
+                        <div class="w-full flex flex-col items-center justify-center bg-gray-50 border border-gray-200 rounded p-4 min-h-[300px] lg:h-[calc(100%-74px)]">
                             
                             <!-- 결과 테이블 래퍼 -->
                             <div id="matrix-output" class="hidden flex flex-col items-center animate-fade-in w-full overflow-x-auto">
-                                <h3 class="text-sm font-semibold text-gray-500 mb-3">▼ 변환된 데이터 (0/1)</h3>
-                                <div id="matrix-table-wrapper" class="p-2 bg-white rounded-lg shadow-sm border border-gray-200 inline-block">
+                                <div id="matrix-table-wrapper" class="p-2 bg-white rounded border border-gray-200 inline-block">
                                     <!-- 결과 테이블 생성 위치 -->
                                 </div>
                             </div>
 
                             <!-- 안내 문구 -->
                             <div id="placeholder-text" class="text-gray-400 text-sm text-center">
-                                버튼을 누르면 이곳에 결과가 표시됩니다.
+                                버튼을 누르면 행렬이 표시됩니다.
                             </div>
                         </div>
                     </div>
@@ -188,36 +188,31 @@ with tab2:
                     
                     const blackCellClass = 'bg-gray-800';
 
-                    // 표 만들기 함수
                     function createGrid() {
                         const rows = parseInt(rowsInput.value, 10);
                         const cols = parseInt(colsInput.value, 10);
 
-                        // 유효성 검사 수정 (최대 10)
                         if (isNaN(rows) || isNaN(cols) || rows <= 0 || cols <= 0) {
-                            alert('유효한 숫자를 입력해주세요.');
+                            alert('1부터 10까지의 자연수를 입력해주세요.');
                             return;
                         }
                         if (rows > 10 || cols > 10) {
-                            alert('가로/세로 크기는 최대 10까지만 가능합니다.');
+                            alert('가로와 세로 픽셀은 최대 10까지만 가능합니다.');
                             return;
                         }
 
                         gridContainer.innerHTML = '';
-                        
-                        // 결과창 초기화
                         outputContainer.classList.add('hidden'); 
                         placeholderText.style.display = 'block';
                         outputWrapper.innerHTML = '';
 
                         const table = document.createElement('table');
-                        table.className = 'border-collapse shadow-md bg-white select-none'; // select-none: 드래그 방지
+                        table.className = 'border-collapse shadow-sm bg-white select-none';
                         
                         for (let r = 0; r < rows; r++) {
                             const tr = document.createElement('tr');
                             for (let c = 0; c < cols; c++) {
                                 const td = document.createElement('td');
-                                // 셀 크기 조정
                                 td.className = 'w-10 h-10 sm:w-12 sm:h-12 border border-gray-300 cursor-pointer hover:bg-gray-100 transition-colors duration-100';
                                 tr.appendChild(td);
                             }
@@ -226,7 +221,6 @@ with tab2:
                         gridContainer.appendChild(table);
                     }
 
-                    // 행렬 결과 보기 함수
                     function showMatrix() {
                         const sourceTable = gridContainer.querySelector('table');
                         if (!sourceTable) {
@@ -252,7 +246,6 @@ with tab2:
                                 const resultTd = document.createElement('td');
                                 resultTd.textContent = value;
                                 
-                                // 결과 셀 스타일
                                 let cellClass = 'w-8 h-8 text-center border border-gray-200 text-sm font-mono cursor-default ';
                                 
                                 if (value === 1) {
@@ -269,7 +262,6 @@ with tab2:
 
                         outputWrapper.appendChild(resultTable);
                         
-                        // 모바일에서만 스크롤 이동
                         if (window.innerWidth < 1024) {
                             outputContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
                         }
@@ -285,7 +277,6 @@ with tab2:
                     showMatrixBtn.addEventListener('click', showMatrix);
                     gridContainer.addEventListener('click', handleGridClick);
 
-                    // 초기 실행
                     createGrid();
                 });
             </script>
@@ -306,4 +297,7 @@ with tab2:
     # HTML 컴포넌트 렌더링
     components.html(html_code, height=650, scrolling=False)    
 with tab3:
+    st.markdown("명암")
+    
+with tab4:
     st.markdown("컬러이미지의 표현")
