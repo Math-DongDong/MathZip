@@ -19,9 +19,8 @@ with tab1:
         # 원본 이미지 정보 가져오기
         original_width, original_height = image.size
 
-
+        # 2. 해상도 조절 UI 및 이미지 처리
         edit, original, result = st.columns([0.2,0.4, 0.4])
-
         with edit:
             st.subheader("해상도 설정")
             # 가로 길이 입력 (기본값: 원본 크기)
@@ -39,7 +38,6 @@ with tab1:
                 step=1
             )
 
-            # [수정된 부분] -------------------------------------------------------
             # 핵심 변경사항 1: NEAREST 필터 사용
             # LANCZOS 대신 NEAREST를 사용하여 색상을 섞지 않고 픽셀을 그대로 가져옵니다. (계단 현상 생성)
             pixelated_image = image.resize((new_width, new_height), Image.Resampling.NEAREST)
@@ -53,7 +51,7 @@ with tab1:
             # 4. 다운로드 버튼 생성 logic
             # 사용자가 다운로드하는 것은 설정한 크기(작은 파일)입니다.
             buf = io.BytesIO()
-        
+
             # 원본 포맷 유지 (JPEG인 경우 포맷 명시 필요)
             img_format = image.format if image.format else "PNG"
             
@@ -76,10 +74,11 @@ with tab1:
             st.subheader("변환 이미지")
             # 결과 이미지 표시 (미리보기용 확대 이미지 사용)
             # caption에는 실제 파일 크기를 표시
-            st.image(preview_image, caption=f"변경됨: {new_width} x {new_height} px (확대 미리보기)", use_container_width=True)
+            st.image(preview_image, caption=f"변경됨: {new_width} x {new_height} px", use_container_width=True)
                 
     else:
         st.info("👆 위 영역에서 이미지 파일( png, jpg, jpeg )을 먼저 업로드해주세요.")
 
 with tab2:
     st.markdown("흑백이미지의 표현")
+    
