@@ -25,7 +25,7 @@ pages = {
         st.Page("Dice.py", title="주사위 모음")
     ],
     "인공지능 수학": [
-        st.Page("ImageExpression.py", title="이미지 자료의 표현")
+        st.Page("./인공지능수학/ImageExpression.py", title="이미지 데이터의 표현")
     ],
     "산업수학": [
         st.Page("./산업수학/MedicalData.py", title="의료 데이터와 건강 상태"),
