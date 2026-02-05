@@ -609,6 +609,6 @@ with tab3:
     """
     
     # HTML 컴포넌트 렌더링
-    components.html(html_code2, height=1300, scrolling=False)    
+    components.html(html_code2, height=650, scrolling=False)    
 with tab4:
     st.markdown("명암")
