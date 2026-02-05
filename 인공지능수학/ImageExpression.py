@@ -315,26 +315,28 @@ with tab3:
                 <div class="flex flex-col items-center mb-8">
                     
                     <!-- 설정 박스 -->
-                    <div class="flex items-center gap-4 p-4 w-full">
+                    <div class="flex flex-col md:flex-row items-start md:items-center gap-4 p-4 w-full">
                         <!-- 왼쪽 그룹: 크기 입력 + 초기화 -->
-                        <div class="flex items-center gap-2">
-                            <label class="text-sm font-medium text-gray-600">가로 픽셀</label>
-                            <input type="number" id="cols" value="4" min="1" max="11" class="w-12 p-2 border border-gray-300 rounded text-center focus:outline-none focus:border-blue-500 text-sm">
-                        </div>
-                        <div class="flex items-center gap-2">
-                            <label class="text-sm font-medium text-gray-600">세로 픽셀</label>
-                            <input type="number" id="rows" value="4" min="1" max="11" class="w-12 p-2 border border-gray-300 rounded text-center focus:outline-none focus:border-blue-500 text-sm">
-                        </div>
+                        <div class="flex flex-wrap items-center gap-2 w-full md:w-auto">
+                            <div class="flex items-center gap-2">
+                                <label class="text-sm font-medium text-gray-600">가로 픽셀</label>
+                                <input type="number" id="cols" value="4" min="1" max="11" class="w-12 p-2 border border-gray-300 rounded text-center focus:outline-none focus:border-blue-500 text-sm">
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <label class="text-sm font-medium text-gray-600">세로 픽셀</label>
+                                <input type="number" id="rows" value="4" min="1" max="11" class="w-12 p-2 border border-gray-300 rounded text-center focus:outline-none focus:border-blue-500 text-sm">
+                            </div>
 
-                        <button id="create-btn" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-5 rounded text-sm shadow transition-colors">
-                            새로 만들기
-                        </button>
+                            <button id="create-btn" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-5 rounded text-sm shadow transition-colors">
+                                새로 만들기
+                            </button>
+                        </div>
 
                         <!-- spacer to push the right-group to the far right -->
-                        <div class="flex-1"></div>
+                        <div class="hidden md:flex flex-1"></div>
 
                         <!-- 오른쪽 그룹: 클릭값 + 이미지 변환 -->
-                        <div class="flex items-center gap-2">
+                        <div class="flex items-center gap-2 w-full md:w-auto">
                             <div class="flex items-center gap-2 bg-purple-50 px-3 py-1.5 rounded border border-purple-100">
                                 <span class="text-lg">🖌️</span>
                                 <label class="text-sm font-bold text-purple-700">클릭 값</label>
