@@ -288,7 +288,8 @@ with tab2:
     """
 
     # HTML 컴포넌트 렌더링
-    components.html(html_code, height=650, scrolling=False)    
+    components.html(html_code, height=800, scrolling=True)
+
 with tab3:
     html_code2 = """
         <!DOCTYPE html>
@@ -609,6 +610,6 @@ with tab3:
     """
     
     # HTML 컴포넌트 렌더링
-    components.html(html_code2, height=500, scrolling=True)    
+    components.html(html_code2, height=800, scrolling=True)    
 with tab4:
     st.markdown("명암")
