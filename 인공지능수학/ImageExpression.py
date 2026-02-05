@@ -315,7 +315,7 @@ with tab3:
                 <div class="flex flex-col items-center mb-8">
                     
                     <!-- 설정 박스 -->
-                    <div class="flex flex-wrap items-center justify-center gap-4 p-4 bg-gray-50 border border-gray-200 rounded-lg shadow-sm">
+                    <div class="flex flex-wrap items-center justify-center gap-4 p-4">
                         
                         <!-- 1. 그리드 크기 설정 -->
                         <div class="flex items-center gap-2">
@@ -562,6 +562,6 @@ with tab3:
     """
     
     # HTML 컴포넌트 렌더링
-    components.html(html_code2, height=650, scrolling=False)    
+    components.html(html_code2, height=1300, scrolling=False)    
 with tab4:
     st.markdown("명암")
