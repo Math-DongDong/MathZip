@@ -97,13 +97,6 @@ with tab2:
         </head>
         <body class="bg-white font-sans text-gray-800">
 
-            <!-- 
-                메인 컨테이너 
-                - w-full: 부모(body) 너비에 맞게 100% 사용
-                - px-4: 모바일에서 내용이 화면 끝에 붙지 않도록 최소한의 좌우 여백만 줌
-                - max-w-none: 너비 제한 제거
-                - shadow/rounded 제거: 배경이 흰색이므로 카드 스타일 제거
-            -->
             <div class="w-full px-4 py-6">
                 
                 <!-- 그리드 레이아웃 -->
@@ -118,7 +111,7 @@ with tab2:
                         </div>
 
                         <!-- 컨트롤 패널 (회색 박스) -->
-                        <div class="flex flex-wrap items-center gap-3 mb-4 p-3 bg-gray-50 border border-gray-200 rounded">
+                        <div class="flex flex-wrap items-center gap-3 mb-4 p-3 rounded">
                             <div class="flex items-center gap-2">
                                 <label class="text-sm font-medium text-gray-600">가로 픽셀</label>
                                 <input type="number" id="cols" value="7" min="1" max="10" class="w-12 p-1 border border-gray-300 rounded text-center focus:outline-none focus:border-blue-500 text-sm">
@@ -128,7 +121,7 @@ with tab2:
                                 <input type="number" id="rows" value="7" min="1" max="10" class="w-12 p-1 border border-gray-300 rounded text-center focus:outline-none focus:border-blue-500 text-sm">
                             </div>
                             <button id="create-btn" class="ml-auto bg-blue-600 hover:bg-blue-700 text-white font-bold py-1.5 px-3 rounded text-sm whitespace-nowrap">
-                                표 만들기
+                                새로 만들기
                             </button>
                         </div>
 
@@ -246,10 +239,10 @@ with tab2:
                                 const resultTd = document.createElement('td');
                                 resultTd.textContent = value;
                                 
-                                let cellClass = 'w-8 h-8 text-center border border-gray-200 text-sm font-mono cursor-default ';
+                                let cellClass = 'w-10 h-10 sm:w-12 sm:h-12 text-center border border-gray-300 text-sm font-mono cursor-default ';
                                 
                                 if (value === 1) {
-                                    cellClass += 'bg-gray-200 text-gray-900 font-bold';
+                                    cellClass += 'bg-gray-800 text-white font-bold';
                                 } else {
                                     cellClass += 'bg-white text-gray-400';
                                 }
