@@ -296,7 +296,6 @@ with tab3:
         <head>
             <meta charset="UTF-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>RGB 컬러 이미지 학습</title>
             <script src="https://cdn.tailwindcss.com"></script>
             <style>
                 /* 숫자 입력 화살표 제거 */
@@ -315,9 +314,8 @@ with tab3:
                 <div class="flex flex-col items-center mb-8">
                     
                     <!-- 설정 박스 -->
-                    <div class="flex flex-wrap items-center justify-center gap-4 p-4">
-                        
-                        <!-- 1. 그리드 크기 설정 -->
+                    <div class="flex items-center gap-4 p-4 w-full">
+                        <!-- 왼쪽 그룹: 크기 입력 + 초기화 -->
                         <div class="flex items-center gap-2">
                             <label class="text-sm font-medium text-gray-600">가로 픽셀</label>
                             <input type="number" id="cols" value="4" min="1" max="11" class="w-12 p-2 border border-gray-300 rounded text-center focus:outline-none focus:border-blue-500 text-sm">
@@ -327,57 +325,55 @@ with tab3:
                             <input type="number" id="rows" value="4" min="1" max="11" class="w-12 p-2 border border-gray-300 rounded text-center focus:outline-none focus:border-blue-500 text-sm">
                         </div>
 
-                        <!-- 구분선 -->
-                        <div class="hidden sm:block w-px h-8 bg-gray-300 mx-1"></div>
-
-                        <!-- 2. 클릭 입력값 (브러시) 설정 -->
-                        <div class="flex items-center gap-2 bg-purple-50 px-3 py-1.5 rounded border border-purple-100">
-                            <span class="text-lg">🖌️</span>
-                            <label class="text-sm font-bold text-purple-700">클릭 값</label>
-                            <input type="number" id="paint-val" value="255" min="0" max="255" class="w-14 p-2 border border-purple-300 rounded text-center text-purple-700 font-bold focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm" title="칸을 클릭할 때 이 값이 입력됩니다.">
-                        </div>
-
-                        <!-- 초기화 버튼 -->
-                        <button id="create-btn" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-5 rounded text-sm shadow transition-colors ml-2">
+                        <button id="create-btn" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-5 rounded text-sm shadow transition-colors">
                             새로 만들기
                         </button>
+
+                        <!-- spacer to push the right-group to the far right -->
+                        <div class="flex-1"></div>
+
+                        <!-- 오른쪽 그룹: 클릭값 + 이미지 변환 -->
+                        <div class="flex items-center gap-2">
+                            <div class="flex items-center gap-2 bg-purple-50 px-3 py-1.5 rounded border border-purple-100">
+                                <span class="text-lg">🖌️</span>
+                                <label class="text-sm font-bold text-purple-700">클릭 값</label>
+                                <input type="number" id="paint-val" value="255" min="0" max="255" class="w-14 p-2 border border-purple-300 rounded text-center text-purple-700 font-bold focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm" title="칸을 클릭할 때 이 값이 입력됩니다.">
+                            </div>
+
+                            <button id="merge-btn" class="bg-gray-800 hover:bg-black text-white text-sm font-bold py-2 px-4 rounded-lg shadow-lg transform transition active:scale-95 whitespace-nowrap">
+                                이미지 변환
+                            </button>
+                        </div>
                     </div>
                 </div>
 
                 <!-- 메인 워크스페이스 -->
-                <div class="flex flex-wrap justify-center items-start gap-6 lg:gap-10">
+                <div class="flex flex-col sm:flex-row items-start gap-6 lg:gap-10">
                     
                     <!-- [입력 영역] -->
-                    <div class="flex flex-wrap justify-center gap-6">
+                    <div class="flex flex-col sm:flex-row gap-6">
                         
                         <!-- Red Channel -->
-                        <div class="flex flex-col items-center group">
+                        <div class="flex flex-col items-center group w-full sm:w-auto">
                             <div class="text-red-600 font-bold mb-2 text-sm bg-red-50 px-3 py-1 rounded border border-red-100">R (Red)</div>
                             <div id="container-r" class="border-2 border-red-100 rounded p-1 bg-white shadow-sm group-hover:border-red-300 transition-colors"></div>
                         </div>
 
                         <!-- Green Channel -->
-                        <div class="flex flex-col items-center group">
+                        <div class="flex flex-col items-center group w-full sm:w-auto">
                             <div class="text-green-600 font-bold mb-2 text-sm bg-green-50 px-3 py-1 rounded border border-green-100">G (Green)</div>
                             <div id="container-g" class="border-2 border-green-100 rounded p-1 bg-white shadow-sm group-hover:border-green-300 transition-colors"></div>
                         </div>
 
                         <!-- Blue Channel -->
-                        <div class="flex flex-col items-center group">
+                        <div class="flex flex-col items-center group w-full sm:w-auto">
                             <div class="text-blue-600 font-bold mb-2 text-sm bg-blue-50 px-3 py-1 rounded border border-blue-100">B (Blue)</div>
                             <div id="container-b" class="border-2 border-blue-100 rounded p-1 bg-white shadow-sm group-hover:border-blue-300 transition-colors"></div>
                         </div>
                     </div>
 
                     <!-- [합성 액션] -->
-                    <div class="flex flex-col items-center justify-center self-center gap-3">
-                        <span class="text-3xl text-gray-300 hidden lg:block">➡</span>
-                        <span class="text-3xl text-gray-300 block lg:hidden">⬇</span>
-                        
-                        <button id="merge-btn" class="bg-gray-800 hover:bg-black text-white text-sm font-bold py-3 px-6 rounded-lg shadow-lg transform transition active:scale-95 whitespace-nowrap flex items-center gap-2">
-                            <span>✨</span> 이미지 변환
-                        </button>
-                    </div>
+                    <!-- 제거: 버튼을 상단 컨트롤 박스에 통합하여 동일 행의 우측에 배치함 -->
 
                     <!-- [결과 영역] -->
                     <div class="flex flex-col items-center">
@@ -453,6 +449,9 @@ with tab3:
                         container.innerHTML = '';
                         const table = document.createElement('table');
                         table.className = 'border-collapse';
+                        // Make table responsive: width fills container and uses fixed layout
+                        table.style.width = '100%';
+                        table.style.tableLayout = 'fixed';
 
                         let inputStyleClass = '';
                         if (colorTheme === 'red') inputStyleClass = 'focus:border-red-500 text-red-700 selection:bg-red-200';
@@ -464,13 +463,27 @@ with tab3:
                             for (let c = 0; c < cols; c++) {
                                 const td = document.createElement('td');
                                 td.className = 'border border-gray-200 p-0.5';
+                                td.style.width = `calc(100% / ${cols})`;
+
+                                // Create a square container using the padding-top trick so height follows width
+                                const square = document.createElement('div');
+                                square.style.position = 'relative';
+                                square.style.width = '100%';
+                                square.style.paddingTop = '100%';
 
                                 const input = document.createElement('input');
                                 input.type = 'number';
                                 input.min = 0;
                                 input.max = 255;
                                 input.placeholder = "0"; // 빈 칸일 때 0처럼 보이게 힌트
-                                input.className = `w-8 h-8 sm:w-9 sm:h-9 text-center text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-opacity-50 font-mono transition-all ${inputStyleClass}`;
+                                // absolutely position the input to fill the square
+                                input.style.position = 'absolute';
+                                input.style.top = '0';
+                                input.style.left = '0';
+                                input.style.width = '100%';
+                                input.style.height = '100%';
+                                input.style.boxSizing = 'border-box';
+                                input.className = `text-center text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-opacity-50 font-mono transition-all ${inputStyleClass}`;
                                 
                                 // [핵심 기능] 클릭 시 '클릭 값'으로 자동 채우기
                                 input.addEventListener('click', function() {
@@ -492,7 +505,8 @@ with tab3:
                                     if (val > 255) this.value = 255;
                                 });
 
-                                td.appendChild(input);
+                                square.appendChild(input);
+                                td.appendChild(square);
                                 tr.appendChild(td);
                             }
                             table.appendChild(tr);
@@ -503,11 +517,28 @@ with tab3:
                     function createResultPlaceholder(rows, cols) {
                         const table = document.createElement('table');
                         table.className = 'border-collapse';
+                        table.style.width = '100%';
+                        table.style.tableLayout = 'fixed';
                         for (let r = 0; r < rows; r++) {
                             const tr = document.createElement('tr');
                             for (let c = 0; c < cols; c++) {
                                 const td = document.createElement('td');
-                                td.className = 'w-8 h-8 sm:w-9 sm:h-9 border border-gray-300 bg-gray-50'; 
+                                td.className = 'border border-gray-300 bg-gray-50 p-0'; 
+                                td.style.width = `calc(100% / ${cols})`;
+                                const square = document.createElement('div');
+                                square.style.position = 'relative';
+                                square.style.width = '100%';
+                                square.style.paddingTop = '100%';
+
+                                const inner = document.createElement('div');
+                                inner.style.position = 'absolute';
+                                inner.style.top = '0';
+                                inner.style.left = '0';
+                                inner.style.width = '100%';
+                                inner.style.height = '100%';
+                                inner.className = 'bg-gray-50';
+                                square.appendChild(inner);
+                                td.appendChild(square);
                                 tr.appendChild(td);
                             }
                             table.appendChild(tr);
@@ -526,6 +557,8 @@ with tab3:
                         containerResult.innerHTML = '';
                         const table = document.createElement('table');
                         table.className = 'border-collapse cursor-crosshair'; 
+                        table.style.width = '100%';
+                        table.style.tableLayout = 'fixed';
 
                         let index = 0;
                         for (let r = 0; r < rows; r++) {
@@ -538,15 +571,29 @@ with tab3:
                                 const gVal = inputsG[index].value === '' ? 0 : parseInt(inputsG[index].value);
                                 const bVal = inputsB[index].value === '' ? 0 : parseInt(inputsB[index].value);
 
-                                td.className = 'w-8 h-8 sm:w-9 sm:h-9 border border-gray-300 transition-colors duration-300';
-                                td.style.backgroundColor = `rgb(${rVal}, ${gVal}, ${bVal})`;
-                                
-                                td.dataset.rgb = `RGB(${rVal}, ${gVal}, ${bVal})`;
-                                td.addEventListener('mouseover', function() {
+                                td.className = 'border border-gray-300 transition-colors duration-300 p-0';
+                                td.style.width = `calc(100% / ${cols})`;
+
+                                const square = document.createElement('div');
+                                square.style.position = 'relative';
+                                square.style.width = '100%';
+                                square.style.paddingTop = '100%';
+
+                                const inner = document.createElement('div');
+                                inner.style.position = 'absolute';
+                                inner.style.top = '0';
+                                inner.style.left = '0';
+                                inner.style.width = '100%';
+                                inner.style.height = '100%';
+                                inner.style.backgroundColor = `rgb(${rVal}, ${gVal}, ${bVal})`;
+                                inner.dataset.rgb = `RGB(${rVal}, ${gVal}, ${bVal})`;
+                                inner.addEventListener('mouseover', function() {
                                     pixelInfo.textContent = this.dataset.rgb;
                                     pixelInfo.style.color = 'black'; 
                                 });
 
+                                square.appendChild(inner);
+                                td.appendChild(square);
                                 tr.appendChild(td);
                                 index++;
                             }
