@@ -7,7 +7,7 @@ import io # 이미지를 바이트 형태로 변환하여 다운로드하기 위
 st.title("이미지 데이터의 표현")
 
 # 탭 생성
-tab1, tab2, tab3, tab4 = st.tabs(["🖼️ 이미지 해상도", "흑백 이미지", "명암 표현" , "컬러 이미지"])
+tab1, tab2, tab3, tab4 = st.tabs(["🖼️ 이미지 해상도", "흑백 이미지", "🎨 컬러 이미지" , "회색 필터"])
 # ==============================================================================
 # [TAB 1] 이미지 해상도
 # ==============================================================================
@@ -290,7 +290,278 @@ with tab2:
     # HTML 컴포넌트 렌더링
     components.html(html_code, height=650, scrolling=False)    
 with tab3:
-    st.markdown("명암")
+    html_code2 = """
+        <!DOCTYPE html>
+        <html lang="ko">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>RGB 컬러 이미지 학습</title>
+            <script src="https://cdn.tailwindcss.com"></script>
+            <style>
+                /* 숫자 입력 화살표 제거 */
+                input[type=number]::-webkit-inner-spin-button, 
+                input[type=number]::-webkit-outer-spin-button { 
+                    -webkit-appearance: none; 
+                    margin: 0; 
+                }
+            </style>
+        </head>
+        <body class="bg-white font-sans text-gray-800">
 
+            <div class="w-full px-4 py-6">
+                
+                <!-- 컨트롤 패널 -->
+                <div class="flex flex-col items-center mb-8">
+                    
+                    <!-- 설정 박스 -->
+                    <div class="flex flex-wrap items-center justify-center gap-4 p-4 bg-gray-50 border border-gray-200 rounded-lg shadow-sm">
+                        
+                        <!-- 1. 그리드 크기 설정 -->
+                        <div class="flex items-center gap-2">
+                            <label class="text-sm font-medium text-gray-600">가로 픽셀</label>
+                            <input type="number" id="cols" value="4" min="1" max="11" class="w-12 p-2 border border-gray-300 rounded text-center focus:outline-none focus:border-blue-500 text-sm">
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <label class="text-sm font-medium text-gray-600">세로 픽셀</label>
+                            <input type="number" id="rows" value="4" min="1" max="11" class="w-12 p-2 border border-gray-300 rounded text-center focus:outline-none focus:border-blue-500 text-sm">
+                        </div>
+
+                        <!-- 구분선 -->
+                        <div class="hidden sm:block w-px h-8 bg-gray-300 mx-1"></div>
+
+                        <!-- 2. 클릭 입력값 (브러시) 설정 -->
+                        <div class="flex items-center gap-2 bg-purple-50 px-3 py-1.5 rounded border border-purple-100">
+                            <span class="text-lg">🖌️</span>
+                            <label class="text-sm font-bold text-purple-700">클릭 값</label>
+                            <input type="number" id="paint-val" value="255" min="0" max="255" class="w-14 p-2 border border-purple-300 rounded text-center text-purple-700 font-bold focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm" title="칸을 클릭할 때 이 값이 입력됩니다.">
+                        </div>
+
+                        <!-- 초기화 버튼 -->
+                        <button id="create-btn" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-5 rounded text-sm shadow transition-colors ml-2">
+                            새로 만들기
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 메인 워크스페이스 -->
+                <div class="flex flex-wrap justify-center items-start gap-6 lg:gap-10">
+                    
+                    <!-- [입력 영역] -->
+                    <div class="flex flex-wrap justify-center gap-6">
+                        
+                        <!-- Red Channel -->
+                        <div class="flex flex-col items-center group">
+                            <div class="text-red-600 font-bold mb-2 text-sm bg-red-50 px-3 py-1 rounded border border-red-100">R (Red)</div>
+                            <div id="container-r" class="border-2 border-red-100 rounded p-1 bg-white shadow-sm group-hover:border-red-300 transition-colors"></div>
+                        </div>
+
+                        <!-- Green Channel -->
+                        <div class="flex flex-col items-center group">
+                            <div class="text-green-600 font-bold mb-2 text-sm bg-green-50 px-3 py-1 rounded border border-green-100">G (Green)</div>
+                            <div id="container-g" class="border-2 border-green-100 rounded p-1 bg-white shadow-sm group-hover:border-green-300 transition-colors"></div>
+                        </div>
+
+                        <!-- Blue Channel -->
+                        <div class="flex flex-col items-center group">
+                            <div class="text-blue-600 font-bold mb-2 text-sm bg-blue-50 px-3 py-1 rounded border border-blue-100">B (Blue)</div>
+                            <div id="container-b" class="border-2 border-blue-100 rounded p-1 bg-white shadow-sm group-hover:border-blue-300 transition-colors"></div>
+                        </div>
+                    </div>
+
+                    <!-- [합성 액션] -->
+                    <div class="flex flex-col items-center justify-center self-center gap-3">
+                        <span class="text-3xl text-gray-300 hidden lg:block">➡</span>
+                        <span class="text-3xl text-gray-300 block lg:hidden">⬇</span>
+                        
+                        <button id="merge-btn" class="bg-gray-800 hover:bg-black text-white text-sm font-bold py-3 px-6 rounded-lg shadow-lg transform transition active:scale-95 whitespace-nowrap flex items-center gap-2">
+                            <span>✨</span> 이미지 변환
+                        </button>
+                    </div>
+
+                    <!-- [결과 영역] -->
+                    <div class="flex flex-col items-center">
+                        <div class="text-gray-800 font-bold mb-2 text-sm bg-gray-100 px-3 py-1 rounded border border-gray-200">Result (Image)</div>
+                        
+                        <div id="container-result" class="border border-gray-300 rounded p-1 bg-white shadow-md min-w-[120px] min-h-[120px] flex items-center justify-center relative">
+                            <span class="text-xs text-gray-400">결과 대기 중</span>
+                        </div>
+                        
+                        <!-- 안내 문구 (요청사항 반영) -->
+                        <div class="mt-3 text-center">
+
+                            <div id="pixel-info" class="text-xs font-bold mt-2 h-4 text-gray-700"></div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <script>
+                document.addEventListener('DOMContentLoaded', () => {
+                    const rowsInput = document.getElementById('rows');
+                    const colsInput = document.getElementById('cols');
+                    const paintValInput = document.getElementById('paint-val'); // 브러시 값 입력창
+                    
+                    const createBtn = document.getElementById('create-btn');
+                    const mergeBtn = document.getElementById('merge-btn');
+                    
+                    const containerR = document.getElementById('container-r');
+                    const containerG = document.getElementById('container-g');
+                    const containerB = document.getElementById('container-b');
+                    const containerResult = document.getElementById('container-result');
+                    const pixelInfo = document.getElementById('pixel-info');
+
+                    // 초기 실행
+                    createAllGrids();
+
+                    createBtn.addEventListener('click', createAllGrids);
+                    mergeBtn.addEventListener('click', updateResultImage);
+
+                    // 브러시 값 범위 체크
+                    paintValInput.addEventListener('change', function() {
+                        let val = parseInt(this.value);
+                        if (val < 0) this.value = 0;
+                        if (val > 255) this.value = 255;
+                    });
+
+                    function createAllGrids() {
+                        const rows = parseInt(rowsInput.value, 10);
+                        const cols = parseInt(colsInput.value, 10);
+
+                        if (rows > 11 || cols > 11) {
+                            alert('가로와 세로 픽셀은 최대 11까지만 가능합니다.');
+                            return;
+                        }
+                        if (rows < 1 || cols < 1) {
+                            alert('1부터 11까지의 자연수를 입력해주세요.');
+                            return;
+                        }
+
+                        // 입력 테이블 생성 (초기값 0으로 통일하여 깔끔하게 시작)
+                        createInputTable(containerR, rows, cols, 'red');
+                        createInputTable(containerG, rows, cols, 'green');
+                        createInputTable(containerB, rows, cols, 'blue');
+
+                        // 결과창 초기화
+                        containerResult.innerHTML = '';
+                        createResultPlaceholder(rows, cols);
+                        pixelInfo.innerText = '';
+                    }
+
+                    function createInputTable(container, rows, cols, colorTheme) {
+                        container.innerHTML = '';
+                        const table = document.createElement('table');
+                        table.className = 'border-collapse';
+
+                        let inputStyleClass = '';
+                        if (colorTheme === 'red') inputStyleClass = 'focus:border-red-500 text-red-700 selection:bg-red-200';
+                        else if (colorTheme === 'green') inputStyleClass = 'focus:border-green-500 text-green-700 selection:bg-green-200';
+                        else if (colorTheme === 'blue') inputStyleClass = 'focus:border-blue-500 text-blue-700 selection:bg-blue-200';
+
+                        for (let r = 0; r < rows; r++) {
+                            const tr = document.createElement('tr');
+                            for (let c = 0; c < cols; c++) {
+                                const td = document.createElement('td');
+                                td.className = 'border border-gray-200 p-0.5';
+
+                                const input = document.createElement('input');
+                                input.type = 'number';
+                                input.min = 0;
+                                input.max = 255;
+                                input.placeholder = "0"; // 빈 칸일 때 0처럼 보이게 힌트
+                                input.className = `w-8 h-8 sm:w-9 sm:h-9 text-center text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-opacity-50 font-mono transition-all ${inputStyleClass}`;
+                                
+                                // [핵심 기능] 클릭 시 '클릭 값'으로 자동 채우기
+                                input.addEventListener('click', function() {
+                                    const brushValue = paintValInput.value;
+                                    // 값이 비어있거나 다를 때만 변경 (사용자 경험 고려)
+                                    // 혹은 무조건 변경을 원하면 조건문 제거 가능. 여기선 무조건 변경.
+                                    this.value = brushValue;
+                                    
+                                    // 클릭할 때 시각적 피드백 (반짝임)
+                                    this.classList.add('bg-gray-100');
+                                    setTimeout(() => this.classList.remove('bg-gray-100'), 150);
+                                });
+
+                                // 수동 입력 시 범위 제한
+                                input.addEventListener('input', function() {
+                                    if (this.value === '') return;
+                                    let val = parseInt(this.value);
+                                    if (val < 0) this.value = 0;
+                                    if (val > 255) this.value = 255;
+                                });
+
+                                td.appendChild(input);
+                                tr.appendChild(td);
+                            }
+                            table.appendChild(tr);
+                        }
+                        container.appendChild(table);
+                    }
+
+                    function createResultPlaceholder(rows, cols) {
+                        const table = document.createElement('table');
+                        table.className = 'border-collapse';
+                        for (let r = 0; r < rows; r++) {
+                            const tr = document.createElement('tr');
+                            for (let c = 0; c < cols; c++) {
+                                const td = document.createElement('td');
+                                td.className = 'w-8 h-8 sm:w-9 sm:h-9 border border-gray-300 bg-gray-50'; 
+                                tr.appendChild(td);
+                            }
+                            table.appendChild(tr);
+                        }
+                        containerResult.appendChild(table);
+                    }
+
+                    function updateResultImage() {
+                        const rows = parseInt(rowsInput.value);
+                        const cols = parseInt(colsInput.value);
+
+                        const inputsR = containerR.querySelectorAll('input');
+                        const inputsG = containerG.querySelectorAll('input');
+                        const inputsB = containerB.querySelectorAll('input');
+
+                        containerResult.innerHTML = '';
+                        const table = document.createElement('table');
+                        table.className = 'border-collapse cursor-crosshair'; 
+
+                        let index = 0;
+                        for (let r = 0; r < rows; r++) {
+                            const tr = document.createElement('tr');
+                            for (let c = 0; c < cols; c++) {
+                                const td = document.createElement('td');
+                                
+                                // 값이 비어있으면 0으로 처리 (|| 0)
+                                const rVal = inputsR[index].value === '' ? 0 : parseInt(inputsR[index].value);
+                                const gVal = inputsG[index].value === '' ? 0 : parseInt(inputsG[index].value);
+                                const bVal = inputsB[index].value === '' ? 0 : parseInt(inputsB[index].value);
+
+                                td.className = 'w-8 h-8 sm:w-9 sm:h-9 border border-gray-300 transition-colors duration-300';
+                                td.style.backgroundColor = `rgb(${rVal}, ${gVal}, ${bVal})`;
+                                
+                                td.dataset.rgb = `RGB(${rVal}, ${gVal}, ${bVal})`;
+                                td.addEventListener('mouseover', function() {
+                                    pixelInfo.textContent = this.dataset.rgb;
+                                    pixelInfo.style.color = 'black'; 
+                                });
+
+                                tr.appendChild(td);
+                                index++;
+                            }
+                            table.appendChild(tr);
+                        }
+                        containerResult.appendChild(table);
+                        pixelInfo.textContent = "마우스를 올리면 픽셀의 RGB 값 확인 가능";
+                    }
+                });
+            </script>
+        </body>
+        </html>
+    """
+    
+    # HTML 컴포넌트 렌더링
+    components.html(html_code2, height=650, scrolling=False)    
 with tab4:
-    st.markdown("컬러이미지의 표현")
+    st.markdown("명암")
