@@ -666,10 +666,10 @@ with tab4:
             이미지 배열을 받아 R, G, B 채널별로 10x10 샘플 데이터를 탭으로 보여주는 함수
             """
             st.markdown(f"#### 📊 {title_prefix}의 RGB채널")
-            st.caption("이미지의 좌측 상단(0,0)부터 **10x10 픽셀** 영역의 숫자를 보여줍니다.")
+            st.caption("이미지의 좌측 상단(0,0)부터 **8x8 픽셀** 영역의 숫자를 보여줍니다.")
 
-            # 채널별 데이터 슬라이싱 (10행 10열 추출)
-            # 슬라이싱 범위 수정: [:10, :10]
+            # 채널별 데이터 슬라이싱 (8행 8열 추출)
+            # 슬라이싱 범위 수정: [:8, :8]
             slice_size = 10
             r_channel = image_array[:slice_size, :slice_size, 0]
             g_channel = image_array[:slice_size, :slice_size, 1]
