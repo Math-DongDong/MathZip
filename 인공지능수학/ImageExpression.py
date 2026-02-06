@@ -670,7 +670,7 @@ with tab4:
 
             # 채널별 데이터 슬라이싱 (8행 8열 추출)
             # 슬라이싱 범위 수정: [:8, :8]
-            slice_size = 10
+            slice_size = 8
             r_channel = image_array[:slice_size, :slice_size, 0]
             g_channel = image_array[:slice_size, :slice_size, 1]
             b_channel = image_array[:slice_size, :slice_size, 2]
