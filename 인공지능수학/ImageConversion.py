@@ -51,11 +51,11 @@ with tab1:
         
         with col_img1:
             st.subheader("원본 이미지")
-            st.image(original_image, use_container_width=True)
+            st.image(original_image, width='stretch')
         
         with col_img2:
             st.subheader("그레이 필터 적용")
-            st.image(gray_image, use_container_width=True)
+            st.image(gray_image, width='stretch')
 
         # --------------------------------------------------------------------------
         # 3. 데이터(픽셀 값) 분석을 위한 함수 정의
@@ -174,13 +174,13 @@ with tab2:
 
         with original:
             st.subheader("원본 이미지")
-            st.image(image, caption=f"원본: {original_width} x {original_height} px", use_container_width=True)
+            st.image(image, caption=f"원본: {original_width} x {original_height} px", width='stretch')
 
         with result:
             st.subheader("변환 이미지")
             # 결과 이미지 표시 (미리보기용 확대 이미지 사용)
             # caption에는 실제 파일 크기를 표시
-            st.image(preview_image, caption=f"변경됨: {new_width} x {new_height} px", use_container_width=True)
+            st.image(preview_image, caption=f"변경됨: {new_width} x {new_height} px", width='stretch')
                 
     else:
         st.info("👆 위 영역에서 이미지 파일( png, jpg, jpeg )을 먼저 업로드해주세요.")
@@ -514,14 +514,30 @@ with tab4:
     st.text("평행")
 
 with tab5:
-    # --- 1. 세션 상태 초기화 ---
+    # --- [핵심 수정] 데이터 처리 함수 (안정성 강화) ---
+    # 1. 캐싱 키로 '파일명'과 '파일크기'를 사용해 변경을 확실히 감지합니다.
+    # 2. PIL 이미지는 제외하고, 계산에 필요한 Numpy 배열만 반환합니다.
+    @st.cache_data(show_spinner=False)
+    def get_image_arrays(name1, size1, name2, size2, _bytes1, _bytes2, target_w, target_h):
+        
+        # 바이트 -> 이미지 -> 리사이즈 -> 배열 변환
+        img1 = Image.open(io.BytesIO(_bytes1)).convert('RGB').resize((target_w, target_h))
+        img2 = Image.open(io.BytesIO(_bytes2)).convert('RGB').resize((target_w, target_h))
+        
+        # 0.0 ~ 1.0 범위의 실수형 배열로 변환
+        arr1 = np.array(img1, dtype=float) / 255.0
+        arr2 = np.array(img2, dtype=float) / 255.0
+        
+        return arr1, arr2
+
+    # --- 세션 상태 초기화 ---
     if 'animation_running' not in st.session_state:
         st.session_state.animation_running = False
     if 'current_alpha' not in st.session_state:
         st.session_state.current_alpha = 0.0
 
     # =========================================================
-    # [상단] 이미지 업로드 (Expander)
+    # [상단] 이미지 업로드
     # =========================================================
     with st.expander("📂 이미지 업로드 열기/닫기", expanded=True):
         col_up1, col_up2 = st.columns(2)
@@ -530,15 +546,16 @@ with tab5:
         with col_up2:
             file2 = st.file_uploader("두 번째 이미지", type=["png", "jpg", "jpeg"], key="img2")
 
-    # 이미지가 모두 업로드 되었을 때만 메인 화면 표시
     if file1 and file2:
-        # 이미지 미리 로드 (사이즈 정보 획득용)
+        # 502 에러 방지를 위한 기본 해상도 계산 (최대 800px)
+        # 파일을 열지 않고 헤더만 읽어서 빠름
         temp_img = Image.open(file1)
-        default_w, default_h = temp_img.size
+        orig_w, orig_h = temp_img.size
+        default_w = 800 if orig_w > 800 else orig_w
+        default_h = int(orig_h * (default_w / orig_w))
 
         # =========================================================
-        # 메인 레이아웃 (3열 배치)
-        # 1열: 설정 / 2열: 원본 나열 / 3열: 결과
+        # 메인 레이아웃 (3열)
         # =========================================================
         col1, col2, col3 = st.columns([0.25, 0.25, 0.5])
 
@@ -548,32 +565,31 @@ with tab5:
         with col1:
             st.subheader("⚙️ 설정 및 제어")
             
-            # 1. 해상도 설정
+            # 해상도 설정
             st.caption("해상도 설정")
             wcol1, wcol2 = st.columns(2)
             with wcol1:
-                target_w = st.number_input("가로 픽셀", value=default_w, step=10)
+                target_w = st.number_input("가로", min_value=10, value=default_w, step=10)
             with wcol2:
-                target_h = st.number_input("세로 픽셀", value=default_h, step=10)
+                target_h = st.number_input("세로", min_value=10, value=default_h, step=10)
             
-            # 2. 애니메이션 제어
+
+            # 재생 제어
             st.caption("디졸브 효과 제어")
             if st.button("⏯️ 재생/일시정지", type="primary", use_container_width=True):
                 st.session_state.animation_running = not st.session_state.animation_running
-                # 재생 시작 시, 만약 끝(1.0)에 있다면 처음(0.0)으로 리셋
-                if st.session_state.animation_running and st.session_state.current_alpha >= 1.0:
-                    st.session_state.current_alpha = 0.0
-
+                # 끝에 있으면 처음으로 리셋
+                # if st.session_state.animation_running and st.session_state.current_alpha >= 1.0:
+                #    st.session_state.current_alpha = 0.0
+            
             if st.session_state.animation_running:
                 st.success("🟢 재생 중...")
             else:
                 st.info("⏸️ 일시 정지")
 
-            # 3. 수동 슬라이더
-            # 애니메이션 중에는 비활성화(disabled)하여 충돌 방지
-            st.caption("수동 조절 (일시정지 시 활성화)")
+            # 수동 슬라이더
             manual_alpha = st.slider(
-                "가중치",
+                "가중치 (Alpha)",
                 min_value=0.0,
                 max_value=1.0,
                 value=0.0,
@@ -583,63 +599,62 @@ with tab5:
             )
 
         # ---------------------------------------------------------
-        # [데이터 준비] 이미지 변환 및 리사이징
+        # [데이터 처리] 캐시 함수 호출
         # ---------------------------------------------------------
-        img1 = Image.open(file1).convert('RGB').resize((target_w, target_h))
-        img2 = Image.open(file2).convert('RGB').resize((target_w, target_h))
-
-        arr1 = np.array(img1, dtype=float) / 255.0
-        arr2 = np.array(img2, dtype=float) / 255.0
+        # 파일 이름과 크기를 키로 사용하여 변경 사항을 확실하게 감지함
+        arr1, arr2 = get_image_arrays(
+            file1.name, file1.size,
+            file2.name, file2.size,
+            file1.getvalue(),
+            file2.getvalue(),
+            target_w, target_h
+        )
 
         # ---------------------------------------------------------
-        # [2열] 원본 이미지 세로 나열
+        # [2열] 원본 이미지 표시
         # ---------------------------------------------------------
         with col2:
-            st.subheader("소스 이미지")
-            st.image(img1, use_container_width=False)
-            st.image(img2, use_container_width=False)
-
+            st.subheader("소스")
+            # 배열 데이터를 바로 이미지로 출력 (st.image는 numpy 배열 지원함)
+            st.image(arr1, use_container_width=False, clamp=True)
+            st.image(arr2, use_container_width=False, clamp=True)
+            
         # ---------------------------------------------------------
-        # [3열] 디졸브 결과 (애니메이션 로직 포함)
+        # [3열] 결과 및 애니메이션
         # ---------------------------------------------------------
         with col3:
-            st.subheader("✨ 결과 (Dissolve)")
+            st.subheader("✨ 결과")
 
-            # 현재 적용할 Alpha 값 결정
-            # 애니메이션 중이면 내부 변수(current_alpha) 사용
-            # 정지 상태면 슬라이더 값(manual_alpha) 사용
+            # Alpha 값 결정
             if st.session_state.animation_running:
                 alpha = st.session_state.current_alpha
             else:
                 alpha = manual_alpha
-                # 수동 조작 시 내부 변수도 동기화 (다시 재생할 때를 위해)
-                st.session_state.current_alpha = alpha
+                st.session_state.current_alpha = alpha # 수동 조작 동기화
 
             # 블렌딩 연산
+            # (arr1, arr2는 이미 0.0~1.0 float이므로 바로 연산 가능)
             blended = (arr1 * (1 - alpha)) + (arr2 * alpha)
-            result_img = Image.fromarray((blended * 255).astype(np.uint8))
-
-            # 이미지 출력 (설정된 해상도 크기 그대로 출력)
+            
+            # 결과 출력
+            # clamp=True: 0.0~1.0 범위를 벗어난 값을 안전하게 처리
             st.image(
-                result_img, 
+                blended, 
                 caption=f"가중치: {alpha:.2f}", 
-                use_container_width=False 
+                use_container_width=False,
+                clamp=True 
             )
 
-            # 애니메이션 자동 진행 로직
+            # 애니메이션 루프
             if st.session_state.animation_running:
-                time.sleep(0.05)  # 속도 조절
+                time.sleep(0.1) # 속도 조절
                 
-                # 값 증가
-                st.session_state.current_alpha += 0.01
+                st.session_state.current_alpha += 0.02
                 
-                # 종료 조건
                 if st.session_state.current_alpha > 1.0:
                     st.session_state.current_alpha = 1.0
                     st.session_state.animation_running = False
                 
-                # 화면 갱신 (Rerun)
-                # 이때 슬라이더 값(slider_val)을 건드리지 않으므로 오류가 발생하지 않음
                 st.rerun()
 
     else:
