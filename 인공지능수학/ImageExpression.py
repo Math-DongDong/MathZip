@@ -616,6 +616,15 @@ with tab3:
     # HTML 컴포넌트 렌더링
     components.html(html_code2, height=800, scrolling=True)    
 with tab4:
+
+    st.markdown("""
+    <style>
+    .e15vb32f5 {
+                display: none;
+            }
+    </style>
+    """, unsafe_allow_html=True)
+    
     # --------------------------------------------------------------------------
     # 1. 이미지 업로드
     # --------------------------------------------------------------------------
