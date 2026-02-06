@@ -4,6 +4,7 @@ import pandas as pd
 import streamlit.components.v1 as components
 from PIL import Image
 import io # 이미지를 바이트 형태로 변환하여 다운로드하기 위해 필요
+import time
 
 # --- 앱 제목 ---
 st.title("이미지 데이터의 표현")
@@ -513,116 +514,133 @@ with tab4:
     st.text("평행")
 
 with tab5:
-    # 세션 상태 초기화
+    # --- 1. 세션 상태 초기화 ---
     if 'animation_running' not in st.session_state:
         st.session_state.animation_running = False
     if 'current_alpha' not in st.session_state:
         st.session_state.current_alpha = 0.0
 
-    # 레이아웃 분할 (왼쪽: 컨트롤 / 오른쪽: 결과 화면)
-    col_left, col_right = st.columns([0.3, 0.7])
-
     # =========================================================
-    # [왼쪽 열] 컨트롤 패널 및 파일 업로드
+    # [상단] 이미지 업로드 (Expander)
     # =========================================================
-    with col_left:
-        # 1. 상단에 컨트롤러가 들어갈 자리를 미리 비워둡니다 (Container)
-        # 나중에 파일이 업로드되면 이 공간에 버튼과 슬라이더를 채워 넣습니다.
-        controls_container = st.container()
-                
-        # 2. 파일 업로더 (항상 아래쪽에 위치)
-        file1 = st.file_uploader("첫 번째 이미지", type=["png", "jpg", "jpeg"], key="file1_anim")
-        file2 = st.file_uploader("두 번째 이미지", type=["png", "jpg", "jpeg"], key="file2_anim")
+    with st.expander("📂 이미지 업로드 열기/닫기", expanded=True):
+        col_up1, col_up2 = st.columns(2)
+        with col_up1:
+            file1 = st.file_uploader("첫 번째 이미지", type=["png", "jpg", "jpeg"], key="img1")
+        with col_up2:
+            file2 = st.file_uploader("두 번째 이미지", type=["png", "jpg", "jpeg"], key="img2")
 
-        # 3. 파일이 모두 업로드되었을 때만 -> 상단 빈 공간(controls_container)에 위젯 그리기
-        if file1 and file2:
-            with controls_container:
-                if st.button("⏯️ 재생/일시정지", type="primary", use_container_width=True):
-                    st.session_state.animation_running = not st.session_state.animation_running
-                
-                # 상태 메시지
-                if st.session_state.animation_running:
-                    st.caption("🟢 재생 중...")
-                else:
-                    st.caption("⏸️ 일시 정지")
+    # 이미지가 모두 업로드 되었을 때만 메인 화면 표시
+    if file1 and file2:
+        # 이미지 미리 로드 (사이즈 정보 획득용)
+        temp_img = Image.open(file1)
+        default_w, default_h = temp_img.size
 
-                # (2) 슬라이더 (애니메이션 중에는 비활성화)
-                alpha_slider = st.slider(
-                    "디졸브 비율 조절", 
-                    min_value=0.0, max_value=1.0, value=0.0, step=0.01, 
-                    disabled=st.session_state.animation_running,
-                    key="manual_slider"
-                )
-        else:
-            # 파일이 없을 때 안내 문구
-            with controls_container:
-                st.info("두 개의 이미지를 업로드해주세요.")
+        # =========================================================
+        # 메인 레이아웃 (3열 배치)
+        # 1열: 설정 / 2열: 원본 나열 / 3열: 결과
+        # =========================================================
+        col1, col2, col3 = st.columns([0.25, 0.25, 0.5])
 
+        # ---------------------------------------------------------
+        # [1열] 설정 및 제어
+        # ---------------------------------------------------------
+        with col1:
+            st.subheader("⚙️ 설정 및 제어")
+            
+            # 1. 해상도 설정
+            st.caption("해상도 설정")
+            wcol1, wcol2 = st.columns(2)
+            with wcol1:
+                target_w = st.number_input("가로 픽셀", value=default_w, step=10)
+            with wcol2:
+                target_h = st.number_input("세로 픽셀", value=default_h, step=10)
+            
+            # 2. 애니메이션 제어
+            st.caption("디졸브 효과 제어")
+            if st.button("⏯️ 재생/일시정지", type="primary", use_container_width=True):
+                st.session_state.animation_running = not st.session_state.animation_running
+                # 재생 시작 시, 만약 끝(1.0)에 있다면 처음(0.0)으로 리셋
+                if st.session_state.animation_running and st.session_state.current_alpha >= 1.0:
+                    st.session_state.current_alpha = 0.0
 
-    # =========================================================
-    # [오른쪽 열] 디졸브 효과 출력
-    # =========================================================
-    with col_right:
-        if file1 and file2:
-            # 1. 이미지 로드 및 전처리
-            img1 = Image.open(file1).convert('RGB')
-            img2 = Image.open(file2).convert('RGB')
-            
-            # 크기 통일 (img2 기준)
-            target_size = img2.size
-            img1_resized = img1.resize(target_size)
-            
-            # 배열 변환 및 정규화 (0.0 ~ 1.0)
-            array1 = np.array(img1_resized, dtype=float) / 255.0
-            array2 = np.array(img2, dtype=float) / 255.0
-            
-            # 결과를 보여줄 빈 공간 확보
-            placeholder = st.empty()
-            
-            # -----------------------------------------------------
-            # Case A: 애니메이션 재생 중일 때
-            # -----------------------------------------------------
+            if st.session_state.animation_running:
+                st.success("🟢 재생 중...")
+            else:
+                st.info("⏸️ 일시 정지")
+
+            # 3. 수동 슬라이더
+            # 애니메이션 중에는 비활성화(disabled)하여 충돌 방지
+            st.caption("수동 조절 (일시정지 시 활성화)")
+            manual_alpha = st.slider(
+                "가중치",
+                min_value=0.0,
+                max_value=1.0,
+                value=0.0,
+                step=0.01,
+                disabled=st.session_state.animation_running,
+                key="slider_val"
+            )
+
+        # ---------------------------------------------------------
+        # [데이터 준비] 이미지 변환 및 리사이징
+        # ---------------------------------------------------------
+        img1 = Image.open(file1).convert('RGB').resize((target_w, target_h))
+        img2 = Image.open(file2).convert('RGB').resize((target_w, target_h))
+
+        arr1 = np.array(img1, dtype=float) / 255.0
+        arr2 = np.array(img2, dtype=float) / 255.0
+
+        # ---------------------------------------------------------
+        # [2열] 원본 이미지 세로 나열
+        # ---------------------------------------------------------
+        with col2:
+            st.subheader("소스 이미지")
+            st.image(img1, use_container_width=False)
+            st.image(img2, use_container_width=False)
+
+        # ---------------------------------------------------------
+        # [3열] 디졸브 결과 (애니메이션 로직 포함)
+        # ---------------------------------------------------------
+        with col3:
+            st.subheader("✨ 결과 (Dissolve)")
+
+            # 현재 적용할 Alpha 값 결정
+            # 애니메이션 중이면 내부 변수(current_alpha) 사용
+            # 정지 상태면 슬라이더 값(manual_alpha) 사용
             if st.session_state.animation_running:
                 alpha = st.session_state.current_alpha
-                step = 0.02
-                
-                # 루프를 돌며 애니메이션 효과
-                while alpha <= 1.0:
-                    # 블렌딩 계산
-                    blended = (array1 * (1 - alpha)) + (array2 * alpha)
-                    result_img = Image.fromarray((blended * 255).astype(np.uint8))
-                    
-                    # 화면 갱신
-                    placeholder.image(result_img, caption=f"Dissolve Alpha: {alpha:.2f}", use_container_width=True)
-                    
-                    # 정지 버튼 체크 (세션 상태가 바뀌면 루프 중단)
-                    if not st.session_state.animation_running:
-                        break
-                    
-                    # 값 증가 및 대기
-                    alpha += step
-                    st.session_state.current_alpha = alpha
-                    time.sleep(0.05)
-                
-                # 끝까지 도달하면 자동 정지 및 초기화
-                if alpha > 1.0:
-                    st.session_state.animation_running = False
-                    st.session_state.current_alpha = 0.0 # 1.0에서 멈추고 싶으면 1.0으로 설정
-                    st.rerun()
-
-            # -----------------------------------------------------
-            # Case B: 정지 상태일 때 (슬라이더 값 적용)
-            # -----------------------------------------------------
             else:
-                # 현재 슬라이더 값 사용 (수동 조절)
-                # 애니메이션이 멈춘 지점(current_alpha)과 슬라이더 값(manual_slider) 동기화 로직
-                # 여기서는 단순하게 슬라이더 값을 우선합니다.
-                alpha = st.session_state.manual_slider
-                
-                # 애니메이션 시작 위치를 현재 슬라이더 위치로 맞춤 (선택사항)
+                alpha = manual_alpha
+                # 수동 조작 시 내부 변수도 동기화 (다시 재생할 때를 위해)
                 st.session_state.current_alpha = alpha
 
-                blended = (array1 * (1 - alpha)) + (array2 * alpha)
-                result_img = Image.fromarray((blended * 255).astype(np.uint8))
+            # 블렌딩 연산
+            blended = (arr1 * (1 - alpha)) + (arr2 * alpha)
+            result_img = Image.fromarray((blended * 255).astype(np.uint8))
+
+            # 이미지 출력 (설정된 해상도 크기 그대로 출력)
+            st.image(
+                result_img, 
+                caption=f"가중치: {alpha:.2f}", 
+                use_container_width=False 
+            )
+
+            # 애니메이션 자동 진행 로직
+            if st.session_state.animation_running:
+                time.sleep(0.05)  # 속도 조절
                 
-                placeholder.image(result_img, caption=f"Dissolve Alpha: {alpha:.2f}", use_container_width=True)
+                # 값 증가
+                st.session_state.current_alpha += 0.01
+                
+                # 종료 조건
+                if st.session_state.current_alpha > 1.0:
+                    st.session_state.current_alpha = 1.0
+                    st.session_state.animation_running = False
+                
+                # 화면 갱신 (Rerun)
+                # 이때 슬라이더 값(slider_val)을 건드리지 않으므로 오류가 발생하지 않음
+                st.rerun()
+
+    else:
+        st.info("👆 상단의 '이미지 업로드'를 열어 두 개의 이미지를 넣어주세요.")
