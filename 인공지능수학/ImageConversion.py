@@ -9,11 +9,111 @@ import io # 이미지를 바이트 형태로 변환하여 다운로드하기 위
 st.title("이미지 데이터의 표현")
 
 # 탭 생성
-tab1, tab2, tab3, tab4, tab5 = st.tabs(["💡 밝기 조절", "🔘 그레이 필터", "➕ 합성" , "↔️ 평행이동 및 방향 변환"," 🔀 디졸브 효과"])
+tab1, tab2, tab3, tab4, tab5 = st.tabs(["🔘 그레이 필터", "💡 밝기 조절", "➕ 합성" , "↔️ 평행이동 및 방향 변환"," 🔀 디졸브 효과"])
+
 # ==============================================================================
-# [TAB 1] 밝기 조절
+# [TAB 1] 그레이 필터
 # ==============================================================================
 with tab1:
+    st.markdown("""
+    <style>
+    .e15vb32f5 {
+                display: none;
+            }
+    </style>
+    """, unsafe_allow_html=True)
+    
+    # --------------------------------------------------------------------------
+    # 1. 이미지 업로드
+    # --------------------------------------------------------------------------
+    uploaded_file = st.file_uploader("이미지 파일을 업로드하세요.", type=["png", "jpg", "jpeg"],key="Gray")
+
+    if uploaded_file is not None:
+        # 1. 이미지 열기 (무조건 RGB 3채널로 변환)
+        original_image = Image.open(uploaded_file).convert('RGB')
+        original_array = np.array(original_image)
+
+        # 2. 단순 평균법으로 그레이스케일 만들기
+        # numpy를 이용해 (Height, Width) 크기의 평균값 배열 생성
+        # axis=2는 채널 축(R,G,B)을 의미함. 정수형(uint8) 변환 필수.
+        gray_mean = np.mean(original_array, axis=2).astype(np.uint8)
+
+        # 3. 시각화를 위해 다시 3채널(RGB) 형태로 변환 (R=G=B=평균값)
+        # shape 변환: (H, W) -> (H, W, 3)
+        gray_array = np.stack((gray_mean, gray_mean, gray_mean), axis=2)
+        gray_image = Image.fromarray(gray_array)
+
+        # --------------------------------------------------------------------------
+        # 2. 이미지 시각화 (2열 배치)
+        # --------------------------------------------------------------------------
+        col_img1, col_img2 = st.columns(2)
+        
+        with col_img1:
+            st.subheader("원본 이미지")
+            st.image(original_image, use_container_width=True)
+        
+        with col_img2:
+            st.subheader("그레이 필터 적용")
+            st.image(gray_image, use_container_width=True)
+
+        # --------------------------------------------------------------------------
+        # 3. 데이터(픽셀 값) 분석을 위한 함수 정의
+        # --------------------------------------------------------------------------
+        def display_channel_data(image_array, title_prefix):
+            """
+            이미지 배열을 받아 R, G, B 채널별로 10x10 샘플 데이터를 탭으로 보여주는 함수
+            """
+            st.markdown(f"#### 📊 {title_prefix}의 RGB 채널")
+            st.caption("이미지의 좌측 상단(0,0)부터 **8x8 픽셀** 영역의 숫자를 보여줍니다.")
+
+            # 채널별 데이터 슬라이싱 (8행 8열 추출)
+            # 슬라이싱 범위 수정: [:8, :8]
+            slice_size = 8
+            r_channel = image_array[:slice_size, :slice_size, 0]
+            g_channel = image_array[:slice_size, :slice_size, 1]
+            b_channel = image_array[:slice_size, :slice_size, 2]
+
+            # 데이터프레임 생성 (헤더와 인덱스 라벨 제거)
+            df_r = pd.DataFrame(r_channel)
+            df_g = pd.DataFrame(g_channel)
+            df_b = pd.DataFrame(b_channel)
+
+            # 3개의 열으로 구분하여 표시
+            Ocol1, Ocol2, Ocol3 = st.columns(3)
+            with Ocol1:
+                st.write("🔴 Red (빨강)")
+                st.table(df_r)
+            with Ocol2:
+                st.write("🟢 Green (초록)")
+                st.table(df_g)
+            with Ocol3:
+                st.write("🔵 Blue (파랑)")
+                st.table(df_b)
+
+
+        # --------------------------------------------------------------------------
+        # 4. 원본 이미지 데이터 표 (3번째 행)
+        # --------------------------------------------------------------------------
+        st.divider()
+        display_channel_data(original_array, "원본 이미지")
+
+        # --------------------------------------------------------------------------
+        # 5. 그레이 필터 이미지 데이터 표 (4번째 행)
+        # --------------------------------------------------------------------------
+        st.divider()
+        display_channel_data(gray_array, "그레이 필터 이미지")
+        
+        # 6. 검증 로직 (첫 번째 픽셀로 계산 증명)
+        r0, g0, b0 = original_array[0,0]
+        avg0 = gray_array[0,0,0] # 변환된 이미지의 첫 픽셀 값
+        
+    else:
+        st.info("👆 위 영역에서 이미지 파일( png, jpg, jpeg )을 먼저 업로드해주세요.")
+
+# ==============================================================================
+# [TAB 2] 밝기 조절
+# ==============================================================================
+with tab2:
     # 1. 이미지 업로드 기능
     uploaded_file = st.file_uploader("이미지 파일을 업로드하세요.", type=["png", "jpg", "jpeg"])
 
@@ -84,104 +184,7 @@ with tab1:
     else:
         st.info("👆 위 영역에서 이미지 파일( png, jpg, jpeg )을 먼저 업로드해주세요.")
 
-# ==============================================================================
-# [TAB 2] 그레이 필터
-# ==============================================================================
-with tab2:
-    st.markdown("""
-    <style>
-    .e15vb32f5 {
-                display: none;
-            }
-    </style>
-    """, unsafe_allow_html=True)
-    
-    # --------------------------------------------------------------------------
-    # 1. 이미지 업로드
-    # --------------------------------------------------------------------------
-    uploaded_file = st.file_uploader("이미지 파일을 업로드하세요.", type=["png", "jpg", "jpeg"],key="Gray")
 
-    if uploaded_file is not None:
-        # 1. 이미지 열기 (무조건 RGB 3채널로 변환)
-        original_image = Image.open(uploaded_file).convert('RGB')
-        original_array = np.array(original_image)
-
-        # 2. 단순 평균법으로 그레이스케일 만들기
-        # numpy를 이용해 (Height, Width) 크기의 평균값 배열 생성
-        # axis=2는 채널 축(R,G,B)을 의미함. 정수형(uint8) 변환 필수.
-        gray_mean = np.mean(original_array, axis=2).astype(np.uint8)
-
-        # 3. 시각화를 위해 다시 3채널(RGB) 형태로 변환 (R=G=B=평균값)
-        # shape 변환: (H, W) -> (H, W, 3)
-        gray_array = np.stack((gray_mean, gray_mean, gray_mean), axis=2)
-        gray_image = Image.fromarray(gray_array)
-
-        # --------------------------------------------------------------------------
-        # 2. 이미지 시각화 (2열 배치)
-        # --------------------------------------------------------------------------
-        col_img1, col_img2 = st.columns(2)
-        
-        with col_img1:
-            st.subheader("원본 이미지")
-            st.image(original_image, use_container_width=True)
-        
-        with col_img2:
-            st.subheader("그레이 필터 적용")
-            st.image(gray_image, use_container_width=True)
-
-        # --------------------------------------------------------------------------
-        # 3. 데이터(픽셀 값) 분석을 위한 함수 정의
-        # --------------------------------------------------------------------------
-        def display_channel_data(image_array, title_prefix):
-            """
-            이미지 배열을 받아 R, G, B 채널별로 10x10 샘플 데이터를 탭으로 보여주는 함수
-            """
-            st.markdown(f"#### 📊 {title_prefix}의 RGB채널")
-            st.caption("이미지의 좌측 상단(0,0)부터 **8x8 픽셀** 영역의 숫자를 보여줍니다.")
-
-            # 채널별 데이터 슬라이싱 (8행 8열 추출)
-            # 슬라이싱 범위 수정: [:8, :8]
-            slice_size = 8
-            r_channel = image_array[:slice_size, :slice_size, 0]
-            g_channel = image_array[:slice_size, :slice_size, 1]
-            b_channel = image_array[:slice_size, :slice_size, 2]
-
-            # 데이터프레임 생성 (헤더와 인덱스 라벨 제거)
-            df_r = pd.DataFrame(r_channel)
-            df_g = pd.DataFrame(g_channel)
-            df_b = pd.DataFrame(b_channel)
-
-            # 3개의 열으로 구분하여 표시
-            Ocol1, Ocol2, Ocol3 = st.columns(3)
-            with Ocol1:
-                st.write("🔴 Red (빨강)")
-                st.table(df_r)
-            with Ocol2:
-                st.write("🟢 Green (초록)")
-                st.table(df_g)
-            with Ocol3:
-                st.write("🔵 Blue (파랑)")
-                st.table(df_b)
-
-
-        # --------------------------------------------------------------------------
-        # 4. 원본 이미지 데이터 표 (3번째 행)
-        # --------------------------------------------------------------------------
-        st.divider()
-        display_channel_data(original_array, "원본 이미지")
-
-        # --------------------------------------------------------------------------
-        # 5. 그레이 필터 이미지 데이터 표 (4번째 행)
-        # --------------------------------------------------------------------------
-        st.divider()
-        display_channel_data(gray_array, "그레이 필터 이미지")
-        
-        # 6. 검증 로직 (첫 번째 픽셀로 계산 증명)
-        r0, g0, b0 = original_array[0,0]
-        avg0 = gray_array[0,0,0] # 변환된 이미지의 첫 픽셀 값
-        
-    else:
-        st.info("👆 위 영역에서 이미지 파일( png, jpg, jpeg )을 먼저 업로드해주세요.")
 
 with tab3:
     html_code2 = """
@@ -510,4 +513,116 @@ with tab4:
     st.text("평행")
 
 with tab5:
-    st.write("디졸브")
+    # 세션 상태 초기화
+    if 'animation_running' not in st.session_state:
+        st.session_state.animation_running = False
+    if 'current_alpha' not in st.session_state:
+        st.session_state.current_alpha = 0.0
+
+    # 레이아웃 분할 (왼쪽: 컨트롤 / 오른쪽: 결과 화면)
+    col_left, col_right = st.columns([0.3, 0.7])
+
+    # =========================================================
+    # [왼쪽 열] 컨트롤 패널 및 파일 업로드
+    # =========================================================
+    with col_left:
+        # 1. 상단에 컨트롤러가 들어갈 자리를 미리 비워둡니다 (Container)
+        # 나중에 파일이 업로드되면 이 공간에 버튼과 슬라이더를 채워 넣습니다.
+        controls_container = st.container()
+                
+        # 2. 파일 업로더 (항상 아래쪽에 위치)
+        file1 = st.file_uploader("첫 번째 이미지", type=["png", "jpg", "jpeg"], key="file1_anim")
+        file2 = st.file_uploader("두 번째 이미지", type=["png", "jpg", "jpeg"], key="file2_anim")
+
+        # 3. 파일이 모두 업로드되었을 때만 -> 상단 빈 공간(controls_container)에 위젯 그리기
+        if file1 and file2:
+            with controls_container:
+                if st.button("⏯️ 재생/일시정지", type="primary", use_container_width=True):
+                    st.session_state.animation_running = not st.session_state.animation_running
+                
+                # 상태 메시지
+                if st.session_state.animation_running:
+                    st.caption("🟢 재생 중...")
+                else:
+                    st.caption("⏸️ 일시 정지")
+
+                # (2) 슬라이더 (애니메이션 중에는 비활성화)
+                alpha_slider = st.slider(
+                    "디졸브 비율 조절", 
+                    min_value=0.0, max_value=1.0, value=0.0, step=0.01, 
+                    disabled=st.session_state.animation_running,
+                    key="manual_slider"
+                )
+        else:
+            # 파일이 없을 때 안내 문구
+            with controls_container:
+                st.info("두 개의 이미지를 업로드해주세요.")
+
+
+    # =========================================================
+    # [오른쪽 열] 디졸브 효과 출력
+    # =========================================================
+    with col_right:
+        if file1 and file2:
+            # 1. 이미지 로드 및 전처리
+            img1 = Image.open(file1).convert('RGB')
+            img2 = Image.open(file2).convert('RGB')
+            
+            # 크기 통일 (img2 기준)
+            target_size = img2.size
+            img1_resized = img1.resize(target_size)
+            
+            # 배열 변환 및 정규화 (0.0 ~ 1.0)
+            array1 = np.array(img1_resized, dtype=float) / 255.0
+            array2 = np.array(img2, dtype=float) / 255.0
+            
+            # 결과를 보여줄 빈 공간 확보
+            placeholder = st.empty()
+            
+            # -----------------------------------------------------
+            # Case A: 애니메이션 재생 중일 때
+            # -----------------------------------------------------
+            if st.session_state.animation_running:
+                alpha = st.session_state.current_alpha
+                step = 0.02
+                
+                # 루프를 돌며 애니메이션 효과
+                while alpha <= 1.0:
+                    # 블렌딩 계산
+                    blended = (array1 * (1 - alpha)) + (array2 * alpha)
+                    result_img = Image.fromarray((blended * 255).astype(np.uint8))
+                    
+                    # 화면 갱신
+                    placeholder.image(result_img, caption=f"Dissolve Alpha: {alpha:.2f}", use_container_width=True)
+                    
+                    # 정지 버튼 체크 (세션 상태가 바뀌면 루프 중단)
+                    if not st.session_state.animation_running:
+                        break
+                    
+                    # 값 증가 및 대기
+                    alpha += step
+                    st.session_state.current_alpha = alpha
+                    time.sleep(0.05)
+                
+                # 끝까지 도달하면 자동 정지 및 초기화
+                if alpha > 1.0:
+                    st.session_state.animation_running = False
+                    st.session_state.current_alpha = 0.0 # 1.0에서 멈추고 싶으면 1.0으로 설정
+                    st.rerun()
+
+            # -----------------------------------------------------
+            # Case B: 정지 상태일 때 (슬라이더 값 적용)
+            # -----------------------------------------------------
+            else:
+                # 현재 슬라이더 값 사용 (수동 조절)
+                # 애니메이션이 멈춘 지점(current_alpha)과 슬라이더 값(manual_slider) 동기화 로직
+                # 여기서는 단순하게 슬라이더 값을 우선합니다.
+                alpha = st.session_state.manual_slider
+                
+                # 애니메이션 시작 위치를 현재 슬라이더 위치로 맞춤 (선택사항)
+                st.session_state.current_alpha = alpha
+
+                blended = (array1 * (1 - alpha)) + (array2 * alpha)
+                result_img = Image.fromarray((blended * 255).astype(np.uint8))
+                
+                placeholder.image(result_img, caption=f"Dissolve Alpha: {alpha:.2f}", use_container_width=True)
