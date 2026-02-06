@@ -517,7 +517,7 @@ with tab5:
     # --- [핵심 수정] 데이터 처리 함수 (안정성 강화) ---
     # 1. 캐싱 키로 '파일명'과 '파일크기'를 사용해 변경을 확실히 감지합니다.
     # 2. PIL 이미지는 제외하고, 계산에 필요한 Numpy 배열만 반환합니다.
-    @st.cache_data(show_spinner=False)
+    @st.cache_data(show_spinner=False,ttl=300)
     def get_image_arrays(name1, size1, name2, size2, _bytes1, _bytes2, target_w, target_h):
         
         # 바이트 -> 이미지 -> 리사이즈 -> 배열 변환
