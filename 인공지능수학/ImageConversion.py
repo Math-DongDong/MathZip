@@ -146,6 +146,10 @@ with tab1:
 with tab2:
     st.text("밝기")
 
+    with st.container(horizontal=True):
+        st.space("stretch")
+        st.page_link("https://matharticle.streamlit.app/Dissolve", label="디졸브 효과", icon="🔀", width="content")
+
 with tab3:
 
     # HTML 컴포넌트 렌더링
