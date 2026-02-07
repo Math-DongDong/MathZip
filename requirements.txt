@@ -56,3 +56,4 @@ tzdata==2025.2
 urllib3==2.4.0
 watchdog==6.0.0
 wrapt==2.0.1
+xlsxwriter==3.2.9

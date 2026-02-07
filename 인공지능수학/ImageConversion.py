@@ -18,99 +18,120 @@ tab1, tab2, tab3, tab4, tab5 = st.tabs(["🔘 그레이 필터", "💡 밝기 �
 with tab1:
     st.markdown("""
     <style>
+    // 표의 머릿글과 왼쪽 기준 제거
     .e15vb32f5 {
                 display: none;
-            }
+    }
+                
+    .block-container {
+        padding-top: 2rem;
+    }
     </style>
     """, unsafe_allow_html=True)
-    
-    # --------------------------------------------------------------------------
+
+    # ==============================================================================
     # 1. 이미지 업로드
-    # --------------------------------------------------------------------------
-    uploaded_file = st.file_uploader("이미지 파일을 업로드하세요.", type=["png", "jpg", "jpeg"],key="Gray")
+    # ==============================================================================
+    uploaded_file = st.file_uploader("이미지 파일을 업로드하세요 (PNG, JPG, JPEG)", type=["png", "jpg", "jpeg"])
 
     if uploaded_file is not None:
-        # 1. 이미지 열기 (무조건 RGB 3채널로 변환)
-        original_image = Image.open(uploaded_file).convert('RGB')
-        original_array = np.array(original_image)
+        # 이미지 열기 및 RGB 변환
+        image_pil = Image.open(uploaded_file).convert('RGB')
+        original_width, original_height = image_pil.size
 
-        # 2. 단순 평균법으로 그레이스케일 만들기
-        # numpy를 이용해 (Height, Width) 크기의 평균값 배열 생성
-        # axis=2는 채널 축(R,G,B)을 의미함. 정수형(uint8) 변환 필수.
-        gray_mean = np.mean(original_array, axis=2).astype(np.uint8)
-
-        # 3. 시각화를 위해 다시 3채널(RGB) 형태로 변환 (R=G=B=평균값)
-        # shape 변환: (H, W) -> (H, W, 3)
-        gray_array = np.stack((gray_mean, gray_mean, gray_mean), axis=2)
-        gray_image = Image.fromarray(gray_array)
+        col_set, col_orig, col_res = st.columns([0.2, 0.4, 0.4], gap="medium")
 
         # --------------------------------------------------------------------------
-        # 2. 이미지 시각화 (2열 배치)
+        # [1열] 해상도 설정 및 엑셀 다운로드
         # --------------------------------------------------------------------------
-        col_img1, col_img2 = st.columns(2)
-        
-        with col_img1:
+        with col_set:
+            st.subheader("⚙️ 해상도 설정")
+            
+            st.caption("해상도 조절")
+            # 가로 길이 입력 (기본값: 원본)
+            new_width = st.number_input(
+                "가로(Width) 픽셀", 
+                min_value=1, 
+                value=original_width, 
+                step=10
+            )
+            # 세로 길이 입력 (기본값: 원본)
+            new_height = st.number_input(
+                "세로(Height) 픽셀", 
+                min_value=1, 
+                value=original_height, 
+                step=10
+            )
+            
+            st.info(f"변환 크기: {new_width} x {new_height}")
+
+            # --- 이미지 처리 로직 (설정값 기반) ---
+            # 1. 리사이징 (LANCZOS: 고품질 리사이징)
+            resized_pil = image_pil.resize((new_width, new_height), Image.Resampling.LANCZOS)
+            resized_arr = np.array(resized_pil)
+
+            # 2. 그레이스케일 변환 (단순 평균법)
+            # axis=2 : R,G,B 채널의 평균을 구함 -> (H, W) 크기의 2차원 배열 생성
+            gray_matrix = np.mean(resized_arr, axis=2).astype(np.uint8)
+
+            # 3. 시각화용 3채널 변환 (R=G=B)
+            # (H, W) -> (H, W, 3)
+            gray_display_arr = np.stack((gray_matrix, gray_matrix, gray_matrix), axis=2)
+            gray_display_pil = Image.fromarray(gray_display_arr)
+
+            st.divider()
+
+            # --- 엑셀 다운로드 로직 ---
+            st.caption("💾 데이터 다운로드")
+            
+            # 엑셀 파일 생성 (메모리 내)
+            output = io.BytesIO()
+            
+            # Pandas를 이용해 2차원 배열(gray_matrix)을 데이터프레임으로 변환
+            df_gray = pd.DataFrame(gray_matrix)
+            
+            # 엑셀 쓰기 (인덱스와 헤더는 제거하여 순수 숫자만 저장)
+            # 용량이 클 수 있으므로 Spinner 표시
+            with st.spinner("엑셀 파일 생성 중..."):
+                with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
+                    df_gray.to_excel(writer, index=False, header=False, sheet_name='Pixel_Data')
+                
+                excel_data = output.getvalue()
+
+            # 다운로드 버튼
+            st.download_button(
+                label="📥 픽셀 데이터(Excel) 받기",
+                data=excel_data,
+                file_name=f"gray_matrix_{new_width}x{new_height}.xlsx",
+                mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                use_container_width=True
+            )
+            st.caption("※ 해상도가 높으면 다운로드에 시간이 걸릴 수 있습니다.")
+
+        # --------------------------------------------------------------------------
+        # [2열] 원본 이미지
+        # --------------------------------------------------------------------------
+        with col_orig:
             st.subheader("원본 이미지")
-            st.image(original_image, width='stretch')
-        
-        with col_img2:
+            st.image(
+                image_pil, 
+                caption=f"Original: {original_width} x {original_height} px", 
+                use_container_width=True
+            )
+
+        # --------------------------------------------------------------------------
+        # [3열] 결과 (그레이스케일) 이미지
+        # --------------------------------------------------------------------------
+        with col_res:
             st.subheader("그레이 필터 적용")
-            st.image(gray_image, width='stretch')
+            st.image(
+                gray_display_pil, 
+                caption=f"Grayscale: {new_width} x {new_height} px", 
+                use_container_width=True
+            )
 
-        # --------------------------------------------------------------------------
-        # 3. 데이터(픽셀 값) 분석을 위한 함수 정의
-        # --------------------------------------------------------------------------
-        def display_channel_data(image_array, title_prefix):
-            """
-            이미지 배열을 받아 R, G, B 채널별로 10x10 샘플 데이터를 탭으로 보여주는 함수
-            """
-            st.markdown(f"#### 📊 {title_prefix}의 RGB 채널")
-            st.caption("이미지의 좌측 상단(0,0)부터 **8x8 픽셀** 영역의 숫자를 보여줍니다.")
-
-            # 채널별 데이터 슬라이싱 (8행 8열 추출)
-            # 슬라이싱 범위 수정: [:8, :8]
-            slice_size = 8
-            r_channel = image_array[:slice_size, :slice_size, 0]
-            g_channel = image_array[:slice_size, :slice_size, 1]
-            b_channel = image_array[:slice_size, :slice_size, 2]
-
-            # 데이터프레임 생성 (헤더와 인덱스 라벨 제거)
-            df_r = pd.DataFrame(r_channel)
-            df_g = pd.DataFrame(g_channel)
-            df_b = pd.DataFrame(b_channel)
-
-            # 3개의 열으로 구분하여 표시
-            Ocol1, Ocol2, Ocol3 = st.columns(3)
-            with Ocol1:
-                st.write("🔴 Red (빨강)")
-                st.table(df_r)
-            with Ocol2:
-                st.write("🟢 Green (초록)")
-                st.table(df_g)
-            with Ocol3:
-                st.write("🔵 Blue (파랑)")
-                st.table(df_b)
-
-
-        # --------------------------------------------------------------------------
-        # 4. 원본 이미지 데이터 표 (3번째 행)
-        # --------------------------------------------------------------------------
-        st.divider()
-        display_channel_data(original_array, "원본 이미지")
-
-        # --------------------------------------------------------------------------
-        # 5. 그레이 필터 이미지 데이터 표 (4번째 행)
-        # --------------------------------------------------------------------------
-        st.divider()
-        display_channel_data(gray_array, "그레이 필터 이미지")
-        
-        # 6. 검증 로직 (첫 번째 픽셀로 계산 증명)
-        r0, g0, b0 = original_array[0,0]
-        avg0 = gray_array[0,0,0] # 변환된 이미지의 첫 픽셀 값
-        
     else:
-        st.info("👆 위 영역에서 이미지 파일( png, jpg, jpeg )을 먼저 업로드해주세요.")
-
+        st.info("👆 파일 업로드 영역에서 이미지를 먼저 선택해주세요.")
 # ==============================================================================
 # [TAB 2] 밝기 조절
 # ==============================================================================
