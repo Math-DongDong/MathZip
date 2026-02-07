@@ -22,9 +22,6 @@ with tab1:
     .e15vb32f5 {
         display: none;
     }
-    .block-container {
-        padding-top: 2rem;
-    }
     </style>
     """, unsafe_allow_html=True)   
 
