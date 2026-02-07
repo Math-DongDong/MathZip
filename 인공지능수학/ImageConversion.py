@@ -94,21 +94,6 @@ with tab1:
             preview_pil = gray_small_pil.resize((original_width, original_height), Image.Resampling.NEAREST)
             
             st.space()
-            # 엑셀 다운로드 (픽셀 데이터)
-            output_excel = io.BytesIO()
-            with st.spinner("엑셀 파일 생성 중..."):
-                with pd.ExcelWriter(output_excel, engine='xlsxwriter') as writer:
-                    # 2차원 그레이스케일 데이터 저장
-                    pd.DataFrame(gray_matrix).to_excel(writer, index=False, header=False, sheet_name='Gray_Data')
-                excel_data = output_excel.getvalue()
-
-            st.download_button(
-                label="픽셀 데이터(Excel) 받기",
-                data=excel_data,
-                file_name=f"gray_data_{new_width}x{new_height}.xlsx",
-                mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                use_container_width=True
-            )
 
         # [2열] 원본
         with col_orig:
@@ -134,6 +119,26 @@ with tab1:
         # (2) 변환된 데이터 (주의: gray_stacked_arr 사용)
         # 그레이스케일이므로 R, G, B 표의 숫자가 모두 똑같아야 정상입니다.
         display_channel_data(gray_stacked_arr, "그레이 필터 이미지")
+
+        # 1열 다운로드 파일 요소 추가
+        with col_edit:
+            # 엑셀 다운로드 (픽셀 데이터)
+            output_excel = io.BytesIO()
+            with st.spinner("엑셀 파일 생성 중..."):
+                with pd.ExcelWriter(output_excel, engine='xlsxwriter') as writer:
+                    # 2차원 그레이스케일 데이터 저장
+                    pd.DataFrame(gray_matrix).to_excel(writer, index=False, header=False, sheet_name='Gray_Data')
+                excel_data = output_excel.getvalue()
+
+            st.download_button(
+                label="픽셀 데이터(Excel) 받기",
+                data=excel_data,
+                file_name=f"gray_data_{new_width}x{new_height}.xlsx",
+                mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                use_container_width=True
+            )
+
+
 
     else:
             st.info("👆 상단의 '이미지 업로드'를 열어 이미지 파일( png, jpg, jpeg )을 먼저 업로드해주세요.")            
