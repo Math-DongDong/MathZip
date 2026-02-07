@@ -16,13 +16,15 @@ tab1, tab2, tab3, tab4, tab5 = st.tabs(["🔘 그레이 필터", "💡 밝기 �
 # [TAB 1] 그레이 필터
 # ==============================================================================
 with tab1:
+    # ==============================================================================
+    # 0. 스타일 설정
+    # ==============================================================================
     st.markdown("""
     <style>
-    // 표의 머릿글과 왼쪽 기준 제거
+    /* 표의 머릿글과 왼쪽 인덱스 숨기기 (필요시) */
     .e15vb32f5 {
-                display: none;
+        display: none;
     }
-                
     .block-container {
         padding-top: 2rem;
     }
@@ -49,14 +51,14 @@ with tab1:
             st.subheader("⚙️ 해상도 설정")
             
             st.caption("해상도 조절")
-            # 가로 길이 입력 (기본값: 원본)
+            # 가로 길이 입력
             new_width = st.number_input(
                 "가로(Width) 픽셀", 
                 min_value=1, 
                 value=original_width, 
                 step=10
             )
-            # 세로 길이 입력 (기본값: 원본)
+            # 세로 길이 입력
             new_height = st.number_input(
                 "세로(Height) 픽셀", 
                 min_value=1, 
@@ -64,50 +66,47 @@ with tab1:
                 step=10
             )
             
-            st.info(f"변환 크기: {new_width} x {new_height}")
+            st.info(f"데이터 크기: {new_width} x {new_height}")
 
-            # --- 이미지 처리 로직 (설정값 기반) ---
-            # 1. 리사이징 
-            resized_pil = image_pil.resize((new_width, new_height), Image.Resampling.NEAREST)
-            resized_arr = np.array(resized_pil)
+            # --- [핵심 로직 수정] 이미지 처리 ---
+            
+            # 1. 데이터용 리사이징 (작은 크기, 엑셀 저장용)
+            # NEAREST를 사용하여 색상을 섞지 않고 픽셀을 추출합니다.
+            small_pil = image_pil.resize((new_width, new_height), Image.Resampling.NEAREST)
+            small_arr = np.array(small_pil)
 
-            # 2. 그레이스케일 변환 (단순 평균법)
-            # axis=2 : R,G,B 채널의 평균을 구함 -> (H, W) 크기의 2차원 배열 생성
-            gray_matrix = np.mean(resized_arr, axis=2).astype(np.uint8)
+            # 2. 그레이스케일 변환 (단순 평균법) -> 엑셀 데이터용
+            gray_matrix = np.mean(small_arr, axis=2).astype(np.uint8)
 
-            # 3. 시각화용 3채널 변환 (R=G=B)
-            # (H, W) -> (H, W, 3)
-            gray_display_arr = np.stack((gray_matrix, gray_matrix, gray_matrix), axis=2)
-            gray_display_pil = Image.fromarray(gray_display_arr)
+            # 3. 시각화용 3채널 변환 (작은 이미지 상태)
+            gray_small_pil = Image.fromarray(np.stack((gray_matrix,)*3, axis=2))
+
+            # 4. [화면 표시용] 원본 크기로 재확대 (Upscaling)
+            # 작은 이미지를 다시 크게 늘리되, NEAREST 옵션을 써서 '깍두기' 모양을 유지함
+            preview_pil = gray_small_pil.resize((original_width, original_height), Image.Resampling.NEAREST)
 
             st.divider()
 
             # --- 엑셀 다운로드 로직 ---
             st.caption("💾 데이터 다운로드")
             
-            # 엑셀 파일 생성 (메모리 내)
             output = io.BytesIO()
-            
-            # Pandas를 이용해 2차원 배열(gray_matrix)을 데이터프레임으로 변환
             df_gray = pd.DataFrame(gray_matrix)
             
-            # 엑셀 쓰기 (인덱스와 헤더는 제거하여 순수 숫자만 저장)
-            # 용량이 클 수 있으므로 Spinner 표시
-            with st.spinner("엑셀 파일 생성 중..."):
+            with st.spinner("엑셀 생성 중..."):
                 with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
+                    # 엑셀에는 '작은 크기(gray_matrix)'의 데이터가 정확하게 들어갑니다.
                     df_gray.to_excel(writer, index=False, header=False, sheet_name='Pixel_Data')
-                
                 excel_data = output.getvalue()
 
-            # 다운로드 버튼
             st.download_button(
                 label="📥 픽셀 데이터(Excel) 받기",
                 data=excel_data,
-                file_name=f"gray_matrix_{new_width}x{new_height}.xlsx",
+                file_name=f"pixel_data_{new_width}x{new_height}.xlsx",
                 mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
                 use_container_width=True
             )
-            st.caption("※ 해상도가 높으면 다운로드에 시간이 걸릴 수 있습니다.")
+            st.caption("※ 엑셀에는 설정한 해상도의 데이터가 저장됩니다.")
 
         # --------------------------------------------------------------------------
         # [2열] 원본 이미지
@@ -121,22 +120,25 @@ with tab1:
             )
 
         # --------------------------------------------------------------------------
-        # [3열] 결과 (그레이스케일) 이미지
+        # [3열] 결과 (그레이스케일 + 픽셀화) 이미지
         # --------------------------------------------------------------------------
         with col_res:
             st.subheader("그레이 필터 적용")
+            # 여기서 'preview_pil'(확대된 이미지)을 보여줍니다.
             st.image(
-                gray_display_pil, 
-                caption=f"Grayscale: {new_width} x {new_height} px", 
+                preview_pil, 
+                caption=f"Preview: {new_width} x {new_height} px (Pixelated)", 
                 use_container_width=True
             )
 
     else:
-        st.info("👆 상단의 '이미지 업로드'를 열어 이미지 파일( png, jpg, jpeg )을 먼저 업로드해주세요.")            
+        st.info("👆 상단의 '이미지 업로드'를 열어 이미지 파일( png, jpg, jpeg )을 먼저 업로드해주세요.")
+
 # ==============================================================================
 # [TAB 2] 밝기 조절
 # ==============================================================================
 with tab2:
+#    st.page_link("Dissolve.py",label="디졸브 효과",icon="🔀")
     # 1. 이미지 업로드 기능
     uploaded_file = st.file_uploader("이미지 파일을 업로드하세요.", type=["png", "jpg", "jpeg"])
 
