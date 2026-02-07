@@ -83,7 +83,7 @@ with tab1:
 
             # 2) 그레이스케일 변환 (단순 평균법)
             # (H, W, 3) -> (H, W) : 채널 축(axis=2) 기준 평균
-            gray_matrix = np.mean(small_arr, axis=2).astype(np.uint8)
+            gray_matrix = np.round(np.mean(small_arr, axis=2)).astype(np.uint8)
 
             # 3) 다시 3채널로 복구 (시각화 및 통일성을 위해 R=G=B로 만듦)
             # (H, W) -> (H, W, 3)
