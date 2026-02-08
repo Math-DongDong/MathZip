@@ -5,15 +5,6 @@ import streamlit.components.v1 as components
 from PIL import Image
 import io # 이미지를 바이트 형태로 변환하여 다운로드하기 위해 필요
 
-# 커스텀 CSS 적용
-st.markdown("""
-<style>
-/* 표의 머릿글과 왼쪽 인덱스 숨기기 (필요시) */
-.e10e2fxn5 {
-    display: none;
-}
-</style>
-""", unsafe_allow_html=True)
 
 # --- 앱 제목 ---
 st.title("이미지 데이터의 변환")
@@ -25,6 +16,15 @@ tab1, tab2, tab3, tab4= st.tabs(["🔘 그레이 필터", "💡 밝기 조절", 
 # [TAB 1] 그레이 필터
 # ==============================================================================
 with tab1:
+    # 커스텀 CSS 적용
+    st.markdown("""
+    <style>
+    /* 표의 머릿글과 왼쪽 인덱스 숨기기 (필요시) */
+    .e10e2fxn5 {
+        display: none;
+    }
+    </style>
+    """, unsafe_allow_html=True)
 
     # 함수 정의 (RGB 데이터 시각화)
     def display_channel_data(image_array, title_prefix):
@@ -119,8 +119,187 @@ with tab1:
 # [TAB 2] 밝기 조절
 # ==============================================================================
 with tab2:
-    st.text("밝기")
+    st.markdown("""
+    <style>
+    .st-emotion-cache-1cl4umz.e1mwqyj91 {
+        margin-top: 28px;
+    }
 
+    .st-emotion-cache-5qfegl.e1mwqyj92 {
+        margin-top: 28px;
+    }
+
+    """, unsafe_allow_html=True)
+
+    # [중요] set_page_config는 항상 코드 맨 처음에 와야 합니다.
+    st.set_page_config(layout="wide", page_title="이미지 연산 실험실")
+
+
+    @st.cache_data(show_spinner=False, ttl=300)
+    def load_excel_data(file):
+        return pd.read_excel(file, header=None)
+
+    def df_to_image(df, scale_factor=20):
+        """데이터프레임을 이미지로 변환하고 확대하는 함수"""
+        # 1. 데이터프레임을 numpy 배열로 변환 및 uint8(0~255)로 형변환
+        data = df.to_numpy().astype(np.uint8)
+        
+        # 2. PIL 이미지 생성
+        img = Image.fromarray(data)
+        
+        # 3. 시각화를 위해 이미지 확대 (NEAREST 옵션으로 픽셀 깨짐 방지/각진 느낌 유지)
+        # 원본 크기가 너무 작으면(예: 10x10) 화면에 안 보이므로 강제로 키움
+        original_w, original_h = img.size
+        
+        # 화면에 꽉 차게 보이기 위해 적절한 크기 계산 (최소 500px 이상)
+        target_w = max(500, original_w * scale_factor)
+        target_h = int(target_w * (original_h / original_w))
+        
+        img_resized = img.resize((target_w, target_h), Image.Resampling.NEAREST)
+        return img_resized, (original_w, original_h)
+
+
+    # 초기 원본 데이터(source_df)를 확정하기 위한 변수
+    source_df = None
+
+    # ==============================================================================
+    # 2. 데이터 준비 (Expander 내부에서 처리)
+    # ==============================================================================
+
+    with st.expander("📂 픽셀 데이터 준비 (직접 입력 / 엑셀 업로드)", expanded=True):
+        # 토글 스위치
+        use_manual_input = st.toggle("📝 직접 입력 모드", value=False)
+
+        if use_manual_input:
+            st.info("💡 행렬 크기를 정하세요. 아래 행렬에 값을 직접 입력할 수 있습니다. (엑셀 데이터 복사 및 붙여넣기 가능)")
+
+            c_in1, c_in2 = st.columns(2)
+            with c_in1:
+                rows = st.number_input("행의 수(Row)", min_value=1, value=10, key="manual_rows")
+            with c_in2:
+                cols = st.number_input("열의 수(Col)", min_value=1, value=10, key="manual_cols")
+
+            # 템플릿 생성
+            # (리로드 될 때마다 초기화되는 것을 막기 위해 session_state 체크는 하지 않고,
+            #  data_editor의 기본 동작을 활용합니다.)
+            template_df = pd.DataFrame(np.zeros((rows, cols), dtype=int))
+
+            # [요청사항] 확장창 안에서 데이터에디터로 입력받음
+            # 입력값 제한 설정
+            column_config = {
+                col: st.column_config.NumberColumn(
+                    min_value=0,
+                    max_value=255,
+                    format="%d"
+                )
+                for col in template_df.columns
+            }
+            
+            # 수동 입력 데이터 확정
+            source_df = st.data_editor(
+                template_df,
+                width='stretch',
+                column_config=column_config,
+                key="manual_editor_widget"
+            )
+
+        else:
+            uploaded_file = st.file_uploader(
+                "그레이 필터 이미지의 픽셀 데이터(Excel) 업로드",
+                type=['xlsx']
+            )
+
+            if uploaded_file is not None:
+                source_df = load_excel_data(uploaded_file)
+
+
+    # 앱이 처음 실행되거나, 소스 데이터가 아예 없을 때 초기화
+    if "current_df" not in st.session_state:
+        st.session_state.current_df = None
+
+    # 소스 데이터가 로드되었는데, 현재 작업 중인 데이터가 없다면 초기화
+    if st.session_state.current_df is None and source_df is not None:
+        st.session_state.current_df = source_df.copy()
+
+
+    if st.session_state.current_df is not None:
+        
+        # --- [A] 컨트롤 패널 (버튼 및 설정) ---
+        with st.container(horizontal=True):
+            # [요청사항] 원본 데이터 불러오기 버튼
+            if st.button("🔄 원본 불러오기", type="secondary", width='stretch'):
+                if source_df is not None:
+                    st.session_state.current_df = source_df.copy()
+                    st.rerun()
+
+            operation = st.selectbox(
+                "연산 종류",
+                ("➕ 덧셈","✖️ 곱셈")
+            )
+
+            number = st.number_input(
+                "연산할 값",
+                min_value=-50.0,
+                max_value=50.0, # 연산값은 좀 더 자유롭게
+                value=10.0,
+                step=1.0
+            )
+
+            run_calc = st.button("🚀 연산 실행", type="primary", width='stretch')
+
+
+        # --- [B] 연산 로직 (누적 적용) ---
+        if run_calc:
+            # 현재 화면에 떠있는 데이터를 가져옴 (누적 연산을 위해)
+            df_calc = st.session_state.current_df.copy()
+
+            if "덧셈" in operation:
+                df_calc = df_calc + number
+            elif "곱셈" in operation:
+                df_calc = df_calc * number
+
+            # 클리핑 (0~255 유지) 및 정수 변환
+            df_calc = df_calc.clip(0, 255)
+            df_calc = np.round(df_calc, 0).astype(int)
+            
+            # [중요] 연산 결과를 '현재 데이터'로 업데이트 (누적 효과)
+            st.session_state.current_df = df_calc
+            st.rerun() # 화면 갱신
+
+
+        # --- [C] 결과 화면 (Left: Dataframe / Right: Image) ---
+        col_left, col_right = st.columns(2, gap="large")
+
+        # [왼쪽] 현재 데이터프레임 수치
+        with col_left:
+            # 데이터프레임의 크기 정보
+            curr_r, curr_c = st.session_state.current_df.shape
+            st.caption("연산이 누적되어 적용된 행렬입니다.")
+            
+            # [요청사항] 원본/연산 데이터를 여기서 확인
+            st.dataframe(
+                st.session_state.current_df,
+                height=500,
+                width='stretch'
+            )
+
+        # [오른쪽] 이미지 시각화 (각진 모자이크 효과)
+        with col_right:
+            st.caption("왼쪽 행렬을 기반으로 변환된 이미지입니다.")
+            
+            # 이미지 변환 함수 호출
+            pixelated_img, original_size = df_to_image(st.session_state.current_df)
+            
+            # 이미지 출력
+            st.image(
+                pixelated_img,
+                width='stretch',
+                clamp=True # 0-255 범위 준수
+            )
+
+    else:
+        # 데이터가 없을 때 안내
+        st.info("👆 상단의 '데이터 준비' 섹션을 열어 데이터를 입력하거나 업로드하세요.")
 with tab3:
     with st.container(horizontal=True):
         st.space("stretch")
