@@ -27,6 +27,7 @@ matplotlib==3.10.8
 narwhals==1.42.0
 numpy==2.3.0
 ortools==9.15.6755
+openpyxl==3.1.5
 packaging==24.2
 pandas==2.3.0
 persim==0.3.8
