@@ -5,6 +5,16 @@ import streamlit.components.v1 as components
 from PIL import Image
 import io # 이미지를 바이트 형태로 변환하여 다운로드하기 위해 필요
 
+# 커스텀 CSS 적용
+st.markdown("""
+<style>
+/* 표의 머릿글과 왼쪽 인덱스 숨기기 (필요시) */
+.e10e2fxn5 {
+    display: none;
+}
+</style>
+""", unsafe_allow_html=True)
+
 # --- 앱 제목 ---
 st.title("이미지 데이터의 변환")
 
@@ -15,16 +25,6 @@ tab1, tab2, tab3, tab4= st.tabs(["🔘 그레이 필터", "💡 밝기 조절", 
 # [TAB 1] 그레이 필터
 # ==============================================================================
 with tab1:
-    # 커스텀 CSS 적용
-    st.markdown("""
-    <style>
-    /* 표의 머릿글과 왼쪽 인덱스 숨기기 (필요시) */
-    .e15vb32f5 {
-        display: none;
-    }
-    </style>
-    """, unsafe_allow_html=True)   
-
     # 함수 정의 (RGB 데이터 시각화)
     def display_channel_data(image_array, title_prefix):
         st.markdown(f"#### 📊 {title_prefix}의 RGB 채널")
