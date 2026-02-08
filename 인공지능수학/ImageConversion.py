@@ -121,13 +121,14 @@ with tab1:
         with col_edit:
             # 엑셀 다운로드 (픽셀 데이터)
             output_excel = io.BytesIO()
-            with st.spinner("엑셀 파일 생성 중..."):
-                st.caption("해상도에 따라 파일 생성이 오래 걸릴 수 있습니다.")
+            with st.spinner("엑셀 파일 생성 중...", show_time=True):
+                msg = st.caption("해상도에 따라 생성 시간은 달라집니다.")
                 with pd.ExcelWriter(output_excel, engine='xlsxwriter') as writer:
                     # 2차원 그레이스케일 데이터 저장
                     pd.DataFrame(gray_matrix).to_excel(writer, index=False, header=False, sheet_name='Gray_Data')
                 excel_data = output_excel.getvalue()
-
+                
+            msg.empty()
             st.download_button(
                 label="픽셀 데이터(Excel) 받기",
                 data=excel_data,
