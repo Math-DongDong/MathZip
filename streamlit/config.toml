@@ -1,0 +1,6 @@
+[client]
+# 1. 에러 코드는 숨김
+showErrorDetails = false
+
+# 3. 우측 상단 메뉴도 최소화
+toolbarMode = "minimal"
