@@ -280,7 +280,8 @@ with tab2:
 
     else:
         # 데이터가 없을 때 안내
-        st.info("👆 상단의 '데이터 준비' 섹션을 열어 픽셀 데이터를 직접 입력하거나 업로드하세요.")
+        st.info("👆 상단의 '데이터 준비' 섹션을 열어 데이터를 직접 입력하거나 업로드하세요.")
+
 with tab3:
     with st.container(horizontal=True):
         st.space("stretch")
