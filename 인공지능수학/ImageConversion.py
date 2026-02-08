@@ -122,7 +122,7 @@ with tab1:
             # 엑셀 다운로드 (픽셀 데이터)
             output_excel = io.BytesIO()
             with st.spinner("엑셀 파일 생성 중...", show_time=True):
-                msg = st.caption("해상도에 따라 생성 시간은 달라집니다.")
+                msg = st.caption("※ 해상도에 따라 생성 시간은 달라집니다.")
                 with pd.ExcelWriter(output_excel, engine='xlsxwriter') as writer:
                     # 2차원 그레이스케일 데이터 저장
                     pd.DataFrame(gray_matrix).to_excel(writer, index=False, header=False, sheet_name='Gray_Data')
@@ -148,13 +148,10 @@ with tab1:
 with tab2:
     st.text("밝기")
 
+with tab3:
     with st.container(horizontal=True):
         st.space("stretch")
         st.page_link("https://matharticle.streamlit.app/Dissolve", label="디졸브 효과", icon="🔀", width="content")
 
-with tab3:
-
-    # HTML 컴포넌트 렌더링
-    components.html("html_code", height=800, scrolling=True)    
 with tab4:
     st.text("평행")
