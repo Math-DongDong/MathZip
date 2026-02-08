@@ -114,8 +114,8 @@ else:
         st.markdown(f"<p style='text-align: center; font-size: 110px; font-weight: bold; margin: 0; line-height: 1;'>{st.session_state.last_roll}</p>", unsafe_allow_html=True)
         st.metric(label="이번 라운드 점수", value=f"{st.session_state.pending_score} 점")
         btn_cols = st.columns(2)
-        with btn_cols[0]: st.button("주사위 던지기", on_click=roll_dice, use_container_width=True, disabled=st.session_state.game_over)
-        with btn_cols[1]: st.button("그만하기", on_click=hold, use_container_width=True, disabled=st.session_state.game_over)
+        with btn_cols[0]: st.button("주사위 던지기", on_click=roll_dice, width='stretch', disabled=st.session_state.game_over)
+        with btn_cols[1]: st.button("그만하기", on_click=hold, width='stretch', disabled=st.session_state.game_over)
 
     with main_col2:
         st.subheader("scoreboard")
@@ -143,7 +143,7 @@ else:
             total_rolls = len(st.session_state.roll_history)
             roll_ratio = full_counts / total_rolls
             fig = go.Figure(); fig.add_trace(go.Scatter(x=roll_ratio.index, y=roll_ratio.values, mode='lines+markers', name='비율', line_shape='spline'))
-            fig.update_layout(xaxis_title="주사위 눈", yaxis_title="비율", yaxis_range=[0, 1],height=300,margin=dict(l=0, r=0, t=0, b=0)); st.plotly_chart(fig, use_container_width=True)
+            fig.update_layout(xaxis_title="주사위 눈", yaxis_title="비율", yaxis_range=[0, 1],height=300,margin=dict(l=0, r=0, t=0, b=0)); st.plotly_chart(fig, width='stretch')
         else: 
             st.caption("아직 주사위를 던지지 않았습니다.")
 

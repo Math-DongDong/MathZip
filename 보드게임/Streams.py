@@ -67,12 +67,12 @@ with tabs[1]:
         initialize_game()
     col1, col_spacer, col2 = st.columns([1,2,1])
     with col1:
-        if st.button("  처음부터 다시하기  ", type="primary",use_container_width=True, key="restart_base"):
+        if st.button("  처음부터 다시하기  ", type="primary",width='stretch', key="restart_base"):
             initialize_game()
             st.rerun()
     with col2:
         is_disabled = (st.session_state.draw_count >= 20)
-        if st.button("다음 숫자 뽑기", disabled=is_disabled, use_container_width=True, key="draw_base"):
+        if st.button("다음 숫자 뽑기", disabled=is_disabled, width='stretch', key="draw_base"):
             if st.session_state.pool:
                 st.session_state.draw_count += 1
                 new_number = st.session_state.pool.pop()
@@ -112,12 +112,12 @@ with tabs[2]:
         initialize_game_Z()
     col1, col_spacer, col2 = st.columns([1,2,1])
     with col1:
-        if st.button("  처음부터 다시하기  ", type="primary",use_container_width=True, key="restart_Z"):
+        if st.button("  처음부터 다시하기  ", type="primary",width='stretch', key="restart_Z"):
             initialize_game_Z()
             st.rerun()
     with col2:
         is_disabled = (st.session_state.draw_count_Z >= 20)
-        if st.button("다음 정수 뽑기", disabled=is_disabled, use_container_width=True, key="draw_Z"):
+        if st.button("다음 정수 뽑기", disabled=is_disabled, width='stretch', key="draw_Z"):
             if st.session_state.pool_Z:
                 st.session_state.draw_count_Z += 1
                 new_number = st.session_state.pool_Z.pop()
@@ -154,12 +154,12 @@ with tabs[3]:
         initialize_game_Q()
     col1, col_spacer, col2 = st.columns([1,2,1])
     with col1:
-        if st.button("  처음부터 다시하기  ", type="primary", use_container_width=True, key="restart_Q"):
+        if st.button("  처음부터 다시하기  ", type="primary", width='stretch', key="restart_Q"):
             initialize_game_Q()
             st.rerun()
     with col2:
         is_disabled = (st.session_state.draw_count_Q >= 32)
-        if st.button("다음 유리수 뽑기", disabled=is_disabled, use_container_width=True, key="draw_Q"):
+        if st.button("다음 유리수 뽑기", disabled=is_disabled, width='stretch', key="draw_Q"):
             if st.session_state.pool_Q:
                 st.session_state.draw_count_Q += 1
                 new_number = st.session_state.pool_Q.pop()
@@ -213,12 +213,12 @@ with tabs[4]:
         initialize_game_R()
     col1, col_spacer, col2 = st.columns([1,2,1])
     with col1:
-        if st.button("  처음부터 다시하기  ", type="primary", use_container_width=True, key="restart_R"):
+        if st.button("  처음부터 다시하기  ", type="primary", width='stretch', key="restart_R"):
             initialize_game_R()
             st.rerun()
     with col2:
         is_disabled = (st.session_state.draw_count_R >= 26)
-        if st.button("다음 실수 뽑기", disabled=is_disabled, use_container_width=True, key="draw_R"):
+        if st.button("다음 실수 뽑기", disabled=is_disabled, width='stretch', key="draw_R"):
             if st.session_state.pool_R:
                 st.session_state.draw_count_R += 1
                 new_number = st.session_state.pool_R.pop()

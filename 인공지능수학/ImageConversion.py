@@ -95,12 +95,12 @@ with tab1:
         # [2열] 원본
         with col_orig:
             st.subheader("원본 이미지")
-            st.image(image, caption=f"원본: {original_width}x{original_height} px", use_container_width=True)
+            st.image(image, caption=f"원본: {original_width}x{original_height} px", width='stretch')
 
         # [3열] 결과 (Gray + Pixelated)
         with col_res:
             st.subheader("그레이 필터")
-            st.image(preview_pil, caption=f"변경됨: {new_width}x{new_height} px", use_container_width=True)
+            st.image(preview_pil, caption=f"변경됨: {new_width}x{new_height} px", width='stretch')
 
         # --------------------------------------------------------------------------
         # 3. 데이터 분석 표 (하단)
@@ -134,7 +134,7 @@ with tab1:
                 data=excel_data,
                 file_name=f"gray_data_{new_width}x{new_height}.xlsx",
                 mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                use_container_width=True
+                width='stretch'
             )
 
 

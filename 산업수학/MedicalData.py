@@ -29,13 +29,13 @@ with tab1:
         with col_set1:
             st.markdown("**🟢 정상군 데이터 입력**")
             df_normal = st.data_editor(
-                empty_df_2d, num_rows="dynamic", key="base_normal", use_container_width=True, height=300, hide_index=True,
+                empty_df_2d, num_rows="dynamic", key="base_normal", width='stretch', height=300, hide_index=True,
                 column_config={"x": st.column_config.NumberColumn("X좌표", required=True), "y": st.column_config.NumberColumn("Y좌표", required=True)}
             )
         with col_set2:
             st.markdown("**🔴 고혈압군 데이터 입력**")
             df_high_bp = st.data_editor(
-                empty_df_2d, num_rows="dynamic", key="base_high_bp", use_container_width=True, height=300, hide_index=True,
+                empty_df_2d, num_rows="dynamic", key="base_high_bp", width='stretch', height=300, hide_index=True,
                 column_config={"x": st.column_config.NumberColumn("X좌표", required=True), "y": st.column_config.NumberColumn("Y좌표", required=True)}
             )
 
@@ -61,7 +61,7 @@ with tab1:
         st.write("###### 2. 데이터 추가하기")
         single_row_df = pd.DataFrame({'x': [None], 'y': [None]}, dtype='float')
         df_added = st.data_editor(
-            single_row_df, num_rows="fixed", key="added_data_bp", use_container_width=True, hide_index=True,
+            single_row_df, num_rows="fixed", key="added_data_bp", width='stretch', hide_index=True,
             column_config={"x": st.column_config.NumberColumn("추가 X", required=True), "y": st.column_config.NumberColumn("추가 Y", required=True)}
         )
         st.caption("좌표를 입력하면 오른쪽 그래프에 반영됩니다.")
@@ -131,7 +131,7 @@ with tab2:
         with col_set1_d:
             st.markdown("**🟢 정상군 데이터 입력**")
             df_normal_diab = st.data_editor(
-                empty_df_3d, num_rows="dynamic", key="base_normal_diab", use_container_width=True, height=300, hide_index=True,
+                empty_df_3d, num_rows="dynamic", key="base_normal_diab", width='stretch', height=300, hide_index=True,
                 column_config={
                     "x": st.column_config.NumberColumn("X좌표", required=True),
                     "y": st.column_config.NumberColumn("Y좌표", required=True),
@@ -141,7 +141,7 @@ with tab2:
         with col_set2_d:
             st.markdown("**🔴 당뇨군 데이터 입력**")
             df_diab_group = st.data_editor(
-                empty_df_3d, num_rows="dynamic", key="base_diab_group", use_container_width=True, height=300, hide_index=True,
+                empty_df_3d, num_rows="dynamic", key="base_diab_group", width='stretch', height=300, hide_index=True,
                 column_config={
                     "x": st.column_config.NumberColumn("X좌표", required=True),
                     "y": st.column_config.NumberColumn("Y좌표", required=True),
@@ -171,7 +171,7 @@ with tab2:
         st.write("###### 2. 데이터 추가하기")
         single_row_df_3d = pd.DataFrame({'x': [None], 'y': [None], 'z': [None]}, dtype='float')
         df_added_diab = st.data_editor(
-            single_row_df_3d, num_rows="fixed", key="added_data_diab", use_container_width=True, hide_index=True,
+            single_row_df_3d, num_rows="fixed", key="added_data_diab", width='stretch', hide_index=True,
             column_config={
                 "x": st.column_config.NumberColumn("추가 X", required=True),
                 "y": st.column_config.NumberColumn("추가 Y", required=True),

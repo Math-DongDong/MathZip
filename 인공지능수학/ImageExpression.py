@@ -74,13 +74,13 @@ with tab1:
 
         with original:
             st.subheader("원본 이미지")
-            st.image(image, caption=f"원본: {original_width} x {original_height} px", use_container_width=True)
+            st.image(image, caption=f"원본: {original_width} x {original_height} px", width='stretch')
 
         with result:
             st.subheader("변환 이미지")
             # 결과 이미지 표시 (미리보기용 확대 이미지 사용)
             # caption에는 실제 파일 크기를 표시
-            st.image(preview_image, caption=f"변경됨: {new_width} x {new_height} px", use_container_width=True)
+            st.image(preview_image, caption=f"변경됨: {new_width} x {new_height} px", width='stretch')
                 
     else:
         st.info("👆 상단의 '이미지 업로드'를 열어 이미지 파일( png, jpg, jpeg )을 먼저 업로드해주세요.")            

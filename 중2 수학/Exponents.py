@@ -67,7 +67,7 @@ col1, col_spacer, col2 = st.columns([1, 2, 1])
 
 with col1:
     # '처음부터 다시하기' 버튼입니다. 누르면 게임 상태가 초기화됩니다.
-    if st.button("🔄️ 처음부터 다시하기", type="primary", use_container_width=True):
+    if st.button("🔄️ 처음부터 다시하기", type="primary", width='stretch'):
         initialize_exponent_game() # 게임 상태 초기화 함수 호출
         st.rerun()                 # 스크립트를 다시 실행하여 화면을 즉시 새로고침
 
@@ -76,7 +76,7 @@ with col2:
     is_disabled = (st.session_state.draw_count >= st.session_state.total_problems)
     
     # '다음 문제 뽑기' 버튼입니다.
-    if st.button("➡️ 다음 문제 뽑기", disabled=is_disabled, use_container_width=True):
+    if st.button("➡️ 다음 문제 뽑기", disabled=is_disabled, width='stretch'):
         # 뽑을 문제가 남아있는 경우에만 실행됩니다.
         if st.session_state.problem_pool:
             st.session_state.draw_count += 1
