@@ -101,9 +101,7 @@ with tab1:
             
             st.image(preview_pil, caption="그레이 필터 적용", width='stretch')
 
-        # --------------------------------------------------------------------------
         # 3. 데이터 분석 표 (하단)
-        # --------------------------------------------------------------------------
         st.divider()
         
         # (1) 원본 데이터
@@ -154,51 +152,15 @@ with tab2:
     # 초기 원본 데이터(source_df)를 확정하기 위한 변수
     source_df = None
 
-    # ==============================================================================
-    # 2. 데이터 준비창
-    # ==============================================================================
-    with st.expander("📂 픽셀 데이터 준비 (직접 입력 / 엑셀 업로드)", expanded=True):
-        # 토글 스위치
-        use_manual_input = st.toggle("📝 직접 입력", value=False)
+    # 엑셀 업로드 창
+    with st.expander("📂 픽셀 데이터 업로드 열기/닫기", expanded=True):
+        uploaded_file = st.file_uploader(
+            "그레이 필터 이미지의 픽셀 데이터(Excel) 업로드",
+            type=['xlsx']
+        )
 
-        if use_manual_input:
-            st.info("💡 행렬 크기를 정하세요. 아래 행렬에 값을 직접 입력할 수 있습니다. (엑셀 데이터 복사 및 붙여넣기 가능)")
-
-            c_in1, c_in2 = st.columns(2)
-            with c_in1:
-                rows = st.number_input("행의 수(Row)", min_value=1, value=10, max_value=300,key="manual_rows")
-            with c_in2:
-                cols = st.number_input("열의 수(Col)", min_value=1, value=10, max_value=300,key="manual_cols")
-
-            # 데이터프레임 생성
-            template_df = pd.DataFrame(np.zeros((rows, cols), dtype=int))
-
-            # 입력값 제한 설정
-            column_config = {
-                col: st.column_config.NumberColumn(
-                    min_value=0,
-                    max_value=255,
-                    format="%d"
-                )
-                for col in template_df.columns
-            }
-            
-            # 수동 입력 데이터 확정
-            source_df = st.data_editor(
-                template_df,
-                width='stretch',
-                column_config=column_config,
-                key="manual_editor_widget"
-            )
-
-        else:
-            uploaded_file = st.file_uploader(
-                "그레이 필터 이미지의 픽셀 데이터(Excel) 업로드",
-                type=['xlsx']
-            )
-
-            if uploaded_file is not None:
-                source_df = load_excel_data(uploaded_file)
+    if uploaded_file is not None:
+        source_df = load_excel_data(uploaded_file)
 
     # 앱이 처음 실행되거나, 소스 데이터가 아예 없을 때 초기화
     if "current_df" not in st.session_state:
@@ -212,10 +174,6 @@ with tab2:
         
         # 연산 버튼 설정
         with st.container(horizontal=True):
-            if st.button("🔄 원본 불러오기", type="secondary", width='stretch'):
-                st.session_state.current_df = source_df.copy()
-                st.rerun()
-
             operation = st.selectbox(
                 "연산 종류",
                 ("➕ 덧셈","✖️ 곱셈")
@@ -226,8 +184,13 @@ with tab2:
                 min_value=-50.0,
                 max_value=50.0, # 연산값은 좀 더 자유롭게
                 value=10.0,
-                step=1.0
+                step=1.0,
+                format="%.1f"
             )
+
+            if st.button("🔄 원본 불러오기", type="secondary", width='stretch'):
+                st.session_state.current_df = source_df.copy()
+                st.rerun()
 
             run_calc = st.button("🚀 연산 실행", type="primary", width='stretch')
 
@@ -257,7 +220,7 @@ with tab2:
             # 데이터프레임의 크기 정보
             curr_r, curr_c = st.session_state.current_df.shape
             st.caption(f"연산이 누적되어 적용된 행렬( {curr_r} x {curr_c} )입니다.")
-            
+
             # [요청사항] 원본/연산 데이터를 여기서 확인
             st.dataframe(
                 st.session_state.current_df,
@@ -266,7 +229,7 @@ with tab2:
             )
 
         with col_right:
-            st.caption("왼쪽 행렬을 기반으로 변환된 이미지입니다.")
+            st.caption("왼쪽 행렬을 기반으로 표현된 이미지입니다.")
             
             # 이미지 변환 함수 호출
             pixelated_img, original_size = df_to_image(st.session_state.current_df)
@@ -280,7 +243,7 @@ with tab2:
 
     else:
         # 데이터가 없을 때 안내
-        st.info("👆 상단의 '데이터 준비' 섹션을 열어 데이터를 직접 입력하거나 업로드하세요.")
+        st.info("👆 상단의 '픽셀 데이터 업로드'를 열어 엑셀파일(xlxs)을 먼저 업로드해주세요.")
 
 with tab3:
     with st.container(horizontal=True):
