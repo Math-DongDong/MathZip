@@ -125,14 +125,15 @@ with tab1:
 with tab2:
     # ==============================================================================
     # 밝기 변환 프레그먼트
-    @st.fragment
-    def brightness_adjustment(df):
-        # 세션 변수 선언
-        if "current_df" not in st.session_state:
+    def brightness_adjustment(df, file_id):
+        # 파일 변경 감지 로직 (새 파일이 들어오면 데이터 리셋)
+        if "last_file_id" not in st.session_state:
+            st.session_state.last_file_id = None
             st.session_state.current_df = None
 
-        # 세션 변수가 None인데 df가 있다면 df로 저장
-        if st.session_state.current_df is None and df is not None:
+        # 업로드된 파일이 바뀌었으면 데이터를 새 파일 내용으로 덮어씀
+        if st.session_state.last_file_id != file_id:
+            st.session_state.last_file_id = file_id
             st.session_state.current_df = df.copy()
 
         setting_col1, setting_col2 = st.columns(2)
@@ -157,7 +158,6 @@ with tab2:
             with st.container(horizontal=True):    
                 if st.button("🔄 원본 불러오기", type="secondary", width='stretch'):
                     st.session_state.current_df = df.copy()
-                    st.rerun()
 
                 if st.button("🚀 연산 실행", type="primary", width='stretch'):
                     df_calc = st.session_state.current_df.copy()
@@ -175,8 +175,6 @@ with tab2:
                     
                     # 연산 결과를 '현재 데이터'로 업데이트
                     st.session_state.current_df = df_calc
-                    st.rerun()
-
 
         # [ Left:Image  / Right: Dataframe ]
         col_left, col_right = st.columns(2, gap="large")
@@ -213,18 +211,14 @@ with tab2:
 
     if uploaded_file is not None:
         source_df = load_excel_data(uploaded_file)
-        brightness_adjustment(source_df)
+        brightness_adjustment(source_df,uploaded_file.name)
 
     else:
         # 데이터가 없을 때 안내
         st.info("👆 상단의 '픽셀 데이터 업로드'를 열어 엑셀파일(xlxs)을 먼저 업로드해주세요.")
 
 with tab3:
-    # ==============================================================================
-    # 2. 데이터 업로드 (Expander)
-    # ==============================================================================
     Uploaded_df1, Uploaded_df2 = None, None
-
     with st.expander("📂 픽셀 데이터 2개 업로드 (행렬 A, B)", expanded=True):
         col_up1, col_up2 = st.columns(2)
         with col_up1:
