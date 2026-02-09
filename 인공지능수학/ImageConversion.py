@@ -204,22 +204,10 @@ with tab2:
             st.rerun() # 화면 갱신
 
 
-        # --- [C] 결과 화면 (Left: Dataframe / Right: Image) ---
+        # --- [C] 결과 화면 (Left:Image  / Right: Dataframe) ---
         col_left, col_right = st.columns(2, gap="large")
         with col_left:
-            # 데이터프레임의 크기 정보
-            curr_r, curr_c = st.session_state.current_df.shape
-            st.caption(f"연산이 누적되어 적용된 행렬( {curr_r} x {curr_c} )입니다.")
-
-            # [요청사항] 원본/연산 데이터를 여기서 확인
-            st.dataframe(
-                st.session_state.current_df,
-                height=500,
-                width='stretch'
-            )
-
-        with col_right:
-            st.caption("왼쪽 행렬을 기반으로 표현된 이미지입니다.")
+            st.caption("오른쪽 행렬을 기반으로 표현된 이미지입니다.")
             
             # 이미지 변환 함수 호출
             pixelated_img, original_size = df_to_image(st.session_state.current_df)
@@ -229,6 +217,18 @@ with tab2:
                 pixelated_img,
                 width='stretch',
                 clamp=True # 0-255 범위 준수
+            )
+
+        with col_right:
+            # 데이터프레임의 크기 정보
+            curr_r, curr_c = st.session_state.current_df.shape
+            st.caption(f"연산이 누적되어 적용된 행렬( {curr_r} x {curr_c} )입니다.")
+
+            # [요청사항] 원본/연산 데이터를 여기서 확인
+            st.dataframe(
+                st.session_state.current_df,
+                height=500,
+                width='stretch'
             )
 
     else:
