@@ -17,7 +17,7 @@ st.markdown("""
 }
 
 /* 탭2 - 원본 불러오기 버튼 높이*/            
-#tabs-bui3-tabpanel-1 .e1mwqyj92 {
+#tabs-bui3-tabpanel-1 .st-emotion-cache-5qfegl {
     margin-top: 28px;
 }
             
@@ -176,13 +176,13 @@ with tab2:
         with st.container(horizontal=True):
             operation = st.selectbox(
                 "연산 종류",
-                ("➕ 덧셈","✖️ 곱셈")
+                ("➕ 덧셈","➖ 뺄셈","✖️ 곱셈")
             )
 
             number = st.number_input(
                 "연산할 값",
-                min_value=-50.0,
-                max_value=50.0, # 연산값은 좀 더 자유롭게
+                min_value=0.0,
+                max_value=30.0, # 연산값은 좀 더 자유롭게
                 value=10.0,
                 step=1.0,
                 format="%.1f"
@@ -202,6 +202,8 @@ with tab2:
 
             if "덧셈" in operation:
                 df_calc = df_calc + number
+            elif "뺄셈" in operation:
+                df_calc = df_calc - number
             elif "곱셈" in operation:
                 df_calc = df_calc * number
 
