@@ -13,11 +13,6 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# 업로드된 파일을 PIL 이미지 객체로 변환(탭1)
-@st.cache_data(show_spinner=False,ttl=300)
-def load_image(image_file):
-    return Image.open(image_file).convert('RGB')
-
 # 함수정의(탭2, 탭3 공통)
 @st.cache_data(show_spinner=False, ttl=300)
 def load_excel_data(file):
@@ -43,10 +38,13 @@ st.title("이미지 데이터의 변환")
 
 # 탭 생성
 tab1, tab2, tab3 = st.tabs(["🔘 그레이 필터", "💡 밝기 조절", "➕ 합성" ])
-# ==============================================================================
-# [TAB 1] 그레이 필터
-# ==============================================================================
 with tab1:
+    # ==============================================================================
+    # 업로드된 파일을 PIL 이미지 객체로 변환
+    @st.cache_data(show_spinner=False,ttl=300)
+    def load_image(image_file):
+        return Image.open(image_file).convert('RGB')
+
     # 함수 정의 (RGB 데이터 시각화)
     def display_channel_data(image_array, title_prefix):
         st.markdown(f"#### 📊 {title_prefix}의 RGB 채널")
@@ -79,38 +77,33 @@ with tab1:
             st.write("🔵 Blue")
             st.table(df_b)
 
+    # ==============================================================================
+
     # 이미지 업로드 창 생성
     with st.expander("📂 이미지 업로드 열기/닫기", expanded=True):
         uploaded_file = st.file_uploader("이미지 파일을 업로드하세요.", type=["png", "jpg", "jpeg"])
 
     if uploaded_file is not None:
-        # 1. 이미지 열기 (무조건 RGB 3채널로 변환)
         image = load_image(uploaded_file)
         original_width, original_height = image.size
 
         # [원본 / 결과] 
         col_orig, col_res = st.columns(2, gap="medium")
-        # [1열] 원본
         with col_orig:
             st.subheader("원본 이미지")
             st.image(image, caption=f"원본 이미지 ( 해상도: {original_width}x{original_height} px )", width='stretch')
 
-        # [2열] 결과 (Gray)
         with col_res:
             st.subheader("그레이 필터")
 
-            # 1) 그레이스케일 변환 (단순 평균법)
-            # (H, W, 3) -> (H, W) : 채널 축(axis=2) 기준 평균
+            # 그레이스케일 변환 (단순 평균법)
             gray_matrix = np.round(np.mean(np.array(image), axis=2)).astype(np.uint8)
-
-            # 2) 다시 3채널로 복구 (시각화 및 통일성을 위해 R=G=B로 만듦)
-            # (H, W) -> (H, W, 3)
             gray_stacked_arr = np.stack((gray_matrix, gray_matrix, gray_matrix), axis=2)
-            gray_small_pil = Image.fromarray(gray_stacked_arr)
-
-            # 3) 원본 크기로 뻥튀기 (각진 느낌 유지)
-            preview_pil = gray_small_pil.resize((original_width, original_height), Image.Resampling.NEAREST)
+            preview_pil = Image.fromarray(gray_stacked_arr)
             
+            # 각진 느낌 유지
+            # preview_pil = gray_small_pil.resize((original_width, original_height), Image.Resampling.NEAREST)
+        
             st.image(preview_pil, caption="그레이 필터 적용", width='stretch')
 
         # 3. 데이터 분석 표 (하단)
@@ -122,7 +115,7 @@ with tab1:
 
         st.divider()
 
-        # (2) 변환된 데이터 (주의: gray_stacked_arr 사용)
+        # (2) 변환된 데이터
         display_channel_data(gray_stacked_arr, "그레이 필터 이미지")
 
     else:
@@ -132,12 +125,7 @@ with tab1:
         st.space("stretch")
         st.page_link("https://matharticle.streamlit.app/GrayScale", label="그레이 필터 이미지 데이터 다운로드", icon="🔀", width="content")
                 
-    
-# ==============================================================================
-# [TAB 2] 밝기 조절
-# ==============================================================================
 with tab2:
-    # 초기 원본 데이터(source_df)를 확정하기 위한 변수
     source_df = None
 
     # 엑셀 업로드 창
