@@ -12,7 +12,7 @@ st.set_page_config(
 pages = {
     "중1 수학": [
         # 그룹의 첫 번째 페이지를 default=True로 설정하면 '중1 수학' 클릭 시 이 페이지가 먼저 보입니다.
-        st.Page("rotation.py", title="회전체 탐구", default=True),
+        st.Page("./중1 수학/rotation.py", title="회전체 탐구", default=True),
     ],
     "중2 수학": [
         st.Page("./중2 수학/Exponents.py", title="지수법칙"),
@@ -20,9 +20,7 @@ pages = {
     "보드게임": [
         st.Page("./보드게임/Streams.py", title="스트림스"),
         st.Page("./보드게임/PigGame.py", title="Pig Game"),
-    ],
-    "주사위 모음": [
-        st.Page("Dice.py", title="주사위 모음")
+        st.Page("./보드게임/Dice.py", title="주사위 모음")
     ],
     "인공지능 수학": [
         st.Page("./인공지능수학/ImageExpression.py", title="이미지 데이터의 표현"),

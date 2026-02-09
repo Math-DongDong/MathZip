@@ -37,7 +37,6 @@ tabs = st.tabs(["게임방법", "기본 버전", "정수 버전", "유리수 버
 # --- 1. 게임방법 탭 ---
 with tabs[0]:
     st.video("https://youtu.be/gq4UmK0MRbE?si=caJJ4gh-hdnC8OvL")
-    st.divider()
     if PDFbyte:
         st.download_button(
             label="게임판 다운로드",
@@ -69,7 +68,7 @@ with tabs[1]:
             initialize_game()
             st.rerun()
     with col2:
-        is_disabled = (st.session_state.draw_count >= 20)
+        is_disabled = (st.session_state.draw_count >= 19)
         if st.button("다음 숫자 뽑기", disabled=is_disabled, width='stretch', key="draw_base"):
             if st.session_state.pool:
                 st.session_state.draw_count += 1
@@ -114,7 +113,7 @@ with tabs[2]:
             initialize_game_Z()
             st.rerun()
     with col2:
-        is_disabled = (st.session_state.draw_count_Z >= 20)
+        is_disabled = (st.session_state.draw_count_Z >= 19)
         if st.button("다음 정수 뽑기", disabled=is_disabled, width='stretch', key="draw_Z"):
             if st.session_state.pool_Z:
                 st.session_state.draw_count_Z += 1
@@ -156,7 +155,7 @@ with tabs[3]:
             initialize_game_Q()
             st.rerun()
     with col2:
-        is_disabled = (st.session_state.draw_count_Q >= 20)
+        is_disabled = (st.session_state.draw_count_Q >= 19)
         if st.button("다음 유리수 뽑기", disabled=is_disabled, width='stretch', key="draw_Q"):
             if st.session_state.pool_Q:
                 st.session_state.draw_count_Q += 1
@@ -166,7 +165,7 @@ with tabs[3]:
     left_col, right_col = st.columns([1, 1])
     with left_col:
         if st.session_state.draw_count_Q == 0: st.header("첫 번째 유리수를 뽑아주세요.")
-        elif st.session_state.draw_count_Q >= 32: st.header("🏁 모든 유리수를 뽑았습니다! 🏁")
+        elif st.session_state.draw_count_Q >= 20: st.header("🏁 모든 유리수를 뽑았습니다! 🏁")
         else: st.header(f"{st.session_state.draw_count_Q}번째 유리수")
         if st.session_state.current_number_Q == "❔":
             st.markdown(f"<p style='text-align: center; font-size: 150px; font-weight: bold;'>{st.session_state.current_number_Q}</p>", unsafe_allow_html=True)
