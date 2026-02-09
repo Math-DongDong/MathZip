@@ -99,12 +99,9 @@ with tab1:
             # 그레이스케일 변환 (단순 평균법)
             gray_matrix = np.round(np.mean(np.array(image), axis=2)).astype(np.uint8)
             gray_stacked_arr = np.stack((gray_matrix, gray_matrix, gray_matrix), axis=2)
-            preview_pil = Image.fromarray(gray_stacked_arr)
-            
-            # 각진 느낌 유지
-            # preview_pil = gray_small_pil.resize((original_width, original_height), Image.Resampling.NEAREST)
-        
-            st.image(preview_pil, caption="그레이 필터 적용", width='stretch')
+            gray_pil = Image.fromarray(gray_stacked_arr)
+                    
+            st.image(gray_pil, caption="그레이 필터 적용", width='stretch')
 
         # 3. 데이터 분석 표 (하단)
         st.divider()
