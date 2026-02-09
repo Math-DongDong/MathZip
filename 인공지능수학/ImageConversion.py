@@ -223,6 +223,10 @@ with tab3:
     # 합성 연산 프레그먼트
     @st.fragment
     def image_addition_subtraction(df1,df2):
+        # 결과 세션 변수 선언
+        if "final_result" not in st.session_state:
+            st.session_state.final_result = None
+            
         btn_col1, btn_col2 = st.columns(2)
         with btn_col1:
             with st.container(horizontal=True):
