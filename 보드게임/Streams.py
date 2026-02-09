@@ -32,9 +32,7 @@ except FileNotFoundError:
 st.title("🔢 스트림스")
 
 # --- 탭 구성 ---
-tabs = st.tabs([
-    "게임방법", "기본 버전", "정수 버전", "유리수 버전", "실수 버전"
-])
+tabs = st.tabs(["게임방법", "기본 버전", "정수 버전", "유리수 버전"])
 
 # --- 1. 게임방법 탭 ---
 with tabs[0]:
@@ -158,7 +156,7 @@ with tabs[3]:
             initialize_game_Q()
             st.rerun()
     with col2:
-        is_disabled = (st.session_state.draw_count_Q >= 32)
+        is_disabled = (st.session_state.draw_count_Q >= 20)
         if st.button("다음 유리수 뽑기", disabled=is_disabled, width='stretch', key="draw_Q"):
             if st.session_state.pool_Q:
                 st.session_state.draw_count_Q += 1
@@ -193,62 +191,4 @@ with tabs[3]:
         history_values =  "  ➡️  ".join([f"${s}$" for s in st.session_state.drawn_history_Q])
     else:
         history_values = "아직 뽑은 유리수가 없습니다."
-    st.info(f"{history_title}\n\n{history_values}")
-
-# --- 5. 실수 버전 탭 ---
-with tabs[4]:
-    def initialize_game_R():
-        number_pool = []
-        number_pool.append("0")
-        for i in range(1, 3): number_pool.append(str(i)); number_pool.append(str(-i))
-        number_pool.extend(["2.\\dot{9}", "-2.\\dot{9}"])
-        number_pool.append("\\sqrt{0}")
-        for i in range(1, 6): number_pool.append(f"\\sqrt{{{i}}}"); number_pool.append(f"-\\sqrt{{{i}}}")
-        number_pool.extend(["\\sqrt{9}", "-\\sqrt{9}"])
-        specific_reals = ["-1-\\sqrt{5}", "1+\\sqrt{5}", "1-\\sqrt{3}", "-1+\\sqrt{3}", "-2+\\sqrt{3}", "2-\\sqrt{3}"]
-        number_pool.extend(specific_reals)
-        random.shuffle(number_pool)
-        st.session_state.pool_R, st.session_state.draw_count_R, st.session_state.current_number_R, st.session_state.drawn_history_R = number_pool, 0, "❔", []
-    if 'pool_R' not in st.session_state:
-        initialize_game_R()
-    col1, col_spacer, col2 = st.columns([1,2,1])
-    with col1:
-        if st.button("  처음부터 다시하기  ", type="primary", width='stretch', key="restart_R"):
-            initialize_game_R()
-            st.rerun()
-    with col2:
-        is_disabled = (st.session_state.draw_count_R >= 26)
-        if st.button("다음 실수 뽑기", disabled=is_disabled, width='stretch', key="draw_R"):
-            if st.session_state.pool_R:
-                st.session_state.draw_count_R += 1
-                new_number = st.session_state.pool_R.pop()
-                st.session_state.current_number_R = new_number
-                st.session_state.drawn_history_R.append(new_number)
-    left_col, right_col = st.columns([1, 1])
-    with left_col:
-        if st.session_state.draw_count_R == 0: st.header("첫 번째 실수를 뽑아주세요.")
-        elif st.session_state.draw_count_R >= 26: st.header("🏁 모든 실수를 모두 뽑았습니다! 🏁")
-        else: st.header(f"{st.session_state.draw_count_R}번째 실수")
-        if st.session_state.current_number_R == "❔":
-            st.markdown(f"<p style='text-align: center; font-size: 150px; font-weight: bold;'>{st.session_state.current_number_R}</p>", unsafe_allow_html=True)
-        else:
-            st.latex(st.session_state.current_number_R)
-    with right_col:
-        # [핵심 수정] "부수 효과"를 활용한 커스텀 HTML/CSS 정보 패널
-        st.markdown(r"""
-        <div class="info-panel">
-                    
-        ℹ️ **실수 타일 구성 (총 26개)**
-        - 절댓값이 $0,\ 1,\ 2,\ 2.\dot{9}$ 인 수
-        - 절댓값이 $\sqrt{0}, \dots, \sqrt{5}$ 및 $\sqrt{9}$ 인 수
-        - $-1-\sqrt{5},\ 1+\sqrt{5}$
-        - $1-\sqrt{3},\ -1+\sqrt{3},\ -2+\sqrt{3},\ 2-\sqrt{3}$
-        </div>
-        """, unsafe_allow_html=True)
-    st.divider() 
-    history_title = "**※ 지금까지 뽑은 실수들:**"
-    if st.session_state.drawn_history_R:
-        history_values =  "  ➡️  ".join([f"${s}$" for s in st.session_state.drawn_history_R])
-    else:
-        history_values = "아직 뽑은 실수가 없습니다."
     st.info(f"{history_title}\n\n{history_values}")
