@@ -125,7 +125,7 @@ with tab1:
 with tab2:
     # ==============================================================================
     # 밝기 변환 프레그먼트
-    @st.fragment
+    @st.fragment()
     def brightness_adjustment(df, file_id):
         # 파일 변경 감지 로직 (새 파일이 들어오면 데이터 리셋)
         if "last_file_id" not in st.session_state:
@@ -220,6 +220,8 @@ with tab2:
 
 with tab3:
     # ==============================================================================
+    # 밝기 변환 프레그먼트
+    @st.fragment()
 
 
     # ==============================================================================
@@ -242,10 +244,10 @@ with tab3:
         else:
             A_col, B_col = st.columns(2)
             with A_col:
-                st.markdown("#### 🅰️ 행렬 A")
+                st.subheader("🅰️ 행렬 A")
                 st.dataframe(Uploaded_df1, height=300, width='stretch')
             with B_col:
-                st.markdown("#### 🅱️ 행렬 B")
+                st.subheader("🅱️ 행렬 B")
                 st.dataframe(Uploaded_df2, height=300, width='stretch')
 
             btn_col1, btn_col2 = st.columns(2)
