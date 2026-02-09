@@ -123,29 +123,20 @@ with tab1:
         st.page_link("https://matharticle.streamlit.app/GrayScale", label="그레이 필터 이미지 데이터 다운로드", icon="🔀", width="content")
                 
 with tab2:
-    source_df = None
+    # ==============================================================================
+    # 밝기 변환 프레그먼트
+    @st.fragment
+    def brightness_adjustment(df):
+        # 세션 변수 선언
+        if "current_df" not in st.session_state:
+            st.session_state.current_df = None
 
-    # 엑셀 업로드 창
-    with st.expander("📂 픽셀 데이터 업로드 열기/닫기", expanded=True):
-        uploaded_file = st.file_uploader(
-            "그레이 필터 이미지의 픽셀 데이터(Excel) 업로드",
-            type=['xlsx']
-        )
+        # 세션 변수가 None인데 df가 있다면 df로 저장
+        if st.session_state.current_df is None and df is not None:
+            st.session_state.current_df = df.copy()
 
-    if uploaded_file is not None:
-        source_df = load_excel_data(uploaded_file)
-
-    # 앱이 처음 실행되거나, 소스 데이터가 아예 없을 때 초기화
-    if "current_df" not in st.session_state:
-        st.session_state.current_df = None
-
-    # 소스 데이터가 로드되었는데, 현재 작업 중인 데이터가 없다면 초기화
-    if st.session_state.current_df is None and source_df is not None:
-        st.session_state.current_df = source_df.copy()
-
-    if st.session_state.current_df is not None:
-        p_col1, p_col2 = st.columns(2)
-        with p_col1:
+        setting_col1, setting_col2 = st.columns(2)
+        with setting_col1:
             # 연산 버튼 설정
             with st.container(horizontal=True):
                 operation = st.selectbox(
@@ -161,46 +152,39 @@ with tab2:
                     step=1.0,
                     format="%.1f"
                 )
-        with p_col2:
+        with setting_col2:
             st.space()
             with st.container(horizontal=True):    
                 if st.button("🔄 원본 불러오기", type="secondary", width='stretch'):
-                    st.session_state.current_df = source_df.copy()
+                    st.session_state.current_df = df.copy()
                     st.rerun()
 
-                run_calc = st.button("🚀 연산 실행", type="primary", width='stretch')
+                if st.button("🚀 연산 실행", type="primary", width='stretch'):
+                    df_calc = st.session_state.current_df.copy()
+
+                    if "덧셈" in operation:
+                        df_calc = df_calc + number
+                    elif "뺄셈" in operation:
+                        df_calc = df_calc - number
+                    elif "곱셈" in operation:
+                        df_calc = df_calc * number
+
+                    # 클리핑 (0~255 유지) 및 정수 변환
+                    df_calc = df_calc.clip(0, 255)
+                    df_calc = np.round(df_calc, 0).astype(int)
+                    
+                    # 연산 결과를 '현재 데이터'로 업데이트
+                    st.session_state.current_df = df_calc
+                    st.rerun()
 
 
-        # --- [B] 연산 로직 (누적 적용) ---
-        if run_calc:
-            # 현재 화면에 떠있는 데이터를 가져옴 (누적 연산을 위해)
-            df_calc = st.session_state.current_df.copy()
-
-            if "덧셈" in operation:
-                df_calc = df_calc + number
-            elif "뺄셈" in operation:
-                df_calc = df_calc - number
-            elif "곱셈" in operation:
-                df_calc = df_calc * number
-
-            # 클리핑 (0~255 유지) 및 정수 변환
-            df_calc = df_calc.clip(0, 255)
-            df_calc = np.round(df_calc, 0).astype(int)
-            
-            # [중요] 연산 결과를 '현재 데이터'로 업데이트 (누적 효과)
-            st.session_state.current_df = df_calc
-            st.rerun() # 화면 갱신
-
-
-        # --- [C] 결과 화면 (Left:Image  / Right: Dataframe) ---
+        # [ Left:Image  / Right: Dataframe ]
         col_left, col_right = st.columns(2, gap="large")
         with col_left:
             st.caption("오른쪽 행렬을 기반으로 표현된 이미지입니다.")
-            
+
             # 이미지 변환 함수 호출
-            pixelated_img, original_size = df_to_image(st.session_state.current_df)
-            
-            # 이미지 출력
+            pixelated_img = df_to_image(st.session_state.current_df)
             st.image(
                 pixelated_img,
                 width='stretch',
@@ -208,16 +192,28 @@ with tab2:
             )
 
         with col_right:
-            # 데이터프레임의 크기 정보
             curr_r, curr_c = st.session_state.current_df.shape
             st.caption(f"연산이 누적되어 적용된 행렬( {curr_r} x {curr_c} )입니다.")
 
-            # [요청사항] 원본/연산 데이터를 여기서 확인
+            # 원본/연산 데이터를 여기서 확인
             st.dataframe(
                 st.session_state.current_df,
                 height=500,
                 width='stretch'
             )
+
+    # ==============================================================================
+
+    source_df = None
+    with st.expander("📂 픽셀 데이터 업로드 열기/닫기", expanded=True):
+        uploaded_file = st.file_uploader(
+            "그레이 필터 이미지의 픽셀 데이터(Excel) 업로드",
+            type=['xlsx']
+        )
+
+    if uploaded_file is not None:
+        source_df = load_excel_data(uploaded_file)
+        brightness_adjustment(source_df)
 
     else:
         # 데이터가 없을 때 안내
