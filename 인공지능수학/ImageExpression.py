@@ -28,7 +28,7 @@ def image_editor_fragment(image, original_width, original_height, filename):
             "세로(Height) 픽셀", 
             min_value=1, 
             value=original_height, 
-            step=10
+            step=1
         )
 
         # 이미지 처리 (NEAREST) - 픽셀화 효과를 준 이후 원본사이즈로 확대 후 다시 픽셀화
