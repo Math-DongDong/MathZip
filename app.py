@@ -1,7 +1,6 @@
 import streamlit as st
 
 # 1. 페이지 레이아웃 설정
-# layout="wide"로 설정 For 상단 메뉴바 표시
 st.set_page_config(
     page_title="동동쌤의 수학모음",
     page_icon="./기타/동동이.PNG",
