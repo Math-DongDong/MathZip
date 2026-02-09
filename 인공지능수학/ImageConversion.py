@@ -10,20 +10,28 @@ st.markdown("""
 #tabs-bui9-tabpanel-0 .e10e2fxn5 {
     display: none;
 }
-
-/* 탭2 - 연산실행버튼 높이*/            
-#tabs-bui3-tabpanel-1 .e1mwqyj91 {
-    margin-top: 28px;
-}
-
-/* 탭2 - 원본 불러오기 버튼 높이*/            
-#tabs-bui3-tabpanel-1 .st-emotion-cache-5qfegl {
-    margin-top: 28px;
-}
-            
 </style>
 """, unsafe_allow_html=True)
 
+# 함수정의(탭2, 탭3 공통)
+@st.cache_data(show_spinner=False, ttl=300)
+def load_excel_data(file):
+    return pd.read_excel(file, header=None)
+
+def df_to_image(df, scale_factor=20):
+    # 유효 범위(0~255) 클리핑 및 형변환
+    data = df.fillna(0).clip(0, 255).to_numpy().astype(np.uint8)
+    
+    img = Image.fromarray(data)
+    original_w, original_h = img.size
+    
+    # 화면에 잘 보이도록 확대 (최소 500px)
+    target_w = max(500, original_w * scale_factor)
+    target_h = int(target_w * (original_h / original_w))
+    
+    # NEAREST 옵션으로 픽셀화 효과 유지
+    img_resized = img.resize((target_w, target_h), Image.Resampling.NEAREST)
+    return img_resized, (original_w, original_h)
 
 # --- 앱 제목 ---
 st.title("이미지 데이터의 변환")
@@ -126,29 +134,6 @@ with tab1:
 # [TAB 2] 밝기 조절
 # ==============================================================================
 with tab2:
-    @st.cache_data(show_spinner=False, ttl=300)
-    def load_excel_data(file):
-        return pd.read_excel(file, header=None)
-
-    def df_to_image(df, scale_factor=20):
-        """데이터프레임을 이미지로 변환하고 확대하는 함수"""
-        # 1. 데이터프레임을 numpy 배열로 변환 및 uint8(0~255)로 형변환
-        data = df.to_numpy().astype(np.uint8)
-        
-        # 2. PIL 이미지 생성
-        img = Image.fromarray(data)
-        
-        # 3. 시각화를 위해 이미지 확대 (NEAREST 옵션으로 픽셀 깨짐 방지/각진 느낌 유지)
-        # 원본 크기가 너무 작으면(예: 10x10) 화면에 안 보이므로 강제로 키움
-        original_w, original_h = img.size
-        
-        # 화면에 꽉 차게 보이기 위해 적절한 크기 계산 (최소 300px 이상)
-        target_w = max(300, original_w * scale_factor)
-        target_h = int(target_w * (original_h / original_w))
-        
-        img_resized = img.resize((target_w, target_h), Image.Resampling.NEAREST)
-        return img_resized, (original_w, original_h)
-
     # 초기 원본 데이터(source_df)를 확정하기 위한 변수
     source_df = None
 
@@ -171,28 +156,31 @@ with tab2:
         st.session_state.current_df = source_df.copy()
 
     if st.session_state.current_df is not None:
-        
-        # 연산 버튼 설정
-        with st.container(horizontal=True):
-            operation = st.selectbox(
-                "연산 종류",
-                ("➕ 덧셈","➖ 뺄셈","✖️ 곱셈")
-            )
+        p_col1, p_col2 = st.columns(2)
+        with p_col1:
+            # 연산 버튼 설정
+            with st.container(horizontal=True):
+                operation = st.selectbox(
+                    "연산 종류",
+                    ("➕ 덧셈","➖ 뺄셈","✖️ 곱셈")
+                )
 
-            number = st.number_input(
-                "연산할 값",
-                min_value=0.0,
-                max_value=30.0, # 연산값은 좀 더 자유롭게
-                value=10.0,
-                step=1.0,
-                format="%.1f"
-            )
+                number = st.number_input(
+                    "연산할 값",
+                    min_value=0.0,
+                    max_value=30.0, # 연산값은 좀 더 자유롭게
+                    value=10.0,
+                    step=1.0,
+                    format="%.1f"
+                )
+        with p_col2:
+            st.space()
+            with st.container(horizontal=True):    
+                if st.button("🔄 원본 불러오기", type="secondary", width='stretch'):
+                    st.session_state.current_df = source_df.copy()
+                    st.rerun()
 
-            if st.button("🔄 원본 불러오기", type="secondary", width='stretch'):
-                st.session_state.current_df = source_df.copy()
-                st.rerun()
-
-            run_calc = st.button("🚀 연산 실행", type="primary", width='stretch')
+                run_calc = st.button("🚀 연산 실행", type="primary", width='stretch')
 
 
         # --- [B] 연산 로직 (누적 적용) ---
@@ -248,9 +236,125 @@ with tab2:
         st.info("👆 상단의 '픽셀 데이터 업로드'를 열어 엑셀파일(xlxs)을 먼저 업로드해주세요.")
 
 with tab3:
+    # ==============================================================================
+    # 2. 데이터 업로드 (Expander)
+    # ==============================================================================
+    Uploaded_df1, Uploaded_df2 = None, None
+
+    with st.expander("📂 픽셀 데이터 2개 업로드 (행렬 A, B)", expanded=True):
+        col_up1, col_up2 = st.columns(2)
+        with col_up1:
+            file1 = st.file_uploader("행렬 A (엑셀 파일)", type=['xlsx'], key="file1")
+        with col_up2:
+            file2 = st.file_uploader("행렬 B (엑셀 파일)", type=['xlsx'], key="file2")
+
+    if file1 and file2:
+        Uploaded_df1 = load_excel_data(file1)
+        Uploaded_df2 = load_excel_data(file2)
+        
+        # 크기 검증
+        if Uploaded_df1.shape != Uploaded_df2.shape:
+            st.error(f"⚠️ 두 행렬의 크기가 다릅니다! (A: {Uploaded_df1.shape}, B: {Uploaded_df2.shape})")
+        else:
+            A_col, B_col = st.columns(2)
+            with A_col:
+                st.markdown("#### 🅰️ 행렬 A")
+                st.dataframe(Uploaded_df1, height=300, width='stretch')
+            with B_col:
+                st.markdown("#### 🅱️ 행렬 B")
+                st.dataframe(Uploaded_df2, height=300, width='stretch')
+
+            btn_col1, btn_col2 = st.columns(2)
+            with btn_col1:
+                with st.container(horizontal=True):
+                    scalar1 = st.number_input(
+                        "행렬 A의 실수배 (k₁)", 
+                        min_value=0.0,
+                        value=1.0, 
+                        step=0.1, 
+                        format="%.1f",
+                        key="scalar1"
+                    )
+
+                    operation = st.selectbox(
+                        "연산", 
+                        ("➕", "➖"), 
+                        
+                    )
+
+                    scalar2 = st.number_input(
+                        "행렬 B의 실수배 (k₂)", 
+                        value=1.0, 
+                        min_value=0.0,
+                        step=0.1, 
+                        format="%.1f", 
+                        key="scalar2"
+                    )
+
+            with btn_col2:
+                st.space()
+                with st.container(horizontal=True):
+                    if st.button("🔄 결과 초기화",width='stretch'):
+                        st.session_state.final_result = None
+                        st.rerun()
+
+                    if st.button("🚀 계산 실행: (k₁ × A) " + operation + " (k₂ × B)", type="primary", width='stretch'):            
+                        # 1. 실수배 적용
+                        term1 = Uploaded_df1 * scalar1
+                        term2 = Uploaded_df2 * scalar2
+                        
+                        # 2. 덧셈/뺄셈 연산
+                        if operation == "➕":
+                            res_df = term1 + term2
+                        else:
+                            res_df = term1 - term2
+                            
+                        # 3. 데이터 보정 (0~255 클리핑 & 정수 변환)
+                        res_df = res_df.fillna(0) # NaN 방지
+                        res_df = res_df.clip(0, 255)
+                        res_df = np.round(res_df, 0).astype(int)
+                        
+                        # 4. 결과 저장
+                        st.session_state.final_result = res_df
+                        st.rerun()
+
+            # ==============================================================================
+            # 4. 결과 확인 (하단)
+            # ==============================================================================
+
+            if "final_result" in st.session_state and st.session_state.final_result is not None:
+                result_col1, result_col2 = st.columns(2)
+                
+                # [결과 데이터프레임]
+                with result_col1:
+                    st.markdown("#### 결과 행렬")
+                    st.dataframe(
+                        st.session_state.final_result,
+                        height=500,
+                        width='stretch'
+                    )
+                    
+                # [결과 이미지]
+                with result_col2:
+                    st.markdown("#### 결과 이미지")
+                    
+                    # 이미지 변환 (확대 포함)
+                    img_res, orig_size = df_to_image(st.session_state.final_result)
+                    
+                    st.image(
+                        img_res,
+                        caption=f"Result Image ({orig_size[0]}x{orig_size[1]})",
+                        width='stretch',
+                        clamp=True
+                    )
+                    
+
+    elif Uploaded_df1 is None or Uploaded_df2 is None:
+        st.info("👆 위에서 두 개의 엑셀 파일(xlxs)을 모두 업로드해주세요.")
+
     with st.container(horizontal=True):
         st.space("stretch")
         st.page_link("https://matharticle.streamlit.app/Dissolve", label="디졸브 효과", icon="🔀", width="content")
 
 with tab4:
-    st.text("평행")
+    st.text("평행 이동 및 방향 변환 제작 예정...")
