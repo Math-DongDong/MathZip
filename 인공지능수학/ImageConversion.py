@@ -275,10 +275,6 @@ with tab3:
                     # 4. 결과 저장
                     st.session_state.final_result = res_df
 
-        # ==============================================================================
-        # 4. 결과 확인 (하단)
-        # ==============================================================================
-
         if "final_result" in st.session_state and st.session_state.final_result is not None:
             # [이미지 / 데이터프레임]
             result_col1, result_col2 = st.columns(2)
