@@ -13,6 +13,11 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
+# 업로드된 파일을 PIL 이미지 객체로 변환(탭1)
+@st.cache_data(show_spinner=False,ttl=300)
+def load_image(image_file):
+    return Image.open(image_file).convert('RGB')
+
 # 함수정의(탭2, 탭3 공통)
 @st.cache_data(show_spinner=False, ttl=300)
 def load_excel_data(file):
@@ -38,7 +43,6 @@ st.title("이미지 데이터의 변환")
 
 # 탭 생성
 tab1, tab2, tab3 = st.tabs(["🔘 그레이 필터", "💡 밝기 조절", "➕ 합성" ])
-
 # ==============================================================================
 # [TAB 1] 그레이 필터
 # ==============================================================================
@@ -81,10 +85,10 @@ with tab1:
 
     if uploaded_file is not None:
         # 1. 이미지 열기 (무조건 RGB 3채널로 변환)
-        image = Image.open(uploaded_file).convert('RGB')
+        image = load_image(uploaded_file)
         original_width, original_height = image.size
 
-        # 메인 레이아웃 ( 원본 | 결과)
+        # [원본 / 결과] 
         col_orig, col_res = st.columns(2, gap="medium")
         # [1열] 원본
         with col_orig:
@@ -119,7 +123,6 @@ with tab1:
         st.divider()
 
         # (2) 변환된 데이터 (주의: gray_stacked_arr 사용)
-        # 그레이스케일이므로 R, G, B 표의 숫자가 모두 똑같아야 정상입니다.
         display_channel_data(gray_stacked_arr, "그레이 필터 이미지")
 
     else:
@@ -127,7 +130,7 @@ with tab1:
 
     with st.container(horizontal=True):
         st.space("stretch")
-        st.page_link("https://matharticle.streamlit.app/grayscale", label="그레이 필터 이미지 데이터 다운로드", icon="🔀", width="content")
+        st.page_link("https://matharticle.streamlit.app/GrayScale", label="그레이 필터 이미지 데이터 다운로드", icon="🔀", width="content")
                 
     
 # ==============================================================================

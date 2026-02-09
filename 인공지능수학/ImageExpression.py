@@ -3,69 +3,67 @@ import numpy as np
 import pandas as pd
 import streamlit.components.v1 as components
 from PIL import Image
-import io # 이미지를 바이트 형태로 변환하여 다운로드하기 위해 필요
-
-# 업로드된 파일을 PIL 이미지 객체로 변환
-@st.cache_data(show_spinner=False,ttl=300)
-def load_image(image_file):
-    return Image.open(image_file)
-
-# 해상도 변환 프레그먼트화
-@st.fragment
-def image_editor_fragment(image, original_width, original_height, filename):
-    
-    # [설정 / 변환 결과 / 원본]
-    edit,result , original = st.columns([0.2, 0.4, 0.4])
-    with edit:
-        st.subheader("해상도 설정")
-        new_width = st.number_input(
-            "가로(Width) 픽셀", 
-            min_value=1, 
-            value=original_width, 
-            step=1
-        )
-        new_height = st.number_input(
-            "세로(Height) 픽셀", 
-            min_value=1, 
-            value=original_height, 
-            step=1
-        )
-
-        # 이미지 처리 (NEAREST) - 픽셀화 효과를 준 이후 원본사이즈로 확대 후 다시 픽셀화
-        pixelated_image = image.resize((new_width, new_height), Image.Resampling.NEAREST)
-        preview_image = pixelated_image.resize((original_width, original_height), Image.Resampling.NEAREST)
-        
-        # 다운로드 로직
-        buf = io.BytesIO()
-        img_format = image.format if image.format else "PNG"
-        pixelated_image.save(buf, format=img_format)
-        byte_im = buf.getvalue()
-
-        st.download_button(
-            label="💾 변환된 이미지 다운로드",
-            data=byte_im,
-            file_name=f"pixelated_{filename}",
-            mime=f"image/{img_format.lower()}",
-            width='stretch'
-        )
-
-    with result:
-        st.subheader("변환 이미지")
-        st.image(preview_image, caption=f"변경됨: {new_width} x {new_height} px", width='stretch')
-
-    with original:
-        st.subheader("원본 이미지")
-        st.image(image, caption=f"원본: {original_width} x {original_height} px", width='stretch')
+import io 
 
 # --- 앱 제목 ---
 st.title("이미지 데이터의 표현")
 
 # 탭 생성
 tab1, tab2, tab3= st.tabs(["🖼️ 이미지 해상도", "⚫ 흑백 이미지", "🎨 컬러 이미지"])
-# ==============================================================================
-# [TAB 1] 이미지 해상도
-# ==============================================================================
 with tab1:
+    #================================================================================================
+    # 업로드된 파일을 PIL 이미지 객체로 변환
+    @st.cache_data(show_spinner=False,ttl=300)
+    def load_image(image_file):
+        return Image.open(image_file)
+
+    # 해상도 변환 프레그먼트
+    @st.fragment
+    def image_editor_fragment(image, original_width, original_height, filename):
+        # [설정 / 변환 결과 / 원본]
+        edit,result , original = st.columns([0.2, 0.4, 0.4])
+        with edit:
+            st.subheader("해상도 설정")
+            new_width = st.number_input(
+                "가로(Width) 픽셀", 
+                min_value=1, 
+                value=original_width, 
+                step=1
+            )
+            new_height = st.number_input(
+                "세로(Height) 픽셀", 
+                min_value=1, 
+                value=original_height, 
+                step=1
+            )
+
+            # 이미지 처리 (NEAREST) - 픽셀화 효과를 준 이후 원본사이즈로 확대 후 다시 픽셀화
+            pixelated_image = image.resize((new_width, new_height), Image.Resampling.NEAREST)
+            preview_image = pixelated_image.resize((original_width, original_height), Image.Resampling.NEAREST)
+            
+            # 다운로드 로직
+            buf = io.BytesIO()
+            img_format = image.format if image.format else "PNG"
+            pixelated_image.save(buf, format=img_format)
+            byte_im = buf.getvalue()
+
+            st.download_button(
+                label="💾 변환된 이미지 다운로드",
+                data=byte_im,
+                file_name=f"pixelated_{filename}",
+                mime=f"image/{img_format.lower()}",
+                width='stretch'
+            )
+
+        with result:
+            st.subheader("변환 이미지")
+            st.image(preview_image, caption=f"변경됨: {new_width} x {new_height} px", width='stretch')
+
+        with original:
+            st.subheader("원본 이미지")
+            st.image(image, caption=f"원본: {original_width} x {original_height} px", width='stretch')
+
+    #================================================================================================
     with st.expander("📂 이미지 업로드 열기/닫기", expanded=True):
         # 1. 이미지 업로드 기능
         uploaded_file = st.file_uploader("이미지 파일을 업로드하세요.", type=["png", "jpg", "jpeg"])
@@ -82,11 +80,7 @@ with tab1:
     else:
         st.info("👆 상단의 '이미지 업로드'를 열어 이미지 파일( png, jpg, jpeg )을 먼저 업로드해주세요.")            
 
-# ==============================================================================
-# [TAB 2] 흑백 이미지 (HTML/JS 전용 버전)
-# ==============================================================================
 with tab2:
-    # 파이썬 개입 없이 아이프레임 내부에서 완결되는 HTML 코드입니다.
     html_code = """
         <!DOCTYPE html>
         <html lang="ko">
