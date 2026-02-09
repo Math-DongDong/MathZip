@@ -184,7 +184,7 @@ with tab2:
             st.caption("오른쪽 행렬을 기반으로 표현된 이미지입니다.")
 
             # 이미지 변환 함수 호출
-            pixelated_img = df_to_image(st.session_state.current_df)
+            pixelated_img, orig_size = df_to_image(st.session_state.current_df)
             st.image(
                 pixelated_img,
                 width='stretch',
