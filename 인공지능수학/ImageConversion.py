@@ -125,7 +125,7 @@ with tab1:
 with tab2:
     # ==============================================================================
     # 밝기 변환 프레그먼트
-    @st.fragment()
+    @st.fragment
     def brightness_adjustment(df, file_id):
         # 파일 변경 감지 로직 (새 파일이 들어오면 데이터 리셋)
         if "last_file_id" not in st.session_state:
@@ -220,9 +220,84 @@ with tab2:
 
 with tab3:
     # ==============================================================================
-    # 밝기 변환 프레그먼트
-    @st.fragment()
+    # 합성 연산 프레그먼트
+    @st.fragment
+    def image_addition_subtraction(df1,df2):
+        btn_col1, btn_col2 = st.columns(2)
+        with btn_col1:
+            with st.container(horizontal=True):
+                scalar1 = st.number_input(
+                    "행렬 A의 실수배 (k₁)", 
+                    min_value=0.0,
+                    value=1.0, 
+                    step=0.1, 
+                    format="%.1f",
+                    key="scalar1"
+                )
 
+                operation = st.selectbox(
+                    "연산", 
+                    ("➕", "➖"), 
+                    
+                )
+
+                scalar2 = st.number_input(
+                    "행렬 B의 실수배 (k₂)", 
+                    value=1.0, 
+                    min_value=0.0,
+                    step=0.1, 
+                    format="%.1f", 
+                    key="scalar2"
+                )
+
+        with btn_col2:
+            st.space()
+            with st.container(horizontal=True):
+                if st.button("🔄 결과 초기화",width='stretch'):
+                    st.session_state.final_result = None
+
+                if st.button("🚀 계산 실행: (k₁ × A) " + operation + " (k₂ × B)", type="primary", width='stretch'):            
+                    # 1. 실수배 적용
+                    term1 = df1 * scalar1
+                    term2 = df2 * scalar2
+                    
+                    # 2. 덧셈/뺄셈 연산
+                    if operation == "➕":
+                        res_df = term1 + term2
+                    else:
+                        res_df = term1 - term2
+                        
+                    # 3. 데이터 보정 (0~255 클리핑 & 정수 변환)
+                    res_df = res_df.fillna(0) # NaN 방지
+                    res_df = res_df.clip(0, 255)
+                    res_df = np.round(res_df, 0).astype(int)
+                    
+                    # 4. 결과 저장
+                    st.session_state.final_result = res_df
+
+        # ==============================================================================
+        # 4. 결과 확인 (하단)
+        # ==============================================================================
+
+        if "final_result" in st.session_state and st.session_state.final_result is not None:
+            # [이미지 / 데이터프레임]
+            result_col1, result_col2 = st.columns(2)
+            with result_col1:
+                st.subheader("결과 이미지")
+                img_res, orig_size = df_to_image(st.session_state.final_result)
+                st.image(
+                    img_res,
+                    width='stretch',
+                    clamp=True
+                )
+                
+            with result_col2:
+                st.subheader("결과 행렬")
+                st.dataframe(
+                    st.session_state.final_result,
+                    height=500,
+                    width='stretch'
+                )
 
     # ==============================================================================
 
@@ -250,90 +325,7 @@ with tab3:
                 st.subheader("🅱️ 행렬 B")
                 st.dataframe(Uploaded_df2, height=300, width='stretch')
 
-            btn_col1, btn_col2 = st.columns(2)
-            with btn_col1:
-                with st.container(horizontal=True):
-                    scalar1 = st.number_input(
-                        "행렬 A의 실수배 (k₁)", 
-                        min_value=0.0,
-                        value=1.0, 
-                        step=0.1, 
-                        format="%.1f",
-                        key="scalar1"
-                    )
-
-                    operation = st.selectbox(
-                        "연산", 
-                        ("➕", "➖"), 
-                        
-                    )
-
-                    scalar2 = st.number_input(
-                        "행렬 B의 실수배 (k₂)", 
-                        value=1.0, 
-                        min_value=0.0,
-                        step=0.1, 
-                        format="%.1f", 
-                        key="scalar2"
-                    )
-
-            with btn_col2:
-                st.space()
-                with st.container(horizontal=True):
-                    if st.button("🔄 결과 초기화",width='stretch'):
-                        st.session_state.final_result = None
-                        st.rerun()
-
-                    if st.button("🚀 계산 실행: (k₁ × A) " + operation + " (k₂ × B)", type="primary", width='stretch'):            
-                        # 1. 실수배 적용
-                        term1 = Uploaded_df1 * scalar1
-                        term2 = Uploaded_df2 * scalar2
-                        
-                        # 2. 덧셈/뺄셈 연산
-                        if operation == "➕":
-                            res_df = term1 + term2
-                        else:
-                            res_df = term1 - term2
-                            
-                        # 3. 데이터 보정 (0~255 클리핑 & 정수 변환)
-                        res_df = res_df.fillna(0) # NaN 방지
-                        res_df = res_df.clip(0, 255)
-                        res_df = np.round(res_df, 0).astype(int)
-                        
-                        # 4. 결과 저장
-                        st.session_state.final_result = res_df
-                        st.rerun()
-
-            # ==============================================================================
-            # 4. 결과 확인 (하단)
-            # ==============================================================================
-
-            if "final_result" in st.session_state and st.session_state.final_result is not None:
-                result_col1, result_col2 = st.columns(2)
-                
-                # [결과 데이터프레임]
-                with result_col1:
-                    st.markdown("#### 결과 행렬")
-                    st.dataframe(
-                        st.session_state.final_result,
-                        height=500,
-                        width='stretch'
-                    )
-                    
-                # [결과 이미지]
-                with result_col2:
-                    st.markdown("#### 결과 이미지")
-                    
-                    # 이미지 변환 (확대 포함)
-                    img_res, orig_size = df_to_image(st.session_state.final_result)
-                    
-                    st.image(
-                        img_res,
-                        caption=f"Result Image ({orig_size[0]}x{orig_size[1]})",
-                        width='stretch',
-                        clamp=True
-                    )
-                    
+            image_addition_subtraction(Uploaded_df1, Uploaded_df2)                     
 
     elif Uploaded_df1 is None or Uploaded_df2 is None:
         st.info("👆 위에서 두 개의 엑셀 파일(xlxs)을 모두 업로드해주세요.")

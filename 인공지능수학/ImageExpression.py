@@ -18,7 +18,7 @@ with tab1:
         return Image.open(image_file)
 
     # 해상도 변환 프레그먼트
-    @st.fragment()
+    @st.fragment
     def image_editor_fragment(image, original_width, original_height, filename):
         # [설정 / 변환 결과 / 원본]
         edit,result , original = st.columns([0.2, 0.4, 0.4])
