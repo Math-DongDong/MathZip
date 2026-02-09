@@ -37,7 +37,7 @@ def df_to_image(df, scale_factor=20):
 st.title("이미지 데이터의 변환")
 
 # 탭 생성
-tab1, tab2, tab3, tab4= st.tabs(["🔘 그레이 필터", "💡 밝기 조절", "➕ 합성" , "↔️ 평행이동 및 방향 변환"])
+tab1, tab2, tab3 = st.tabs(["🔘 그레이 필터", "💡 밝기 조절", "➕ 합성" ])
 
 # ==============================================================================
 # [TAB 1] 그레이 필터
@@ -355,6 +355,3 @@ with tab3:
     with st.container(horizontal=True):
         st.space("stretch")
         st.page_link("https://matharticle.streamlit.app/Dissolve", label="디졸브 효과", icon="🔀", width="content")
-
-with tab4:
-    st.text("평행 이동 및 방향 변환 제작 예정...")
