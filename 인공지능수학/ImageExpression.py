@@ -43,7 +43,7 @@ def image_editor_fragment(image, original_width, original_height, filename):
 
         st.divider()
         st.download_button(
-            label="💾 다운로드",
+            label="💾 변환된 이미지 다운로드",
             data=byte_im,
             file_name=f"pixelated_{filename}",
             mime=f"image/{img_format.lower()}"
