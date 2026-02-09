@@ -125,6 +125,7 @@ with tab1:
 with tab2:
     # ==============================================================================
     # 밝기 변환 프레그먼트
+    @st.fragment
     def brightness_adjustment(df, file_id):
         # 파일 변경 감지 로직 (새 파일이 들어오면 데이터 리셋)
         if "last_file_id" not in st.session_state:
@@ -218,6 +219,11 @@ with tab2:
         st.info("👆 상단의 '픽셀 데이터 업로드'를 열어 엑셀파일(xlxs)을 먼저 업로드해주세요.")
 
 with tab3:
+    # ==============================================================================
+
+
+    # ==============================================================================
+
     Uploaded_df1, Uploaded_df2 = None, None
     with st.expander("📂 픽셀 데이터 2개 업로드 (행렬 A, B)", expanded=True):
         col_up1, col_up2 = st.columns(2)
@@ -230,7 +236,7 @@ with tab3:
         Uploaded_df1 = load_excel_data(file1)
         Uploaded_df2 = load_excel_data(file2)
         
-        # 크기 검증
+        # 행렬의 크기 검증
         if Uploaded_df1.shape != Uploaded_df2.shape:
             st.error(f"⚠️ 두 행렬의 크기가 다릅니다! (A: {Uploaded_df1.shape}, B: {Uploaded_df2.shape})")
         else:
