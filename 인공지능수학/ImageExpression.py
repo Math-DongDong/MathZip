@@ -86,8 +86,37 @@ with tab2:
         <html lang="ko">
         <head>
             <meta charset="UTF-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
             <script src="https://cdn.tailwindcss.com"></script>
+            <style>
+                /* CSS 애니메이션 */
+                @keyframes fadeIn {
+                    from { opacity: 0; transform: translateY(-5px); }
+                    to { opacity: 1; transform: translateY(0); }
+                }
+                .animate-fade-in {
+                    animation: fadeIn 0.3s ease-out forwards;
+                }
+
+                /* [핵심 수정 1] 호버 효과 제한 */
+                /* 마우스가 있는 장치(PC 등)에서만 호버 효과 적용 */
+                @media (hover: hover) {
+                    .grid-cell:hover {
+                        background-color: #f3f4f6; /* Tailwind gray-100 */
+                    }
+                }
+
+                /* [핵심 수정 2] 모바일 터치 최적화 클래스 */
+                .grid-cell {
+                    touch-action: manipulation; /* 더블탭 줌 방지 -> 즉시 반응 */
+                    -webkit-tap-highlight-color: transparent; /* 모바일 터치 시 파란 박스 제거 */
+                }
+
+                /* 모바일에서 눌렀을 때(Active) 즉각적인 피드백 */
+                .grid-cell:active {
+                    background-color: #e5e7eb; /* Tailwind gray-200 */
+                }
+            </style>
         </head>
         <body class="bg-white font-sans text-gray-800">
 
@@ -98,13 +127,11 @@ with tab2:
                     
                     <!-- [왼쪽] 입력 섹션 -->
                     <div class="flex flex-col w-full">
-                        <!-- 헤더 -->
                         <div class="mb-2 flex items-center gap-2">
                             <span class="bg-blue-100 text-blue-800 text-xs font-bold px-2 py-1 rounded">Step 1</span> 
                             <span class="font-bold text-gray-700">그림 그리기</span>
                         </div>
 
-                        <!-- 컨트롤 패널 (회색 박스) -->
                         <div class="flex flex-wrap items-center gap-3 mb-4 p-3 rounded">
                             <div class="flex items-center gap-2">
                                 <label class="text-sm font-medium text-gray-600">가로 픽셀</label>
@@ -119,7 +146,6 @@ with tab2:
                             </button>
                         </div>
 
-                        <!-- 입력 그리드 영역 -->
                         <div id="grid-container" class="flex justify-center p-4 border border-dashed border-gray-300 rounded">
                             <!-- JS로 생성됨 -->
                         </div>
@@ -127,31 +153,21 @@ with tab2:
 
                     <!-- [오른쪽] 결과 섹션 -->
                     <div class="flex flex-col w-full h-full">
-                        <!-- 헤더 -->
                         <div class="mb-2 flex items-center gap-2">
                             <span class="bg-green-100 text-green-800 text-xs font-bold px-2 py-1 rounded">Step 2</span>
                             <span class="font-bold text-gray-700">행렬 표현</span>
                         </div>
 
-                        <!-- 버튼 영역 (왼쪽 컨트롤 패널과 높이 맞춤) -->
                         <div class="flex items-center mb-4 p-3 h-[58px] sm:h-auto border border-transparent"> 
                             <button id="show-matrix-btn" class="w-full bg-gray-800 hover:bg-gray-900 text-white font-bold py-1.5 px-4 rounded text-sm flex items-center justify-center gap-2">
                                 행렬 변환 결과 보기
                             </button>
                         </div>
 
-                        <!-- 결과 표시 영역 (회색 박스) -->
-                        <!-- h-full과 min-h 설정으로 왼쪽 그리드 영역과 균형 맞춤 -->
                         <div class="w-full flex flex-col items-center justify-center bg-gray-50 border border-gray-200 rounded p-4 min-h-[300px] lg:h-[calc(100%-74px)]">
-                            
-                            <!-- 결과 테이블 래퍼 -->
                             <div id="matrix-output" class="hidden flex flex-col items-center animate-fade-in w-full overflow-x-auto">
-                                <div id="matrix-table-wrapper" class="p-2 bg-white rounded border border-gray-200 inline-block">
-                                    <!-- 결과 테이블 생성 위치 -->
-                                </div>
+                                <div id="matrix-table-wrapper" class="p-2 bg-white rounded border border-gray-200 inline-block"></div>
                             </div>
-
-                            <!-- 안내 문구 -->
                             <div id="placeholder-text" class="text-gray-400 text-sm text-center">
                                 버튼을 누르면 행렬이 표시됩니다.
                             </div>
@@ -173,7 +189,7 @@ with tab2:
                     const outputWrapper = document.getElementById('matrix-table-wrapper');
                     const placeholderText = document.getElementById('placeholder-text');
                     
-                    const blackCellClass = 'bg-gray-800';
+                    const blackCellClass = '!bg-gray-800'; // !important 효과를 위해 ! 추가 (Tailwind)
 
                     function createGrid() {
                         const rows = parseInt(rowsInput.value, 10);
@@ -200,7 +216,11 @@ with tab2:
                             const tr = document.createElement('tr');
                             for (let c = 0; c < cols; c++) {
                                 const td = document.createElement('td');
-                                td.className = 'w-10 h-10 sm:w-12 sm:h-12 border border-gray-300 cursor-pointer hover:bg-gray-100 transition-colors duration-100';
+                                
+                                // [수정됨] 클래스 적용: grid-cell(터치최적화) 추가, transition 제거(즉시반응)
+                                // hover:bg-gray-100 제거 -> CSS @media 쿼리로 대체
+                                td.className = 'grid-cell w-10 h-10 sm:w-12 sm:h-12 border border-gray-300 cursor-pointer';
+                                
                                 tr.appendChild(td);
                             }
                             table.appendChild(tr);
@@ -227,7 +247,7 @@ with tab2:
                             
                             for (let c = 0; c < sourceTable.rows[r].cells.length; c++) {
                                 const sourceCell = sourceTable.rows[r].cells[c];
-                                const isBlack = sourceCell.classList.contains(blackCellClass);
+                                const isBlack = sourceCell.classList.contains('!bg-gray-800'); // 클래스명 확인 수정
                                 const value = isBlack ? 1 : 0;
 
                                 const resultTd = document.createElement('td');
@@ -255,8 +275,9 @@ with tab2:
                     }
                     
                     function handleGridClick(e) {
-                        if (e.target.tagName === 'TD') {
-                            e.target.classList.toggle(blackCellClass);
+                        // grid-cell 클래스를 가진 요소인지 확인
+                        if (e.target.classList.contains('grid-cell')) {
+                            e.target.classList.toggle('!bg-gray-800');
                         }
                     }
 
@@ -267,16 +288,6 @@ with tab2:
                     createGrid();
                 });
             </script>
-            
-            <style>
-                @keyframes fadeIn {
-                    from { opacity: 0; transform: translateY(-5px); }
-                    to { opacity: 1; transform: translateY(0); }
-                }
-                .animate-fade-in {
-                    animation: fadeIn 0.3s ease-out forwards;
-                }
-            </style>
         </body>
         </html>
     """
