@@ -257,9 +257,6 @@ with tab3:
         with btn_col2:
             st.space()
             with st.container(horizontal=True):
-                if st.button("🔄 결과 초기화",width='stretch'):
-                    st.session_state.final_result = None
-
                 if st.button("🚀 계산 실행: (k₁ × A) " + operation + " (k₂ × B)", type="primary", width='stretch'):            
                     # 1. 실수배 적용
                     term1 = df1 * scalar1
