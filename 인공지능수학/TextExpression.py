@@ -142,7 +142,7 @@ if st.session_state.combined_df is not None:
                 
                 st.markdown(f"""
                 <div class="bag-container">
-                    <h4>👜 My Word Bag</h4>
+                    <h4>👜 Bag of Words</h4>
                     <div style="margin-top: 15px;">
                         {html_badges}
                     </div>
@@ -210,4 +210,5 @@ if st.session_state.combined_df is not None:
 
 else:
     st.info("👆 상단의 텍스트 입력창을 열고 분석할 텍스트를 입력하세요.")
+
 
