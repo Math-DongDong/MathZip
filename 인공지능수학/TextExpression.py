@@ -227,16 +227,19 @@ if st.session_state.combined_df is not None:
                 with st.popover("워드클라우드 보기",help="단어들의 빈도수를 시각적으로 표현합니다.",type ="secondary",width="content"):
                     
                     # 워드 클라우드 생성
-                    # 주의: 한글 폰트가 시스템에 없으면 네모(□)로 깨질 수 있습니다.
-                    # 스트림릿 클라우드 배포 시에는 'font_path' 설정이 필요할 수 있습니다.
-                    # 여기서는 기본적인 생성 방식 사용 (시스템 기본 폰트)
                     try:
                         # 빈도수 딕셔너리 생성
                         total_counts = {word: valid_tokens.count(word) for word in vocab}
 
                         # 폰트 설정
+                        # 1. 현재 파일의 위치 ( .../mathzip/인공지능수학 )
                         current_dir = os.path.dirname(os.path.abspath(__file__))
-                        font_path = os.path.join(current_dir, "./기타/나눔고딕 D2coding.ttf")
+                        
+                        # 2. 한 단계 위로 올라가기 ( .../mathzip )
+                        parent_dir = os.path.dirname(current_dir)
+                        
+                        # 3. 거기서 'fonts' 폴더 안으로 들어가기
+                        font_path = os.path.join(parent_dir, "기타", "나눔고딕 D2coding.ttf")
                         
                         wc = WordCloud(
                             width=400, 
@@ -258,4 +261,5 @@ if st.session_state.combined_df is not None:
 
 else:
     st.info("👆 상단의 텍스트 입력창을 열고 분석할 텍스트를 입력하세요.")
+
 
