@@ -24,7 +24,7 @@ pages = {
     "인공지능 수학": [
         st.Page("./인공지능수학/ImageExpression.py", title="이미지 데이터의 표현"),
         st.Page("./인공지능수학/ImageConversion.py", title="이미지 데이터의 변환"),
-        st.Page("./인공지능수학/TextExpression.py", title="텍스트 데이터의 표현과 정보추출"),
+        st.Page("./인공지능수학/TextExpression.py", title="텍스트 데이터의 표현과 주제어 찾기"),
     ],
     "산업수학": [
         st.Page("./산업수학/MedicalData.py", title="의료 데이터와 건강 상태"),
@@ -38,3 +38,4 @@ pg = st.navigation(pages, position="top")
 # 4. 사용자가 선택한 페이지 실행
 
 pg.run()
+
