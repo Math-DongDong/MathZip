@@ -22,7 +22,8 @@ def load_mnist_data():
 # 데이터 로드 실행
 try:
     # 원본이미지(시각화용), 이진화된벡터(계산용), 정답라벨
-    original_images, binary_vectors, labels = load_mnist_data()
+    with st.spinner("mnist 데이터 로드 중...", show_time=True):
+        original_images, binary_vectors, labels = load_mnist_data()
 except Exception as e:
     st.error(f"데이터 로드 중 오류 발생: {e}")
     st.stop()
