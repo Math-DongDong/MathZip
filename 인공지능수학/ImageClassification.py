@@ -30,7 +30,7 @@ except Exception as e:
 
 # 3. [UI] 헤더 및 캔버스 설정
 st.title('이미지 데이터의 분류')
-tap1,tap2 = st.tabs(["해밍거리","합성곱"])
+tap1,tap2 = st.tabs(["해밍거리","합성곱 신경망"])
 with tap1:
     CANVAS_SIZE = 280 # 캔버스 크기 조금 키움
 
