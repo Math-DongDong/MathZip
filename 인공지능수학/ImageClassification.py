@@ -88,7 +88,7 @@ with tap1:
             # (3) 결과 출력
                 with sub_c1:
                     st.subheader("내가 그린 숫자")
-                    st.image(preview_img, caption="입력 받은 숫자", width=280)
+                    st.image(preview_img, caption="해상도: 28x28", width=280)
                 with sub_c2:
                     st.subheader("가장 비슷한 숫자")
                     # 원본 데이터셋에서 해당 인덱스의 이미지를 가져옴
