@@ -4,6 +4,7 @@ import re
 from itertools import zip_longest
 from wordcloud import WordCloud     # 워드클라우드 라이브러리
 import matplotlib.pyplot as plt     # 시각화 라이브러리
+import os # 맨 위에 import 추가 필요
 
 # ==============================================================================
 # 1. 페이지 설정 및 스타일
@@ -232,12 +233,16 @@ if st.session_state.combined_df is not None:
                     try:
                         # 빈도수 딕셔너리 생성
                         total_counts = {word: valid_tokens.count(word) for word in vocab}
+
+                        # 폰트 설정
+                        current_dir = os.path.dirname(os.path.abspath(__file__))
+                        font_path = os.path.join(current_dir, "./기타/나눔고딕 D2coding.ttf")
                         
                         wc = WordCloud(
                             width=400, 
                             height=300, 
                             background_color='white',
-                            font_path='malgun' # 윈도우용 한글폰트 (맥/리눅스에서는 경로 수정 필요 or 제외)
+                            font_path=font_path 
                         ).generate_from_frequencies(total_counts)
                         
                         # matplotlib로 이미지 변환
@@ -253,3 +258,4 @@ if st.session_state.combined_df is not None:
 
 else:
     st.info("👆 상단의 텍스트 입력창을 열고 분석할 텍스트를 입력하세요.")
+
