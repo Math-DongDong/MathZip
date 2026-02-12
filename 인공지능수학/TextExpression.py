@@ -206,7 +206,7 @@ if st.session_state.combined_df is not None:
             st.divider()
 
             st.subheader("4️⃣ 빈도수 벡터 표현 (Frequency Vector)")
-            st.caption("각 단어가 문장에 몇 번 등장했는지 횟수(Count)를 표시합니다.")
+            st.caption("각 단어가 문장에 몇 번 등장했는지를 통해 주제어를 찾을 수 있습니다.")
 
             def make_count_vector(tokens, vocabulary):
                 return [tokens.count(word) for word in vocabulary]
@@ -261,5 +261,6 @@ if st.session_state.combined_df is not None:
 
 else:
     st.info("👆 상단의 텍스트 입력창을 열고 분석할 텍스트를 입력하세요.")
+
 
 
