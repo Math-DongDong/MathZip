@@ -21,9 +21,10 @@ pages = {
         st.Page("./보드게임/PigGame.py", title="Pig Game"),
         st.Page("./보드게임/Dice.py", title="주사위 모음")
     ],
-    "인공지능 수학": [
+    "인공지능 수학": [ 
         st.Page("./인공지능수학/ImageExpression.py", title="이미지 데이터의 표현"),
         st.Page("./인공지능수학/ImageConversion.py", title="이미지 데이터의 변환"),
+        st.Page("./인공지능수학/ImageClassification.py", title="이미지 데이터의 분류"),
         st.Page("./인공지능수학/TextExpression.py", title="텍스트 데이터의 표현과 주제어 찾기"),
     ],
     "산업수학": [
