@@ -5,7 +5,7 @@ import numpy as np
 import tensorflow as tf # 데이터셋 로드용
 
 # 2. [데이터 로드] MNIST 데이터셋 캐싱 (모델 파일 대신 원본 데이터 사용)
-@st.cache_data(show_spinner=False)
+@st.cache_data(show_spinner="MNIST 데이터셋을 다운로드 및 로드 중입니다... (시간이 걸릴 수 있습니다)")
 def load_mnist_data():
     # Keras를 통해 MNIST 데이터 다운로드
     (x_train, y_train), _ = tf.keras.datasets.mnist.load_data()
@@ -22,8 +22,7 @@ def load_mnist_data():
 # 데이터 로드 실행
 try:
     # 원본이미지(시각화용), 이진화된벡터(계산용), 정답라벨
-    with st.spinner("mnist 데이터 로드 중...", show_time=True):
-        original_images, binary_vectors, labels = load_mnist_data()
+    original_images, binary_vectors, labels = load_mnist_data()
 except Exception as e:
     st.error(f"데이터 로드 중 오류 발생: {e}")
     st.stop()
