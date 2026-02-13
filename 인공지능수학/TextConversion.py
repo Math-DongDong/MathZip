@@ -109,7 +109,7 @@ with st.expander("📝 문서 데이터 입력 및 수정 열기/닫기", expand
 if st.session_state.wide_token_df is not None:
     col_edit, col_bag = st.columns([0.5, 0.5], gap="large")
     with col_edit:
-        st.subheader("1️⃣ 불용어 제거")
+        st.subsubheader("1️⃣ 불용어 제거")
         st.caption("단어를 자유롭게 수정한 뒤 아래 버튼을 눌러주세요.")
         
         # [핵심] 폼 시작
@@ -148,7 +148,7 @@ if st.session_state.wide_token_df is not None:
 
         # 1-2. 오른쪽: 단어 가방 시각화
         with col_bag:
-            st.subheader("2️⃣ 단어 가방")
+            st.subsubheader("2️⃣ 단어 가방")
             st.caption("불용어가 제거된 최종 단어 집합입니다.")
             
             all_words = sorted(list(set(all_valid_tokens_flat)))
@@ -175,7 +175,7 @@ if st.session_state.wide_token_df is not None:
         # [Step 2] 단어빈도 (TF)
         # --------------------------------------------------------------------------
         st.divider()
-        st.header("3️⃣ 단어빈도 (TF: Term Frequency)")
+        st.subheader("3️⃣ 단어빈도 (TF: Term Frequency)")
         
         tf_rows = []
         for tokens in tokens_by_doc:
@@ -188,7 +188,7 @@ if st.session_state.wide_token_df is not None:
         # --------------------------------------------------------------------------
         # [Step 3] 문서빈도 (DF)
         # --------------------------------------------------------------------------
-        st.header("4️⃣ 문서빈도 (DF: Document Frequency)")
+        st.subheader("4️⃣ 문서빈도 (DF: Document Frequency)")
         
         df_counts = []
         for word in all_words:
@@ -204,7 +204,7 @@ if st.session_state.wide_token_df is not None:
         # --------------------------------------------------------------------------
         # [Step 4] 역문서빈도 (IDF)
         # --------------------------------------------------------------------------
-        st.header("5️⃣ 역문서빈도 (IDF: Inverse Document Frequency)")
+        st.subheader("5️⃣ 역문서빈도 (IDF: Inverse Document Frequency)")
         n_docs = len(doc_names)
         
         st.latex(r"IDF = \frac{\text{전체 문서의 개수}(n)}{\text{문서빈도}(DF)}")
@@ -224,7 +224,7 @@ if st.session_state.wide_token_df is not None:
         # --------------------------------------------------------------------------
         # [Step 5] TF-IDF
         # --------------------------------------------------------------------------
-        st.header("6️⃣ TF-IDF 구하기")
+        st.subheader("6️⃣ TF-IDF 구하기")
         st.latex(r"\text{TF-IDF} = \text{TF} \times \text{IDF}")
 
         tfidf_rows = []
@@ -244,7 +244,7 @@ if st.session_state.wide_token_df is not None:
         
         # [인사이트]
         st.divider()
-        st.subheader("💡 분석 결과 인사이트")
+        st.subsubheader("💡 분석 결과 인사이트")
         
         for idx, doc_name in enumerate(doc_names):
             row_series = df_tfidf.iloc[idx]
