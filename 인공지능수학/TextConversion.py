@@ -81,7 +81,9 @@ with st.expander("📝 문서 데이터 입력 및 수정 열기/닫기", expand
         use_container_width=True,
         key="input_editor"
     )
-    st.caption("※ 행을 추가하거나 삭제할 수 있습니다. **문서명** 열은 각 문서의 **고유 이름**으로 작성해주세요.")
+    with st.container(horizontal=True):
+        st.space("stretch")
+        st.caption("※ 행을 추가하거나 삭제할 수 있습니다. **문서명** 열은 각 문서의 **고유 이름**으로 작성해주세요.")
     
     if st.button("🚀 데이터 전처리", type="primary", use_container_width=True):
         st.session_state.doc_df = input_df
