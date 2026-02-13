@@ -26,6 +26,8 @@ pages = {
         st.Page("./인공지능수학/ImageConversion.py", title="이미지 데이터의 변환"),
         st.Page("./인공지능수학/ImageClassification.py", title="이미지 데이터의 분류"),
         st.Page("./인공지능수학/TextExpression.py", title="텍스트 데이터의 표현과 주제어 찾기"),
+        st.Page("./인공지능수학/TextConversion.py", title="텍스트 데이터에서 유용한 정보 찾기"),
+
     ],
     "산업수학": [
         st.Page("./산업수학/MedicalData.py", title="의료 데이터와 건강 상태"),
