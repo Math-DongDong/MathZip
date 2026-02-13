@@ -81,9 +81,7 @@ with st.expander("📝 문서 데이터 입력 및 수정 열기/닫기", expand
         use_container_width=True,
         key="input_editor"
     )
-    with st.container(horizontal=True):
-        st.space("stretch")
-        st.caption("※ 행을 추가하거나 삭제할 수 있습니다. **문서명** 열은 각 문서의 **고유 이름**으로 작성해주세요.")
+    st.caption("※ 행을 추가하거나 삭제할 수 있습니다. **문서명** 열은 각 문서의 **고유 이름**으로 작성해주세요.")
     
     if st.button("🚀 데이터 전처리", type="primary", use_container_width=True):
         st.session_state.doc_df = input_df
@@ -261,7 +259,7 @@ if st.session_state.wide_token_df is not None:
     else:
         # 버튼 누르기 전 안내 문구
         with col_bag:
-            st.info("👈 왼쪽에서 불용어 처리를 마친 후 **'단어 가방 만들기'** 버튼을 눌러주세요.")
+            st.info("👈 왼쪽에서 수정을 마치고 **'단어 가방 만들기'** 버튼을 눌러주세요.")
 
 else:
     st.info("👆 상단의 문서 입력창을 열고 분석할 문서 내용을 입력하세요.")
