@@ -75,13 +75,13 @@ if "confirmed_token_df" not in st.session_state:
 # 3. [Step 0] 텍스트 데이터 입력
 # ==============================================================================
 with st.expander("📝 문서 데이터 입력 및 수정 열기/닫기", expanded=True):    
+    st.caption("※ 행을 추가하거나 삭제할 수 있습니다. **문서명** 열은 각 문서의 **고유 이름**으로 작성해주세요.")
     input_df = st.data_editor(
         st.session_state.doc_df,
         num_rows="dynamic",
         use_container_width=True,
         key="input_editor"
     )
-    st.caption("※ 행을 추가하거나 삭제할 수 있습니다. **문서명** 열은 각 문서의 **고유 이름**으로 작성해주세요.")
     
     if st.button("🚀 데이터 전처리", type="primary", use_container_width=True):
         st.session_state.doc_df = input_df
@@ -175,7 +175,8 @@ if st.session_state.wide_token_df is not None:
         # [Step 2] 단어빈도 (TF)
         # --------------------------------------------------------------------------
         st.divider()
-        st.header("3️⃣ 단어빈도 (TF: Term Frequency)")
+        st.subheader("3️⃣ 단어빈도 (TF: Term Frequency)")
+        st.caption("각 문서에 등장하는 단어들의 빈도수입니다.")
         
         tf_rows = []
         for tokens in tokens_by_doc:
@@ -183,13 +184,13 @@ if st.session_state.wide_token_df is not None:
             tf_rows.append(counts)
         
         df_tf = pd.DataFrame(tf_rows, columns=all_words, index=doc_names)
-        st.table(df_tf)
+        st.table(df_tf,border="horizontal")
 
         # --------------------------------------------------------------------------
         # [Step 3] 문서빈도 (DF)
         # --------------------------------------------------------------------------
-        st.header("4️⃣ 문서빈도 (DF: Document Frequency)")
-        
+        st.subheader("4️⃣ 문서빈도 (DF: Document Frequency)")
+        st.caption("단어별로 그 단어가 등장하는 문서의 개수입니다.")
         df_counts = []
         for word in all_words:
             count = 0
@@ -199,12 +200,12 @@ if st.session_state.wide_token_df is not None:
             df_counts.append(count)
             
         df_df_table = pd.DataFrame([df_counts], columns=all_words, index=["DF"])
-        st.table(df_df_table)
+        st.table(df_df_table,border="horizontal")
 
         # --------------------------------------------------------------------------
         # [Step 4] 역문서빈도 (IDF)
         # --------------------------------------------------------------------------
-        st.header("5️⃣ 역문서빈도 (IDF: Inverse Document Frequency)")
+        st.subheader("5️⃣ 역문서빈도 (IDF: Inverse Document Frequency)")
         n_docs = len(doc_names)
         
         st.latex(r"IDF = \frac{\text{전체 문서의 개수}(n)}{\text{문서빈도}(DF)}")
@@ -219,12 +220,12 @@ if st.session_state.wide_token_df is not None:
         
         idf_display = [f"{v:.2f}".rstrip('0').rstrip('.') if v != 0 else "0" for v in idf_values]
         df_idf = pd.DataFrame([idf_display], columns=all_words, index=["IDF"])
-        st.table(df_idf)
+        st.table(df_idf,border="horizontal")
 
         # --------------------------------------------------------------------------
         # [Step 5] TF-IDF
         # --------------------------------------------------------------------------
-        st.header("6️⃣ TF-IDF 구하기")
+        st.subheader("6️⃣ TF-IDF 구하기")
         st.latex(r"\text{TF-IDF} = \text{TF} \times \text{IDF}")
 
         tfidf_rows = []
@@ -240,7 +241,7 @@ if st.session_state.wide_token_df is not None:
         df_tfidf = pd.DataFrame(tfidf_rows, columns=all_words, index=doc_names)
         df_tfidf_display = df_tfidf.applymap(lambda x: f"{x:.2f}".rstrip('0').rstrip('.') if x != 0 else "0")
         
-        st.table(df_tfidf_display)
+        st.table(df_tfidf_display,border="horizontal")
         
         # [인사이트]
         st.divider()
