@@ -1,14 +1,11 @@
 import streamlit as st
 import pandas as pd
 import re
-import numpy as np
 from itertools import zip_longest
 
 # ==============================================================================
 # 1. 페이지 설정 및 스타일 정의
 # ==============================================================================
-st.set_page_config(page_title="TF-IDF 분석기", layout="wide", page_icon="🧮")
-
 st.markdown("""
 <style>
     .word-badge {
@@ -49,16 +46,16 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-st.title("🧮 텍스트 데이터에서 유용한 정보 찾기 (TF-IDF)")
+st.title("🧮 텍스트 데이터에서 유용한 정보 찾기")
 
 # ==============================================================================
 # 2. 초기화
 # ==============================================================================
 default_data = {
     "내용": [
-        "경치가 좋고 사진 찍기 좋은 캠핑장",
-        "시설이 깨끗하고 뷰가 좋은 캠핑장",
-        "온수 잘 나오고 화장실이 깨끗하다"
+        "경치가 좋아서 사진을 찍기가 좋은 캠핑장이라 추천해요!",
+        "시설이 깨끗하고 뷰가 좋은 캠핑장이에요.",
+        "온수가 잘 나오고 화장실이 깨끗해서 위생적이라 좋네요."
     ]
 }
 
@@ -77,17 +74,16 @@ if "confirmed_token_df" not in st.session_state:
 # ==============================================================================
 # 3. [Step 0] 텍스트 데이터 입력
 # ==============================================================================
-with st.expander("📝 문서 데이터 입력 및 수정", expanded=True):
-    st.info("왼쪽의 **'문서명'** 열을 더블 클릭하여 직접 이름을 변경할 수 있습니다.")
-    
+with st.expander("📝 문서 데이터 입력 및 수정 열기/닫기", expanded=True):    
     input_df = st.data_editor(
         st.session_state.doc_df,
         num_rows="dynamic",
         use_container_width=True,
         key="input_editor"
     )
+    st.caption("※ 행을 추가하거나 삭제할 수 있습니다. **문서명** 열은 각 문서의 **고유 이름**으로 작성해주세요.")
     
-    if st.button("🚀 분석 시작 (토큰화)", type="primary", use_container_width=True):
+    if st.button("🚀 데이터 전처리", type="primary", use_container_width=True):
         st.session_state.doc_df = input_df
         
         token_lists = []
@@ -111,14 +107,10 @@ with st.expander("📝 문서 데이터 입력 및 수정", expanded=True):
 # 4. 분석 프로세스
 # ==============================================================================
 if st.session_state.wide_token_df is not None:
-    st.divider()
-    
     col_edit, col_bag = st.columns([0.5, 0.5], gap="large")
-    
-    # --- [Step 1] 불용어 처리 (폼 적용) ---
     with col_edit:
-        st.subheader("1️⃣ 단어 분리 및 불용어 제거")
-        st.caption("단어를 자유롭게 수정한 뒤 아래 **'단어 가방 만들기'** 버튼을 눌러주세요.")
+        st.subheader("1️⃣ 불용어 제거")
+        st.caption("단어를 자유롭게 수정한 뒤 아래 버튼을 눌러주세요.")
         
         # [핵심] 폼 시작
         with st.form("token_edit_form", border=False):
@@ -126,13 +118,11 @@ if st.session_state.wide_token_df is not None:
             edited_wide_df = st.data_editor(
                 st.session_state.wide_token_df,
                 use_container_width=True,
-                height=400,
+                height=300,
                 num_rows="dynamic",
                 key="wide_editor"
             )
             
-            st.write("") # 간격
-            # 폼 제출 버튼
             submit_btn = st.form_submit_button("🎒 단어 가방 만들기", type="primary", use_container_width=True)
         
         # 버튼이 눌리면 데이터 확정 및 저장
@@ -158,8 +148,8 @@ if st.session_state.wide_token_df is not None:
 
         # 1-2. 오른쪽: 단어 가방 시각화
         with col_bag:
-            st.subheader("2️⃣ 단어 가방 (Bag of Words)")
-            st.caption("모든 문서에서 추출된 고유 단어 목록입니다.")
+            st.subheader("2️⃣ 단어 가방")
+            st.caption("불용어가 제거된 최종 단어 집합입니다.")
             
             all_words = sorted(list(set(all_valid_tokens_flat)))
             
@@ -272,4 +262,4 @@ if st.session_state.wide_token_df is not None:
             st.info("👈 왼쪽에서 불용어 처리를 마친 후 **'단어 가방 만들기'** 버튼을 눌러주세요.")
 
 else:
-    st.info("👆 상단의 '분석 시작' 버튼을 눌러주세요.")
+    st.info("👆 상단의 문서 입력창을 열고 분석할 문서 내용을 입력하세요.")
