@@ -19,7 +19,7 @@ pages = {
     "보드게임": [
         st.Page("./보드게임/Streams.py", title="스트림스"),
         st.Page("./보드게임/PigGame.py", title="Pig Game"), 
-        st.Page("./보드게임/#NumberBaseball.py", title="숫자야구"),
+        st.Page("./보드게임/NumberBaseball.py", title="숫자야구"),
         st.Page("./보드게임/Dice.py", title="주사위 모음")
     ],
     
