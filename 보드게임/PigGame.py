@@ -1,178 +1,155 @@
-# pig_game_app_v14_final_header_size_fix.py
-
 import streamlit as st
-import pandas as pd
-import numpy as np
 import random
-import time
-import plotly.graph_objects as go
 
-# [핵심 수정] .stats-header의 font-size 값을 .stats-cell과 유사한 수준으로 키워 균형을 맞춥니다.
-st.markdown("""
-<style>
-.stats-table {
-    border: 1px solid #e0e0e0;
-    border-radius: 10px;
-    padding: 15px;
-    background-color: #fafafa;
-}
-.stats-header {
-    text-align: center;
-    font-weight: bold;
-    font-size: 2em !important; /* 헤더 폰트 크기 대폭 증가 */
-}
-.stats-row-header {
-    font-weight: bold;
-    font-size: 1.2em !important; 
-}
-.stats-cell {
-    text-align: center;
-    font-size: 1.4em !important; 
-    font-weight: bold; 
-}
-</style>
-""", unsafe_allow_html=True)
+# -----------------------------------------------------------------------------
+# 1. 페이지 기본 설정
+# -----------------------------------------------------------------------------
+st.set_page_config(page_title="숫자 야구 게임", page_icon="⚾", layout="wide")
 
-st.title("🐷 Pig Game")
+# -----------------------------------------------------------------------------
+# 2. 게임 로직 함수 정의
+# -----------------------------------------------------------------------------
+def generate_target_number(length):
+    """선택한 자릿수(length)에 맞춰 중복 없는 랜덤 숫자를 생성합니다."""
+    digits = list("0123456789")
+    first_digit = random.choice(list("123456789")) # 첫 자리는 0 제외
+    digits.remove(first_digit)
+    rest_digits = random.sample(digits, length - 1)
+    return first_digit + "".join(rest_digits)
 
-# --- 2. 상단 게임 설정 패널 ---
-with st.expander("⚙️ 게임 설정 및 진행 방법 (클릭하여 열기/닫기)", expanded=('player_scores' not in st.session_state)):
-    with st.form(key="game_setup_form"):
-        col1, col2 = st.columns(2)
-        with col1:
-            num_players = st.slider("모둠 수", min_value=2, max_value=10, value=2)
-        with col2:
-            winning_score = st.number_input("목표 점수", min_value=20, max_value=100, value=100, step=10)
+def check_guess(guess, target):
+    """사용자 입력과 정답을 비교하여 S, B, O를 계산합니다."""
+    strikes = sum(1 for i in range(len(guess)) if guess[i] == target[i])
+    balls = sum(1 for i in range(len(guess)) if guess[i] != target[i] and guess[i] in target)
+    outs = len(target) - strikes - balls
+    return strikes, balls, outs
 
-        st.markdown(f"""
-        - **승리조건:** 먼저 **목표점수**에 도달하세요!
-        - **진행:**
-            1. 자기 차례가 되면 '주사위 던지기'를 계속할 수 있습니다.
-            2. 나온 눈의 수가 '이번 라운드 점수'에 계속 더해집니다.
-            3. **하지만 주사위 눈이 **`1`** 이 나오면...** 이번 라운드 점수는 **0점**이 되고, 즉시 다음 사람에게 차례가 넘어갑니다.
-            4.  **`1`** 이 나오기 전에 '그만하기'를 누르면, 이번 라운드 점수가 '총 점수'에 더해지고 차례가 넘어갑니다.
-        """)
+# -----------------------------------------------------------------------------
+# 3. 세션 상태(Session State) 초기화
+# -----------------------------------------------------------------------------
+if 'target_number' not in st.session_state:
+    st.session_state.target_number = None
+if 'history' not in st.session_state:
+    st.session_state.history =[]
+if 'game_over' not in st.session_state:
+    st.session_state.game_over = False
+if 'digit_length' not in st.session_state:
+    st.session_state.digit_length = 4
+
+def start_new_game(length):
+    """새로운 게임을 시작할 때 변수들을 초기화하는 함수입니다."""
+    st.session_state.target_number = generate_target_number(length)
+    st.session_state.history =[]
+    st.session_state.game_over = False
+    st.session_state.digit_length = length
+
+# 처음 접속 시 게임 세팅
+if st.session_state.target_number is None:
+    start_new_game(st.session_state.digit_length)
+
+# -----------------------------------------------------------------------------
+# 4. 화면 레이아웃 구성
+# -----------------------------------------------------------------------------
+st.title("⚾ 두근두근 숫자 야구 게임")
+st.markdown("---")
+
+# ==========================================
+#[상단 레이아웃] 1행: 2개의 열 (게임 설정 / 규칙 설명)
+# ==========================================
+top_left, top_right = st.columns(2)
+
+# 상단 왼쪽: 팝오버(popover)를 활용한 게임 설정
+with top_left:
+    st.subheader("⚙️ 게임 준비")
+    st.write(f"현재 **{st.session_state.digit_length}자리 숫자** 모드입니다.")
+    
+    # st.popover를 사용하면 클릭 시 확장되는 메뉴를 만들 수 있습니다.
+    with st.popover("🎮 게임 설정 열기"):
+        st.markdown("**1. 자릿수 선택**")
+        # 현재 설정된 자릿수를 기본값(index)으로 설정
+        idx = st.session_state.digit_length - 4 
+        selected_length = st.radio(
+            "몇 자리 숫자로 게임을 할까요?", 
+            (4, 5, 6), 
+            index=idx, 
+            horizontal=True
+        )
         
-        submitted = st.form_submit_button("🚀 새 게임 시작")
-        
+        st.markdown("**2. 게임 시작**")
+        if st.button("🔄 새 게임 시작", type="primary", use_container_width=True):
+            start_new_game(selected_length)
+            st.rerun() # 설정 적용 후 화면 새로고침
+
+# 상단 오른쪽: 판정 기호 설명
+with top_right:
+    st.subheader("📖 규칙 및 판정 설명")
+    st.success("🟢 **S (스트라이크)** : 숫자와 **위치**가 모두 맞았을 때")
+    st.warning("🟡 **B (볼)** : 숫자는 맞췄지만, **위치**가 틀렸을 때")
+    st.error("🔴 **O (아웃)** : 내가 입력한 숫자가 정답에 **아예 없을 때**")
+
+st.markdown("---")
+
+# ==========================================
+# [하단 레이아웃] 2행: 2개의 열 (숫자 입력란 / 입력 결과 정리)
+# ==========================================
+bot_left, bot_right = st.columns(2)
+
+# 하단 왼쪽: 숫자 입력란
+with bot_left:
+    st.subheader("🎯 숫자 입력")
+    
+    # 정답을 맞추지 않았을 때만 입력 폼 표시
+    if not st.session_state.game_over:
+        with st.form("guess_form", clear_on_submit=True):
+            user_guess = st.text_input(
+                f"{st.session_state.digit_length}자리 숫자를 중복 없이 입력하세요:",
+                max_chars=st.session_state.digit_length
+            )
+            submitted = st.form_submit_button("확인 (또는 엔터)")
+
+        # 입력값 검증 로직
         if submitted:
-            st.session_state.num_players = num_players
-            st.session_state.winning_score = winning_score
-            st.session_state.player_names = [f"{i+1}모둠" for i in range(num_players)]
-            st.session_state.player_scores = [0] * num_players
-            st.session_state.current_player = 0
-            st.session_state.pending_score = 0
-            st.session_state.last_roll = "🐷"
-            st.session_state.game_over = False
-            st.session_state.winner = None
-            st.session_state.roll_history = []
-            st.session_state.turn_over_message = ""
-            st.rerun()
-
-
-# --- 3. 핵심 게임 로직 함수 ---
-def next_turn():
-    st.session_state.current_player = (st.session_state.current_player + 1) % st.session_state.num_players
-    st.session_state.pending_score = 0
-    st.session_state.last_roll = "🐷"
-    time.sleep(0.5) 
-
-def roll_dice():
-    roll = random.randint(1, 6)
-    st.session_state.last_roll = roll
-    st.session_state.roll_history.append(roll)
-    if roll == 1:
-        st.session_state.pending_score = 0
-        st.session_state.turn_over_message = f"앗! 1이 나왔습니다. 점수를 모두 잃고 턴이 넘어갑니다."
-        next_turn()
+            if len(user_guess) != st.session_state.digit_length:
+                st.error(f"⚠️ {st.session_state.digit_length}자리 숫자를 모두 채워주세요!")
+            elif not user_guess.isdigit():
+                st.error("⚠️ 숫자만 입력해 주세요!")
+            elif len(set(user_guess)) != st.session_state.digit_length:
+                st.error("⚠️ 중복되는 숫자가 있습니다. 서로 다른 숫자를 입력해 주세요!")
+            else:
+                # 판정 후 기록 저장
+                s, b, o = check_guess(user_guess, st.session_state.target_number)
+                st.session_state.history.append((user_guess, s, b, o))
+                
+                # 정답 처리
+                if s == st.session_state.digit_length:
+                    st.session_state.game_over = True
+                    st.rerun() # 결과를 오른쪽에 띄우기 위해 리런
     else:
-        st.session_state.pending_score += roll
-        st.session_state.turn_over_message = ""
+        # 정답을 맞춘 후의 화면
+        st.success("🎉 정답을 맞췄습니다! 게임이 종료되었습니다.")
+        st.info("다시 하려면 상단의 **'게임 설정 열기'** 버튼을 눌러 새 게임을 시작하세요.")
 
-def hold():
-    current_player_idx = st.session_state.current_player
-    st.session_state.player_scores[current_player_idx] += st.session_state.pending_score
-    st.session_state.turn_over_message = f"{st.session_state.pending_score}점을 획득했습니다!"
-    if st.session_state.player_scores[current_player_idx] >= st.session_state.winning_score:
-        st.session_state.game_over = True
-        st.session_state.winner = st.session_state.player_names[current_player_idx]
-    else:
-        next_turn()
-
-# --- 4. 메인 UI 렌더링 ---
-if 'player_scores' not in st.session_state:
-    st.info("👆 상단의 '게임 설정' 패널에서 설정을 마친 후 '새 게임 시작' 버튼을 눌러주세요.")
-else:
-    active_player_name = st.session_state.player_names[st.session_state.current_player]
-    st.subheader(f"👑 현재 차례: **{active_player_name}**")
+# 하단 오른쪽: 입력 결과(히스토리) 정리
+with bot_right:
+    st.subheader("📝 입력 결과 기록")
+    
+    # 게임 종료 시 축하 메시지와 풍선 효과
     if st.session_state.game_over:
-        st.balloons(); 
-        st.success(f"🎉 **게임 종료! 승자는 {st.session_state.winner} 입니다!** 🎉  새 게임을 시작하려면 상단 설정 패널에서 '새 게임 시작' 버튼을 누르세요.")
-   
-    main_col1, main_col2 = st.columns([0.3, 0.7])
-    with main_col1:
-        st.markdown(f"<p style='text-align: center; font-size: 110px; font-weight: bold; margin: 0; line-height: 1;'>{st.session_state.last_roll}</p>", unsafe_allow_html=True)
-        st.metric(label="이번 라운드 점수", value=f"{st.session_state.pending_score} 점")
-        btn_cols = st.columns(2)
-        with btn_cols[0]: st.button("주사위 던지기", on_click=roll_dice, width='stretch', disabled=st.session_state.game_over)
-        with btn_cols[1]: st.button("그만하기", on_click=hold, width='stretch', disabled=st.session_state.game_over)
-
-    with main_col2:
-        st.subheader("scoreboard")
-        score_cols = st.columns(st.session_state.num_players)
-        
-        for i, col in enumerate(score_cols):
-            with col:
-                is_current_player = (i == st.session_state.current_player)
-                player_name = st.session_state.player_names[i]
-                header_text = f"👑 {player_name}" if is_current_player else player_name
-                st.markdown(f"**{header_text}**")
-                player_score = st.session_state.player_scores[i]
-                delta_score = st.session_state.pending_score if is_current_player and not st.session_state.game_over else 0
-                st.metric(label="총 점수", value=player_score, delta=f"{delta_score} 점" if delta_score > 0 else None)
-        if st.session_state.turn_over_message: st.info(st.session_state.turn_over_message)
-
-    st.divider()
-    stats_col1, stats_col2 = st.columns(2)
-
-    with stats_col1:
-        st.subheader("📊 주사위 눈의 비율")
-        if st.session_state.roll_history:
-            roll_counts = pd.Series(st.session_state.roll_history).value_counts()
-            full_counts = pd.Series(index=range(1, 7), data=0, dtype=int); full_counts.update(roll_counts)
-            total_rolls = len(st.session_state.roll_history)
-            roll_ratio = full_counts / total_rolls
-            fig = go.Figure(); fig.add_trace(go.Scatter(x=roll_ratio.index, y=roll_ratio.values, mode='lines+markers', name='비율', line_shape='spline'))
-            fig.update_layout(xaxis_title="주사위 눈", yaxis_title="비율", yaxis_range=[0, 1],height=300,margin=dict(l=0, r=0, t=0, b=0)); st.plotly_chart(fig, width='stretch')
-        else: 
-            st.caption("아직 주사위를 던지지 않았습니다.")
-
-    with stats_col2:
-        st.subheader("📈 주사위 눈의 통계표")
-        if st.session_state.roll_history:
-            roll_counts = pd.Series(st.session_state.roll_history).value_counts()
-            full_counts = pd.Series(index=range(1, 7), data=0, dtype=int); full_counts.update(roll_counts)
-            total_rolls = len(st.session_state.roll_history)
-            roll_ratio = full_counts / total_rolls
-
-            header_cols = st.columns([1, 1, 1, 1, 1, 1, 1])
-            headers = ["", "🎲 1", "🎲 2", "🎲 3", "🎲 4", "🎲 5", "🎲 6"]
-            for col, header in zip(header_cols, headers):
-                col.markdown(f'<p class="stats-header">{header}</p>', unsafe_allow_html=True)
+        st.balloons()
+        st.success(f"🎊 {len(st.session_state.history)}번 만에 정답 `{st.session_state.target_number}`을(를) 맞추셨습니다!")
+    
+    # 기록이 없을 때 빈 화면 방지 안내문
+    if not st.session_state.history:
+        st.info("아직 입력한 기록이 없습니다. 왼쪽에서 숫자를 입력해 보세요!")
+    else:
+        # 최근 입력한 것이 제일 위로 오도록 reversed 사용
+        for idx, (guess, s, b, o) in enumerate(reversed(st.session_state.history)):
+            attempt_num = len(st.session_state.history) - idx
             
-            #st.divider()
-
-            freq_cols = st.columns([1, 1, 1, 1, 1, 1, 1])
-            freq_cols[0].markdown('<p class="stats-row-header">빈도</p>', unsafe_allow_html=True)
-            for i in range(1, 7):
-                freq_cols[i].markdown(f'<p class="stats-cell">{full_counts.get(i, 0)}</p>', unsafe_allow_html=True)
-
-            ratio_cols = st.columns([1, 1, 1, 1, 1, 1, 1])
-            ratio_cols[0].markdown('<p class="stats-row-header">비율</p>', unsafe_allow_html=True)
-            for i in range(1, 7):
-                ratio_cols[i].markdown(f'<p class="stats-cell">{roll_ratio.get(i, 0.0):.3f}</p>', unsafe_allow_html=True)
+            # S, B, O 여부에 따라 색상을 입혀서 가독성 향상
+            result_text = f"**{attempt_num}번째** ➡️ `{guess}` : "
+            if s > 0: result_text += f"🟢 **{s}S** "
+            if b > 0: result_text += f"🟡 **{b}B** "
+            if o > 0: result_text += f"🔴 **{o}O**"
             
-            st.markdown('</div>', unsafe_allow_html=True)
-        else: 
-            st.caption("아직 주사위를 던지지 않았습니다.")
-
+            st.markdown(result_text)
