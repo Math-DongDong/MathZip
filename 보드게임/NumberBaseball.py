@@ -33,19 +33,43 @@ if 'game_over' not in st.session_state:
     st.session_state.game_over = False
 if 'digit_length' not in st.session_state:
     st.session_state.digit_length = 4
-# 알약(pills) 상태를 실시간으로 관리하기 위한 세션 상태 추가
 if 'current_guess' not in st.session_state:
     st.session_state.current_guess =[]
+if 'error_msg' not in st.session_state:
+    st.session_state.error_msg = "" # 경고 메시지를 담을 공간 추가
 
-def start_new_game(length):
+def start_new_game(length=None):
+    if length is None:
+        length = st.session_state.digit_length
     st.session_state.target_number = generate_target_number(length)
     st.session_state.history =[]
     st.session_state.game_over = False
     st.session_state.digit_length = length
-    st.session_state.current_guess =[] # 새 게임 시 입력칸도 초기화
+    st.session_state.current_guess =[]
+    st.session_state.error_msg = ""
 
 if st.session_state.target_number is None:
-    start_new_game(st.session_state.digit_length)
+    start_new_game()
+
+# ⭐ [핵심 해결책] 확인 버튼을 눌렀을 때 실행될 콜백(Callback) 함수
+def handle_submit():
+    # 1. 입력된 숫자 가져오기
+    user_guess = "".join(st.session_state.current_guess)
+    
+    # 2. 자릿수 검사
+    if len(user_guess) != st.session_state.digit_length:
+        st.session_state.error_msg = f"⚠️ {st.session_state.digit_length}개의 숫자를 모두 선택해 주세요!"
+    else:
+        # 3. 정상 입력 시 로직 처리
+        st.session_state.error_msg = "" # 에러 메시지 초기화
+        s, b, o = check_guess(user_guess, st.session_state.target_number)
+        st.session_state.history.append((user_guess, s, b, o))
+        
+        if s == st.session_state.digit_length:
+            st.session_state.game_over = True
+            
+        # 4. 화면을 그리기 전에 알약 버튼 상태를 미리 비워줌 (에러 방지!)
+        st.session_state.current_guess =[]
 
 # -----------------------------------------------------------------------------
 # 4. 화면 레이아웃 구성
@@ -92,43 +116,37 @@ with bot_left:
     if not st.session_state.game_over:
         st.info("💡 **버튼을 터치**하면 아래에 숫자가 표시됩니다.")
         
-        # 1. 큼직한 실시간 숫자 디스플레이 (전광판 느낌)
-        # 선택된 숫자가 있으면 간격을 띄워 예쁘게 보여주고, 없으면 빈칸( _ )으로 표시합니다.
+        # 1. 큼직한 실시간 숫자 디스플레이
         current_selection = st.session_state.current_guess
         if current_selection:
             display_text = " ".join(current_selection)
-            # HTML과 CSS를 활용해 크고 파란색의 텍스트로 렌더링합니다.
             st.markdown(f"<h1 style='text-align: center; color: #1E88E5; letter-spacing: 15px; font-size: 50px;'>{display_text}</h1>", unsafe_allow_html=True)
         else:
             placeholder_text = "_ " * st.session_state.digit_length
             st.markdown(f"<h1 style='text-align: center; color: #B0BEC5; letter-spacing: 15px; font-size: 50px;'>{placeholder_text}</h1>", unsafe_allow_html=True)
         
-        # 2. 터치형 알약 버튼 (st.form 제거)
-        # key="current_guess"를 부여하여, 클릭할 때마다 위 디스플레이가 즉시 반응합니다.
+        # 2. 에러 메시지 표시 로직 (콜백 함수에서 발생한 메시지 띄우기)
+        if st.session_state.error_msg:
+            st.error(st.session_state.error_msg)
+            # 한 번 보여준 에러 메시지는 다음 행동 시 지워지도록 초기화
+            st.session_state.error_msg = ""
+        
+        # 3. 터치형 알약 버튼
         st.pills(
             f"👇 {st.session_state.digit_length}개의 숫자를 선택하세요:",
             options=[str(i) for i in range(10)],
             selection_mode="multi",
-            key="current_guess" # 세션 상태와 직접 연결!
+            key="current_guess"
         )
         
-        # 3. 입력 완료 버튼
-        if st.button("확인 (입력 완료)", type="primary", use_container_width=True):
-            user_guess = "".join(st.session_state.current_guess)
+        # 4. 입력 완료 버튼 (⭐⭐⭐ on_click 옵션 추가 ⭐⭐⭐)
+        st.button(
+            "확인 (입력 완료)", 
+            type="primary", 
+            use_container_width=True, 
+            on_click=handle_submit # 이 버튼을 누르면 위에서 정의한 handle_submit 함수가 먼저 실행됩니다!
+        )
             
-            if len(user_guess) != st.session_state.digit_length:
-                st.error(f"⚠️ {st.session_state.digit_length}개의 숫자를 모두 선택해 주세요!")
-            else:
-                s, b, o = check_guess(user_guess, st.session_state.target_number)
-                st.session_state.history.append((user_guess, s, b, o))
-                
-                # 입력을 완료했으므로 알약 버튼(화면)을 다시 비워줍니다.
-                st.session_state.current_guess =[] 
-                
-                if s == st.session_state.digit_length:
-                    st.session_state.game_over = True
-                
-                st.rerun() # 변경된 상태(기록 추가, 버튼 리셋)를 반영하기 위해 새로고침
     else:
         st.success("🎉 정답을 맞췄습니다! 게임이 종료되었습니다.")
         st.info("다시 하려면 상단의 **'게임 설정 열기'** 버튼을 눌러 새 게임을 시작하세요.")
