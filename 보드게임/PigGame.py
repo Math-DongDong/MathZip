@@ -104,7 +104,6 @@ if 'player_scores' not in st.session_state:
     st.info("👆 상단의 '게임 설정' 패널에서 설정을 마친 후 '새 게임 시작' 버튼을 눌러주세요.")
 else:
     active_player_name = st.session_state.player_names[st.session_state.current_player]
-    st.subheader(f"👑 현재 차례: **{active_player_name}**")
     if st.session_state.game_over:
         st.balloons(); 
         st.success(f"🎉 **게임 종료! 승자는 {st.session_state.winner} 입니다!** 🎉  새 게임을 시작하려면 상단 설정 패널에서 '새 게임 시작' 버튼을 누르세요.")
@@ -118,7 +117,7 @@ else:
         with btn_cols[1]: st.button("그만하기", on_click=hold, width='stretch', disabled=st.session_state.game_over)
 
     with main_col2:
-        st.subheader("scoreboard")
+        st.subheader(f"scoreboard(현재 차례: **{active_player_name}**)")
         score_cols = st.columns(st.session_state.num_players)
         
         for i, col in enumerate(score_cols):
