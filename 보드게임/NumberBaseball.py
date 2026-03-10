@@ -82,7 +82,7 @@ with st.container(horizontal=True):
 # ==========================================
 # [하단 레이아웃] 2행
 # ==========================================
-bot_left, bot_right = st.columns(2)
+bot_left, bot_right = st.columns([1,3])
 
 # 하단 왼쪽: 숫자 입력란 (실시간 디스플레이 + st.pills)
 with bot_left:
@@ -142,12 +142,17 @@ with bot_right:
     if not st.session_state.history:
         st.caption("아직 입력한 기록이 없습니다.")
     else:
+        col_left, col_right = st.columns(2)
+        
         for idx, (guess, s, b, o) in enumerate(reversed(st.session_state.history)):
             attempt_num = len(st.session_state.history) - idx
             
-            result_text = f"**{attempt_num}번째**  `{guess}` : "
+            result_text = f"**`{attempt_num}번째`**  {guess} : "
             if s > 0: result_text += f"🟢 **{s}S** "
             if b > 0: result_text += f"🟡 **{b}B** "
             if o > 0: result_text += f"🔴 **{o}O**"
             
-            st.markdown(f"#### {result_text}")
+            if attempt_num <= 10:
+                col_left.markdown(f"#### {result_text}")
+            else:
+                col_right.markdown(f"#### {result_text}")
