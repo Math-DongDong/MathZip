@@ -70,7 +70,6 @@ def handle_submit():
 # 4. 화면 레이아웃 구성
 # -----------------------------------------------------------------------------
 st.title("⚾ 숫자 야구")
-st.markdown("---")
 
 # ==========================================
 # [상단 레이아웃] 1행
@@ -78,24 +77,19 @@ st.markdown("---")
 top_left, top_right = st.columns(2)
 
 with top_left:
-    st.subheader("⚙️ 게임 준비")
-    st.write(f"현재 **{st.session_state.digit_length}자리 숫자** 모드입니다.")
-    
     with st.popover("🎮 게임 설정 열기"):
-        st.markdown("**1. 자릿수 선택**")
         idx = st.session_state.digit_length - 4 
         selected_length = st.radio("몇 자리 숫자로 할까요?", (4, 5, 6), index=idx, horizontal=True)
-        
-        st.markdown("**2. 게임 시작**")
         if st.button("🔄 새 게임 시작", type="primary", use_container_width=True):
             start_new_game(selected_length)
             st.rerun()
 
 with top_right:
-    st.subheader("📖 규칙 및 판정 설명")
-    st.success("🟢 **S (스트라이크)** : 숫자와 **위치**가 모두 맞았을 때")
-    st.warning("🟡 **B (볼)** : 숫자는 맞췄지만, **위치**가 틀렸을 때")
-    st.error("🔴 **O (아웃)** : 내가 입력한 숫자가 정답에 **아예 없을 때**")
+    with st.container(horizontal=True):
+        st.subheader("📖 규칙 및 판정 설명")
+        st.success("🟢 **S (스트라이크)** : 숫자와 **위치**가 모두 맞았을 때")
+        st.warning("🟡 **B (볼)** : 숫자는 맞췄지만, **위치**가 틀렸을 때")
+        st.error("🔴 **O (아웃)** : 내가 입력한 숫자가 정답에 **아예 없을 때**")
 
 st.markdown("---")
 
