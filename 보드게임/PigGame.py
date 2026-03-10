@@ -36,7 +36,7 @@ st.markdown("""
 st.title("🐷 Pig Game")
 
 # --- 2. 상단 게임 설정 패널 ---
-with st.expander("⚙️ 게임 설정 및 진행 방법 (클릭하여 열기/닫기)", expanded=('player_scores' not in st.session_state)):
+with st.expander("⚙️ 게임 설정 및 진행 방법 열기", expanded=('player_scores' not in st.session_state)):
     with st.form(key="game_setup_form",border=False):
         col1, col2 = st.columns(2)
         with col1:
@@ -65,7 +65,9 @@ with st.expander("⚙️ 게임 설정 및 진행 방법 (클릭하여 열기/�
             st.session_state.last_roll = "🐷"
             st.session_state.game_over = False
             st.session_state.winner = None
-            st.session_state.roll_history = []
+            # roll_history는 유지 (첫 게임일 때만 초기화)
+            if 'roll_history' not in st.session_state:
+                st.session_state.roll_history = []
             st.session_state.turn_over_message = ""
             st.rerun()
 
@@ -117,7 +119,7 @@ else:
         with btn_cols[1]: st.button("그만하기", on_click=hold, width='stretch', disabled=st.session_state.game_over)
 
     with main_col2:
-        st.subheader(f"scoreboard(현재 차례: **{active_player_name}**)")
+        st.subheader(f"scoreboard - 현재 **{active_player_name}**")
         score_cols = st.columns(st.session_state.num_players)
         
         for i, col in enumerate(score_cols):
@@ -131,7 +133,6 @@ else:
                 st.metric(label="총 점수", value=player_score, delta=f"{delta_score} 점" if delta_score > 0 else None)
         if st.session_state.turn_over_message: st.info(st.session_state.turn_over_message)
 
-    st.divider()
     stats_col1, stats_col2 = st.columns(2)
 
     with stats_col1:
