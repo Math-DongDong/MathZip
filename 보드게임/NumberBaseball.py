@@ -74,7 +74,7 @@ st.title("⚾ 숫자 야구")
 # ==========================================
 # [상단 레이아웃] 1행
 # ==========================================
-top_left, top_right = st.columns([1,3]])
+top_left, top_right = st.columns([1,3])
 
 with top_left:
     with st.popover("🎮 게임 설정 열기"):
