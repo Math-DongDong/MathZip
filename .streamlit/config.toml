@@ -1,7 +1,4 @@
 [client]
-# "Running..." 표시 숨김 
-showSpinner = false
-
 # 우측 상단 메뉴 숨김
 toolbarMode = "minimal"
 
