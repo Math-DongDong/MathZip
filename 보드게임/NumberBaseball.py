@@ -150,4 +150,4 @@ with bot_right:
             if b > 0: result_text += f"🟡 **{b}B** "
             if o > 0: result_text += f"🔴 **{o}O**"
             
-            st.markdown(result_text)
+            st.markdown(f"<p style='font-size: 18px;'>{result_text}</p>", unsafe_allow_html=True)
