@@ -74,7 +74,7 @@ st.title("⚾ 숫자 야구")
 # ==========================================
 # [상단 레이아웃] 1행
 # ==========================================
-top_left, top_right = st.columns(2)
+top_left, top_right = st.columns([1,3]])
 
 with top_left:
     with st.popover("🎮 게임 설정 열기"):
@@ -86,12 +86,9 @@ with top_left:
 
 with top_right:
     with st.container(horizontal=True):
-        st.subheader("📖 규칙 및 판정 설명")
         st.success("🟢 **S (스트라이크)** : 숫자와 **위치**가 모두 맞았을 때")
         st.warning("🟡 **B (볼)** : 숫자는 맞췄지만, **위치**가 틀렸을 때")
         st.error("🔴 **O (아웃)** : 내가 입력한 숫자가 정답에 **아예 없을 때**")
-
-st.markdown("---")
 
 # ==========================================
 # [하단 레이아웃] 2행
