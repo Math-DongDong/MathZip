@@ -82,7 +82,7 @@ with st.container(horizontal=True):
 # ==========================================
 # [하단 레이아웃] 2행
 # ==========================================
-bot_left, bot_right = st.columns([1,3])
+bot_left, bot_right = st.columns([0.3,0.7])
 
 # 하단 왼쪽: 숫자 입력란 (실시간 디스플레이 + st.pills)
 with bot_left:
@@ -137,7 +137,7 @@ with bot_right:
     
     if st.session_state.game_over:
         st.balloons()
-        st.success(f"🎊 {len(st.session_state.history)}번 만에 정답 `{st.session_state.target_number}`을(를) 맞추셨습니다!")
+        st.success(f"🎊 {len(st.session_state.history)}번 만에 정답 {st.session_state.target_number}을(를) 맞추셨습니다!")
     
     if not st.session_state.history:
         st.caption("아직 입력한 기록이 없습니다.")
