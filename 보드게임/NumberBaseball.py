@@ -74,21 +74,10 @@ st.title("⚾ 숫자 야구")
 # ==========================================
 # [상단 레이아웃] 1행
 # ==========================================
-top_left, top_right = st.columns([1,3])
-
-with top_left:
-    with st.popover("🎮 게임 설정 열기"):
-        idx = st.session_state.digit_length - 4 
-        selected_length = st.radio("몇 자리 숫자로 할까요?", (4, 5, 6), index=idx, horizontal=True)
-        if st.button("🔄 새 게임 시작", type="primary", use_container_width=True):
-            start_new_game(selected_length)
-            st.rerun()
-
-with top_right:
-    with st.container(horizontal=True):
-        st.success("🟢 **S (스트라이크)** : 숫자와 **위치**가 모두 맞았을 때")
-        st.warning("🟡 **B (볼)** : 숫자는 맞췄지만, **위치**가 틀렸을 때")
-        st.error("🔴 **O (아웃)** : 내가 입력한 숫자가 정답에 **아예 없을 때**")
+with st.container(horizontal=True):
+    st.success("🟢 **S (스트라이크)** : 숫자와 **위치**가 모두 맞았을 때")
+    st.warning("🟡 **B (볼)** : 숫자는 맞췄지만, **위치**가 틀렸을 때")
+    st.error("🔴 **O (아웃)** : 내가 입력한 숫자가 정답에 **아예 없을 때**")
 
 # ==========================================
 # [하단 레이아웃] 2행
@@ -97,11 +86,16 @@ bot_left, bot_right = st.columns(2)
 
 # 하단 왼쪽: 숫자 입력란 (실시간 디스플레이 + st.pills)
 with bot_left:
-    st.subheader("🎯 숫자 입력")
-    
+    st.subheader(f"🎯 {st.session_state.digit_length}자리 숫자 입력")
+
+    with st.popover("🎮 게임 설정 열기"):
+        idx = st.session_state.digit_length - 4 
+        selected_length = st.radio("몇 자리 숫자로 할까요?", (4, 5, 6), index=idx, horizontal=True)
+        if st.button("🔄 새 게임 시작", type="primary", use_container_width=True):
+            start_new_game(selected_length)
+            st.rerun()
+
     if not st.session_state.game_over:
-        st.info("💡 **버튼을 터치**하면 아래에 숫자가 표시됩니다.")
-        
         # 1. 큼직한 실시간 숫자 디스플레이
         current_selection = st.session_state.current_guess
         if current_selection:
@@ -134,7 +128,7 @@ with bot_left:
         )
             
     else:
-        st.success("🎉 정답을 맞췄습니다! 게임이 종료되었습니다.")
+        st.success("🎉 정답을 맞췄습니다!")
         st.info("다시 하려면 상단의 **'게임 설정 열기'** 버튼을 눌러 새 게임을 시작하세요.")
 
 # 하단 오른쪽: 입력 결과(히스토리) 정리
@@ -146,12 +140,12 @@ with bot_right:
         st.success(f"🎊 {len(st.session_state.history)}번 만에 정답 `{st.session_state.target_number}`을(를) 맞추셨습니다!")
     
     if not st.session_state.history:
-        st.info("아직 입력한 기록이 없습니다. 왼쪽에서 숫자를 선택해 보세요!")
+        st.caption("아직 입력한 기록이 없습니다.")
     else:
         for idx, (guess, s, b, o) in enumerate(reversed(st.session_state.history)):
             attempt_num = len(st.session_state.history) - idx
             
-            result_text = f"**{attempt_num}번째** ➡️ `{guess}` : "
+            result_text = f"**{attempt_num}번째**  `{guess}` : "
             if s > 0: result_text += f"🟢 **{s}S** "
             if b > 0: result_text += f"🟡 **{b}B** "
             if o > 0: result_text += f"🔴 **{o}O**"
