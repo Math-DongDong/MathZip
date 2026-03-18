@@ -1,7 +1,7 @@
-streamlit
-pandas
-numpy
-plotly
+streamlit==1.54.0
+pandas==2.3.0
+numpy==2.3.0
+plotly==5.20.0
 pillow==11.2.1
 plotly==5.20.0
 protobuf==6.33.4
@@ -35,6 +35,5 @@ tzdata==2025.2
 urllib3==2.4.0
 watchdog==6.0.0
 Werkzeug==3.1.5
-wordcloud==1.9.6
 wrapt==2.0.1
 xlsxwriter==3.2.9
