@@ -418,4 +418,4 @@ html_code='''
 '''
 
 # 4. 스트림릿 컴포넌트로 렌더링
-components.html(html_code, height=550)
+components.html(html_code, height=530)
