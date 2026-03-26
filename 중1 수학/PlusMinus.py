@@ -155,7 +155,7 @@ html_code='''
         let questionStartTime = 0;
 
         const LEVEL_THRESHOLDS =[0, 5, 12, 20]; 
-        const LEVEL_TITLES =["Lv.1 덧셈 연습", "Lv.2 덧셈과 뺄셈", "Lv.3 음수의 뺄셈", "Lv.4 유리수 마스터"];
+        const LEVEL_TITLES =["Lv.1 덧셈 연습", "Lv.2 덧셈과 뺄셈", "Lv.3 음수의 덧셈과 뺄셈", "Lv.4 유리수 마스터"];
         const PRAISES =["완벽해요! 🔥", "최고예요! ⭐", "천재인가요? 🚀", "잘하고 있어요! 👏", "정답입니다! 💯"];
 
         const scoreEl = document.getElementById('score');
