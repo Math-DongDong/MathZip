@@ -11,8 +11,8 @@ st.set_page_config(
 pages = {
     "중1 수학": [
         # 그룹의 첫 번째 페이지를 default=True로 설정하면 '중1 수학' 클릭 시 이 페이지가 먼저 보입니다.
-        st.Page("./중1 수학/PlusMinus.py", title="정수와 유리수의 덧셈, 뺄셈"),   
-        st.Page("./중1 수학/MultiplicationDivision.py", title="정수와 유리수의 덧셈, 뺄셈"),   
+        st.Page("./중1 수학/PlusMinus.py", title="덧셈, 뺄셈"),   
+        st.Page("./중1 수학/MultiplicationDivision.py", title="곱셈, 나눗셈"),   
         st.Page("./중1 수학/rotation.py", title="회전체 탐구", default=True),
     ],
     "중2 수학": [
