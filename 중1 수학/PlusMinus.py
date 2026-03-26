@@ -1,7 +1,7 @@
 import streamlit as st
 import streamlit.components.v1 as components
 
-st.title("🔄 회전체 탐구")
+st.title("덧셈, 뺄셈")
 html_code='''
 <!DOCTYPE html>
 <html lang="ko">
@@ -430,4 +430,4 @@ html_code='''
 '''
 
 # 4. 스트림릿 컴포넌트로 렌더링
-components.html(html_code, height=600, scrolling=True)
+components.html(html_code, height=800, scrolling=True)
