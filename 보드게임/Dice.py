@@ -26,6 +26,10 @@ def on_op_change():
     # 현재 상태를 이전 상태로 저장 (다음 비교를 위해)
     st.session_state.prev_op_pills = st.session_state.op_pills
 
+# 주사위 개수를 변경할 때의 콜백 함수
+def on_dice_count_change():
+    pass
+
 # -----------------------------------------------------------------------------
 # 3. 세션 상태(Session State) 초기화
 # -----------------------------------------------------------------------------
@@ -35,14 +39,16 @@ if 'op_pills' not in st.session_state:
     st.session_state.prev_op_pills = ["🚫 없음"]
 if 'sign_pill' not in st.session_state:
     st.session_state.sign_pill = "미포함"
+if 'dice_count' not in st.session_state:
+    st.session_state.dice_count = 1
 if 'dice_result' not in st.session_state:
-    st.session_state.dice_result = "❔"
+    st.session_state.dice_result = None
 
 # -----------------------------------------------------------------------------
 # 4. 설정 UI 영역 (st.pills 활용)
 # -----------------------------------------------------------------------------
 with st.expander("⚙️ 주사위 설정 열기"):
-    col1, col2 = st.columns([1.5, 1])
+    col1, col2, col3 = st.columns([1.5, 1, 1])
 
     with col1:
         st.write("**1. 연산 기호** (다중 선택 가능)")
@@ -62,6 +68,17 @@ with st.expander("⚙️ 주사위 설정 열기"):
             options=["포함", "미포함"],
             selection_mode="single", # 무조건 하나만 선택
             key="sign_pill",
+            label_visibility="collapsed"
+        )
+
+    with col3:
+        st.write("**3. 주사위 개수**")
+        st.slider(
+            "개수",
+            min_value=1,
+            max_value=3,
+            key="dice_count",
+            on_change=on_dice_count_change,
             label_visibility="collapsed"
         )
 
@@ -110,13 +127,24 @@ if st.button("🎲 주사위 굴리기", type="primary"):
     # 안전 장치: 값이 비어있을 경우 기본값 세팅
     curr_ops = st.session_state.op_pills if st.session_state.op_pills else ["🚫 없음"]
     curr_sign = st.session_state.sign_pill if st.session_state.sign_pill else "미포함"
+    dice_count = st.session_state.dice_count if st.session_state.dice_count else 1
     
     # 애니메이션(드르르륵 굴러가는 효과)
     for i in range(total_steps):
-        op, num = generate_dice_face(curr_ops, curr_sign)
-        temp_result = f"<small>{op}</small>{num}"
+        # 주사위 개수만큼 결과 생성
+        temp_results = []
+        for _ in range(dice_count):
+            op, num = generate_dice_face(curr_ops, curr_sign)
+            temp_results.append(f"<small>{op}</small>{num}")
+        
         with placeholder.container():
-            st.markdown(f"<h1 style='text-align: center; font-size: 130px; padding: 40px 0;'>{temp_result}</h1>", unsafe_allow_html=True)
+            if dice_count == 1:
+                st.markdown(f"<h1 style='text-align: center; font-size: 130px; padding: 40px 0;'>{temp_results[0]}</h1>", unsafe_allow_html=True)
+            else:
+                cols = st.columns(dice_count)
+                for j, col in enumerate(cols):
+                    with col:
+                        st.markdown(f"<h1 style='text-align: center; font-size: 100px; padding: 20px 0;'>{temp_results[j]}</h1>", unsafe_allow_html=True)
         
         # 갈수록 느려지는 효과 (마찰력 구현)
         progress = i / total_steps
@@ -125,14 +153,40 @@ if st.button("🎲 주사위 굴리기", type="primary"):
             time.sleep(current_delay)
 
     # 최종 결과 고정
-    op, num = generate_dice_face(curr_ops, curr_sign)
-    final_result = f"<small>{op}</small>{num}"
-    st.session_state.dice_result = final_result # 저장
+    final_results = []
+    for _ in range(dice_count):
+        op, num = generate_dice_face(curr_ops, curr_sign)
+        final_results.append(f"<small>{op}</small>{num}")
+    st.session_state.dice_result = final_results # 저장
     
     with placeholder.container():
-        # 결과는 파란색으로 조금 더 예쁘게 강조!
-        st.markdown(f"<h1 style='text-align: center; font-size: 130px; padding: 40px 0; color: #1E88E5;'>{final_result}</h1>", unsafe_allow_html=True)
+        if dice_count == 1:
+            # 결과는 파란색으로 조금 더 예쁘게 강조!
+            st.markdown(f"<h1 style='text-align: center; font-size: 130px; padding: 40px 0; color: #1E88E5;'>{final_results[0]}</h1>", unsafe_allow_html=True)
+        else:
+            cols = st.columns(dice_count)
+            for j, col in enumerate(cols):
+                with col:
+                    st.markdown(f"<h1 style='text-align: center; font-size: 100px; padding: 20px 0; color: #1E88E5;'>{final_results[j]}</h1>", unsafe_allow_html=True)
 
 else:
     # 평상시(버튼 누르기 전) 화면
-    st.markdown(f"<h1 style='text-align: center; font-size: 130px; padding: 40px 0;'>{st.session_state.dice_result}</h1>", unsafe_allow_html=True)
+    if st.session_state.dice_result is not None:
+        dice_count = st.session_state.dice_count if st.session_state.dice_count else 1
+        result_count = len(st.session_state.dice_result)
+        
+        # 저장된 결과 개수가 현재 설정된 개수와 일치할 경우에만 표시
+        if result_count == dice_count:
+            if dice_count == 1:
+                st.markdown(f"<h1 style='text-align: center; font-size: 130px; padding: 40px 0;'>{st.session_state.dice_result[0]}</h1>", unsafe_allow_html=True)
+            else:
+                cols = st.columns(dice_count)
+                for j, col in enumerate(cols):
+                    with col:
+                        st.markdown(f"<h1 style='text-align: center; font-size: 100px; padding: 20px 0;'>{st.session_state.dice_result[j]}</h1>", unsafe_allow_html=True)
+        else:
+            # 주사위 개수가 변경되었으므로 초기화
+            st.session_state.dice_result = None
+            st.markdown(f"<h1 style='text-align: center; font-size: 130px; padding: 40px 0;'>❔</h1>", unsafe_allow_html=True)
+    else:
+        st.markdown(f"<h1 style='text-align: center; font-size: 130px; padding: 40px 0;'>❔</h1>", unsafe_allow_html=True)
