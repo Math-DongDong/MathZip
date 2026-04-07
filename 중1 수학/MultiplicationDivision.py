@@ -149,6 +149,7 @@ html_code='''
         let totalTimeMs = 0;
         let solvedCount = 0;
         let questionStartTime = 0;
+        let isChecking = false;
 
         // 5단계 레벨로 세분화 (정수곱 -> 유리수곱 -> 거듭제곱 -> 나눗셈 -> 혼합)
         const LEVEL_THRESHOLDS =[0, 5, 11, 18, 26]; 

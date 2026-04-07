@@ -153,6 +153,7 @@ html_code='''
         let totalTimeMs = 0;
         let solvedCount = 0;
         let questionStartTime = 0;
+        let isChecking = false;
 
         const LEVEL_THRESHOLDS =[0, 5, 12, 20]; 
         const LEVEL_TITLES =["Lv.1 덧셈 연습", "Lv.2 덧셈과 뺄셈", "Lv.3 음수의 덧셈과 뺄셈", "Lv.4 유리수 마스터"];
@@ -336,7 +337,8 @@ html_code='''
         }
 
         function checkAnswer() {
-            if (currentInput === "" || lives <= 0) return;
+            if (currentInput === "" || lives <= 0 || isChecking) return;
+            isChecking = true;
 
             if (currentInput === expectedAnswer) {
                 let timeTaken = Date.now() - questionStartTime;
@@ -354,6 +356,7 @@ html_code='''
                     feedbackMsg.classList.remove('pop', 'opacity-100');
                     feedbackMsg.classList.add('opacity-0');
                     generateQuestion();
+                    isChecking = false;
                 }, 800);
             } else {
                 combo = 0;
@@ -362,6 +365,7 @@ html_code='''
 
                 if (lives <= 0) {
                     showGameOver();
+                    isChecking = false;
                     return;
                 }
 
@@ -378,6 +382,7 @@ html_code='''
                 setTimeout(() => {
                     feedbackMsg.classList.remove('opacity-100');
                     feedbackMsg.classList.add('opacity-0');
+                    isChecking = false;
                 }, 1500);
             }
         }
