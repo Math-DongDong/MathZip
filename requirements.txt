@@ -20,8 +20,6 @@ scikit-learn==1.8.0
 scipy==1.17.0
 six==1.17.0
 smmap==5.0.2
-streamlit==1.54.0
-streamlit-drawable-canvas==0.9.3
 tenacity==9.1.2
 tensorboard==2.20.0
 tensorboard-data-server==0.7.2
@@ -36,4 +34,3 @@ urllib3==2.4.0
 watchdog==6.0.0
 Werkzeug==3.1.5
 wrapt==2.0.1
-xlsxwriter==3.2.9
