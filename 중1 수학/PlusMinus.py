@@ -102,32 +102,6 @@ html_code='''
                     </div>
                 </div>
 
-                <!-- 완료 알림 (50점 도달) -->
-                <div id="completion-overlay" class="absolute inset-0 bg-black/80 flex items-center justify-center hidden z-30">
-                    <div class="text-center pop bg-white p-6 sm:p-8 rounded-2xl shadow-xl mx-4 w-11/12 max-w-sm">
-                        <div class="text-5xl sm:text-6xl mb-4">🎊</div>
-                        <h2 class="text-2xl sm:text-3xl font-bold text-blue-600 mb-2">축하합니다!</h2>
-                        <p class="text-sm sm:text-base text-gray-600 mb-6">50점을 달성하셨습니다!</p>
-                        <div class="bg-gray-100 rounded-xl p-3 sm:p-4 mb-6">
-                            <p class="text-base sm:text-lg text-gray-700">최종 점수: <span id="completion-score" class="font-bold text-blue-600 text-xl sm:text-2xl">50</span>점</p>
-                        </div>
-                        <button onclick="showNameInputModal()" class="bg-green-500 hover:bg-green-600 text-white font-bold text-lg sm:text-xl py-3 px-8 w-full rounded-full transition-transform active:scale-95">
-                            이수증 받기
-                        </button>
-                    </div>
-                </div>
-
-                <!-- 이름 입력 모달 -->
-                <div id="name-input-modal" class="absolute inset-0 bg-black/80 flex items-center justify-center hidden z-40">
-                    <div class="text-center pop bg-white p-6 sm:p-8 rounded-2xl shadow-xl mx-4 w-11/12 max-w-sm">
-                        <h2 class="text-2xl sm:text-3xl font-bold text-blue-600 mb-4">이름을 입력하세요</h2>
-                        <input type="text" id="user-name-input" class="w-full border-2 border-blue-400 rounded-lg px-4 py-3 text-lg text-center mb-6 focus:outline-none focus:border-blue-600" placeholder="이름 입력" maxlength="15">
-                        <button onclick="generateAndDownloadCertificate()" class="bg-blue-500 hover:bg-blue-600 text-white font-bold text-lg sm:text-xl py-3 px-8 w-full rounded-full transition-transform active:scale-95">
-                            이수증 다운로드
-                        </button>
-                    </div>
-                </div>
-
                 <div id="feedback-msg" class="text-lg sm:text-xl font-bold text-green-500 h-8 transition-all opacity-0">정답입니다!</div>
 
                 <!-- 수식 컨테이너 (반응형 크기 적용 및 줄바꿈 허용) -->
@@ -168,11 +142,9 @@ html_code='''
         </div>
     </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script>
         let score = 0;
         let combo = 0;
-        let maxCombo = 0;
         let level = 1;
         let lives = 5;
         let expectedAnswer = "";
@@ -200,8 +172,6 @@ html_code='''
         const levelUpOverlay = document.getElementById('levelup-overlay');
         const levelUpMsg = document.getElementById('levelup-msg');
         const gameOverOverlay = document.getElementById('gameover-overlay');
-        const completionOverlay = document.getElementById('completion-overlay');
-        const nameInputModal = document.getElementById('name-input-modal');
         const hintMsg = document.getElementById('hint-msg');
 
         function init() {
@@ -212,12 +182,10 @@ html_code='''
         function restartGame() {
             score = 0;
             combo = 0;
-            maxCombo = 0;
             level = 1;
             lives = 5;
             totalTimeMs = 0;
             solvedCount = 0;
-            completionOverlay.classList.add('hidden');
             gameOverOverlay.classList.add('hidden');
             init();
         }
@@ -368,98 +336,6 @@ html_code='''
             document.getElementById('final-avg-time').innerText = finalAvg + "초";
         }
 
-        function showCompletion() {
-            completionOverlay.classList.remove('hidden');
-            document.getElementById('completion-score').innerText = score;
-        }
-
-        function showNameInputModal() {
-            completionOverlay.classList.add('hidden');
-            nameInputModal.classList.remove('hidden');
-            document.getElementById('user-name-input').focus();
-        }
-
-        function generateAndDownloadCertificate() {
-            let userName = document.getElementById('user-name-input').value.trim();
-            if (userName === "") {
-                alert("이름을 입력해주세요!");
-                return;
-            }
-
-            // 이수증 HTML 생성
-            let certificateHTML = `
-                <div style="width: 400px; height: 500px; background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%); border-radius: 24px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); display: flex; flex-direction: column; justify-content: space-between; padding: 32px; font-family: 'Jua', sans-serif; color: #1f2937;">
-                    <!-- 헤더 -->
-                    <div style="text-align: center; flex: 0;">
-                        <div style="font-size: 48px; line-height: 1;">🏆</div>
-                        <h1 style="font-size: 28px; font-weight: bold; color: #2563eb; line-height: 1.2; margin: 4px 0;">수료증</h1>
-                        <p style="font-size: 16px; color: #3b82f6; font-weight: bold; line-height: 1; margin: 2px 0;">정수와 유리수 마스터</p>
-                    </div>
-                    
-                    <!-- 중간 경계선 섹션 -->
-                    <div style="text-align: center; border-top: 4px solid #60a5fa; border-bottom: 4px solid #60a5fa; flex: 1; display: flex; flex-direction: column; justify-content: center; gap: 6px; padding: 12px 0;">
-                        <p style="font-size: 28px; font-weight: bold; color: #1d4ed8; line-height: 1.1;">${userName}</p>
-                        <p style="font-size: 14px; color: #6b7280; line-height: 1.2;">해당 과정을 성공적으로<br>완료하였음을 인증합니다.</p>
-                    </div>
-
-                    <!-- 통계 정보 -->
-                    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 4px; text-align: center; flex: 0;">
-                        <div>
-                            <p style="font-size: 12px; color: #6b7280; line-height: 1;">남은 기회</p>
-                            <p style="font-size: 20px; font-weight: bold; color: #dc2626; line-height: 1;">${lives}개</p>
-                        </div>
-                        <div>
-                            <p style="font-size: 12px; color: #6b7280; line-height: 1;">최고 콤보</p>
-                            <p style="font-size: 20px; font-weight: bold; color: #dc2626; line-height: 1;">${maxCombo}콤보</p>
-                        </div>
-                        <div>
-                            <p style="font-size: 12px; color: #6b7280; line-height: 1;">평균 시간</p>
-                            <p style="font-size: 20px; font-weight: bold; color: #7c3aed; line-height: 1;">${solvedCount === 0 ? "0.0" : ((totalTimeMs / solvedCount) / 1000).toFixed(1)}초</p>
-                        </div>
-                    </div>
-
-                    <!-- 날짜 -->
-                    <div style="text-align: center; flex: 0;">
-                        <p style="font-size: 14px; color: #9ca3af; line-height: 1;">${new Date().getFullYear()}년 ${new Date().getMonth() + 1}월 ${new Date().getDate()}일</p>
-                    </div>
-                </div>
-            `;
-
-            // 임시 div 생성 및 렌더링
-            let tempDiv = document.createElement('div');
-            tempDiv.innerHTML = certificateHTML;
-            tempDiv.style.position = 'absolute';
-            tempDiv.style.left = '-9999px';
-            tempDiv.style.top = '-9999px';
-            document.body.appendChild(tempDiv);
-
-            // html2canvas로 이미지 생성 및 다운로드
-            html2canvas(tempDiv, {
-                backgroundColor: null,
-                scale: 2,
-                useCORS: true,
-                width: 400,
-                height: 500
-            }).then(canvas => {
-                let link = document.createElement('a');
-                link.href = canvas.toDataURL('image/png');
-                link.download = `${userName}_수료증.png`;
-                link.click();
-                
-                // 임시 div 제거
-                document.body.removeChild(tempDiv);
-                
-                // 모달 닫고 게임 재시작
-                nameInputModal.classList.add('hidden');
-                document.getElementById('user-name-input').value = "";
-                restartGame();
-            }).catch(err => {
-                console.error('Error:', err);
-                alert('이수증 다운로드 중 오류가 발생했습니다.');
-                document.body.removeChild(tempDiv);
-            });
-        }
-
         function checkAnswer() {
             if (currentInput === "" || lives <= 0 || isChecking) return;
             isChecking = true;
@@ -470,23 +346,11 @@ html_code='''
                 solvedCount++;
                 score += 1;
                 combo += 1;
-                if (combo > maxCombo) maxCombo = combo;
                 
                 feedbackMsg.innerText = PRAISES[Math.floor(Math.random() * PRAISES.length)];
                 feedbackMsg.classList.remove('opacity-0', 'text-red-500');
                 feedbackMsg.classList.add('opacity-100', 'text-green-500', 'pop');
                 updateUI();
-                
-                // 50점 달성 확인
-                if (score >= 50) {
-                    setTimeout(() => {
-                        feedbackMsg.classList.remove('pop', 'opacity-100');
-                        feedbackMsg.classList.add('opacity-0');
-                        showCompletion();
-                        isChecking = false;
-                    }, 800);
-                    return;
-                }
                 
                 setTimeout(() => {
                     feedbackMsg.classList.remove('pop', 'opacity-100');
@@ -545,16 +409,6 @@ html_code='''
 
         document.addEventListener('keydown', (e) => {
             const key = e.key;
-            
-            // 이름 입력 모달이 활성화된 경우
-            if (!nameInputModal.classList.contains('hidden')) {
-                if (key === 'Enter') {
-                    generateAndDownloadCertificate();
-                }
-                return;
-            }
-            
-            // 게임 중인 경우
             if (key >= '0' && key <= '9') inputKey(key);
             else if (key === '-' || key === '/') inputKey(key);
             else if (key === 'Backspace') inputKey('DEL');
