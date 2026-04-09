@@ -152,7 +152,7 @@ html_code='''
         let isChecking = false;
 
         // 5단계 레벨로 세분화 (정수곱 -> 유리수곱 -> 거듭제곱 -> 나눗셈 -> 혼합)
-        const LEVEL_THRESHOLDS =[0, 5, 11, 18, 26]; 
+        const LEVEL_THRESHOLDS =[0, 10, 20, 30, 40]; 
         const LEVEL_TITLES =["Lv.1 정수 곱셈", "Lv.2 유리수 곱셈", "Lv.3 거듭제곱", "Lv.4 나눗셈", "Lv.5 혼합 계산"];
         const PRAISES =["완벽해요! 🔥", "최고예요! ⭐", "천재인가요? 🚀", "잘하고 있어요! 👏", "정답입니다! 💯"];
 
