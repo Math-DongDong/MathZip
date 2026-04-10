@@ -64,9 +64,14 @@ html_code='''
                         <div class="text-xs sm:text-sm font-bold tracking-widest text-red-200" id="lives-display">❤️❤️❤️❤️❤️</div>
                     </div>
                     <div class="text-right flex flex-col justify-end">
-                        <div class="text-[10px] sm:text-xs text-blue-100 font-bold mb-1">평균: <span id="avg-time">0.0초</span></div>
-                        <div id="combo-display" class="text-yellow-300 font-bold text-xs sm:text-sm h-4 sm:h-5 transition-all leading-none"></div>
-                        <div class="text-lg sm:text-xl mt-1 leading-none">점수: <span id="score">0</span></div>
+                        <div class="flex justify-between items-center mb-1">
+                            <div id="combo-display" class="text-yellow-300 font-bold text-base sm:text-lg"></div>
+                            <div class="text-base sm:text-lg text-blue-100 font-bold">평균: <span id="avg-time">0.0초</span></div>
+                        </div>
+                        <div class="flex justify-between items-center mt-1 gap-4">
+                            <div id="max-combo-display" class="text-yellow-300 font-bold text-lg sm:text-xl"></div>
+                            <div class="text-lg sm:text-xl leading-none">점수: <span id="score">0</span></div>
+                        </div>
                     </div>
                 </div>
                 <div class="w-full bg-blue-300 rounded-full h-1.5 sm:h-2 mt-1 sm:mt-2">
@@ -95,6 +100,7 @@ html_code='''
                         <div class="bg-gray-100 rounded-xl p-3 sm:p-4 mb-6">
                             <p class="text-base sm:text-lg text-gray-700">최종 점수: <span id="final-score" class="font-bold text-blue-600 text-xl sm:text-2xl">0</span>점</p>
                             <p class="text-base sm:text-lg text-gray-700">평균 풀이: <span id="final-avg-time" class="font-bold text-green-500 text-lg sm:text-xl">0.0초</span></p>
+                            <p class="text-base sm:text-lg text-gray-700">최고 콤보: <span id="final-max-combo" class="font-bold text-purple-500 text-lg sm:text-xl">0</span></p>
                         </div>
                         <button onclick="restartGame()" class="bg-blue-500 hover:bg-blue-600 text-white font-bold text-lg sm:text-xl py-3 px-8 w-full rounded-full transition-transform active:scale-95">
                             다시 도전하기
@@ -145,6 +151,7 @@ html_code='''
     <script>
         let score = 0;
         let combo = 0;
+        let maxCombo = 0;
         let level = 1;
         let lives = 5;
         let expectedAnswer = "";
@@ -161,6 +168,7 @@ html_code='''
 
         const scoreEl = document.getElementById('score');
         const comboEl = document.getElementById('combo-display');
+        const maxComboEl = document.getElementById('max-combo-display');
         const levelBadgeEl = document.getElementById('level-badge');
         const progressBarEl = document.getElementById('progress-bar');
         const livesDisplay = document.getElementById('lives-display');
@@ -182,6 +190,7 @@ html_code='''
         function restartGame() {
             score = 0;
             combo = 0;
+            maxCombo = 0;
             level = 1;
             lives = 5;
             totalTimeMs = 0;
@@ -334,6 +343,7 @@ html_code='''
             document.getElementById('final-score').innerText = score;
             let finalAvg = solvedCount === 0 ? "0.0" : ((totalTimeMs / solvedCount) / 1000).toFixed(1);
             document.getElementById('final-avg-time').innerText = finalAvg + "초";
+            document.getElementById('final-max-combo').innerText = maxCombo;
         }
 
         function checkAnswer() {
@@ -346,6 +356,7 @@ html_code='''
                 solvedCount++;
                 score += 1;
                 combo += 1;
+                if (combo > maxCombo) maxCombo = combo;
                 
                 feedbackMsg.innerText = PRAISES[Math.floor(Math.random() * PRAISES.length)];
                 feedbackMsg.classList.remove('opacity-0', 'text-red-500');
@@ -397,6 +408,8 @@ html_code='''
             
             if (combo >= 2) comboEl.innerText = `${combo} 콤보! 🔥`;
             else comboEl.innerText = "";
+            
+            maxComboEl.innerText = `최고 콤보: ${maxCombo}`;
 
             let maxScore = LEVEL_THRESHOLDS[level] || LEVEL_THRESHOLDS[3] + 10;
             let minScore = LEVEL_THRESHOLDS[level-1];
