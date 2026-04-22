@@ -405,7 +405,8 @@ html_code='''
         }
 
         function checkAnswer() {
-            if (currentInput === "" || lives <= 0) return;
+            if (currentInput === "" || lives <= 0 || isChecking) return;
+            isChecking = true;
 
             if (currentInput === expectedAnswer) {
                 let timeTaken = Date.now() - questionStartTime;
@@ -424,6 +425,7 @@ html_code='''
                     feedbackMsg.classList.remove('pop', 'opacity-100');
                     feedbackMsg.classList.add('opacity-0');
                     generateQuestion();
+                    isChecking = false;
                 }, 800);
             } else {
                 combo = 0;
@@ -432,6 +434,7 @@ html_code='''
 
                 if (lives <= 0) {
                     showGameOver();
+                    isChecking = false;
                     return;
                 }
 
@@ -447,6 +450,7 @@ html_code='''
                 setTimeout(() => {
                     feedbackMsg.classList.remove('opacity-100');
                     feedbackMsg.classList.add('opacity-0');
+                    isChecking = false;
                 }, 1500);
             }
         }
