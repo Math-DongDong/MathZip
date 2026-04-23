@@ -12,7 +12,7 @@ html_code='''
     <link href="https://fonts.googleapis.com/css2?family=Jua&display=swap" rel="stylesheet">
     
     <style>
-        /* 배경 및 기본 설정 (완전 흰색, 스크롤 방지) */
+        /* 배경 및 기본 설정 */
         body {
             font-family: 'Jua', sans-serif;
             background-color: #ffffff;
@@ -119,7 +119,7 @@ html_code='''
             </div>
         </div>
 
-        <!-- [오른쪽 영역 / 모바일 하단] 키패드 -->
+        <!--[오른쪽 영역 / 모바일 하단] 키패드 -->
         <div class="w-full md:w-[300px] lg:w-[350px] bg-white p-2 sm:p-4 flex flex-col justify-center border-t md:border-t-0 md:border-l border-gray-200 z-10 shrink-0">
             <div class="grid grid-cols-4 gap-1.5 sm:gap-2 w-full h-full md:h-auto max-w-sm mx-auto">
                 <button class="key-btn bg-gray-50 shadow-sm border border-gray-100 rounded-lg sm:rounded-xl text-xl sm:text-2xl font-bold py-3 sm:py-4 md:py-5 text-gray-700" onclick="inputKey('1')">1</button>
@@ -158,7 +158,7 @@ html_code='''
         let questionStartTime = 0;
         let isChecking = false;
 
-        // 6단계 레벨로 세분화 (정수곱 -> 유리수곱 -> 거듭제곱 -> 나눗셈 -> 혼합 -> 덧셈의 귀환)
+        // 6단계 레벨로 세분화
         const LEVEL_THRESHOLDS =[0, 10, 20, 30, 40, 50]; 
         const LEVEL_TITLES =["Lv.1 정수 곱셈", "Lv.2 유리수 곱셈", "Lv.3 거듭제곱", "Lv.4 나눗셈", "Lv.5 혼합 계산", "Lv.6 덧셈의 귀환"];
         const PRAISES =["완벽해요! 🔥", "최고예요! ⭐", "천재인가요? 🚀", "잘하고 있어요! 👏", "정답입니다! 💯"];
@@ -208,7 +208,7 @@ html_code='''
             return a;
         }
 
-        // 분수 기약분수화 및 문자열 반환 헬퍼
+        // 분수 기약분수화
         function simplify(n, d) {
             if (n === 0) return "0";
             let g = gcd(n, d);
@@ -219,7 +219,7 @@ html_code='''
 
         function getRandomInt(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; }
 
-        // 유리수(분수)를 HTML로 이쁘게 변환해주는 헬퍼
+        // 분수 HTML 변환 헬퍼
         function createFractionHTML(n, d, isFirst) {
             let isPositive = (n * d) > 0;
             let absN = Math.abs(n);
@@ -257,7 +257,6 @@ html_code='''
             if (newLevel > level) { level = newLevel; isLevelUp = true; }
             updateUI();
 
-            // 이전 난이도 혼합 (40% 확률)
             let problemType = level;
             if (level > 1 && Math.random() < 0.4) {
                 problemType = getRandomInt(1, level - 1);
@@ -270,42 +269,35 @@ html_code='''
                 // Lv.1 정수의 곱셈
                 let a = getRandomInt(-10, 10);
                 let b = getRandomInt(-10, 10);
-                if (a === 0) a = 3; if (b === 0) b = -2; // 0 제거
-                
+                if (a === 0) a = 3; if (b === 0) b = -2;
                 let signA = `${a}`;
-                let signB = b > 0 ? `${b}` : `(${b})`; // 양수는 괄호 생략
-                
+                let signB = b > 0 ? `${b}` : `(${b})`;
                 qHtml = `<span>${signA}</span> <span class="mx-1 text-blue-500">×</span> <span>${signB}</span>`;
                 ansStr = (a * b).toString();
                 hintMsg.style.opacity = 0;
             } 
             else if (problemType === 2) {
-                // Lv.2 유리수(분수)의 곱셈
+                // Lv.2 분수의 곱셈
                 let d1 = getRandomInt(2, 6);
                 let d2 = getRandomInt(2, 6);
                 let n1 = getRandomInt(1, d1 - 1) * (Math.random() < 0.5 ? 1 : -1);
                 let n2 = getRandomInt(1, d2 - 1) * (Math.random() < 0.5 ? 1 : -1);
-
                 qHtml = `${createFractionHTML(n1, d1, true)} <span class="mx-1 text-blue-500">×</span> ${createFractionHTML(n2, d2, false)}`;
                 ansStr = simplify(n1 * n2, d1 * d2);
                 hintMsg.style.opacity = 1;
             }
             else if (problemType === 3) {
-                // Lv.3 거듭제곱 (정수 및 분수)
+                // Lv.3 거듭제곱
                 let type = Math.random() < 0.5 ? 'int' : 'frac';
                 if (type === 'int') {
                     let base = getRandomInt(2, 5);
-                    let exp = getRandomInt(2, base === 2 ? 4 : 3); // 2^4=16, 3^3=27
-                    let isParens = Math.random() < 0.5; // (-3)^2 와 -3^2 구분
-                    
+                    let exp = getRandomInt(2, base === 2 ? 4 : 3);
+                    let isParens = Math.random() < 0.5;
                     let baseStr = isParens ? `(-${base})` : `-${base}`;
-                    
-                    // [수정됨] 지수를 위쪽으로 깔끔하게 올림 (-mt 적용)
                     qHtml = `<span class="flex items-start">
                                 <span class="flex items-center">${baseStr}</span>
                                 <span class="text-[0.65em] font-bold ml-0.5 -mt-1 sm:-mt-2">${exp}</span>
                              </span>`;
-                    
                     let val = Math.pow(base, exp);
                     ansStr = (isParens && exp % 2 === 0) ? val.toString() : (-val).toString();
                 } else {
@@ -314,19 +306,15 @@ html_code='''
                     let exp = getRandomInt(2, 3);
                     let isNeg = Math.random() < 0.5;
                     let sign = isNeg ? '-' : '';
-                    
                     let fracHTML = `
                         <div class="flex flex-col items-center text-[0.65em] leading-none mx-0.5 relative top-[-2px]">
                             <span class="frac-line w-full text-center pb-0.5 sm:pb-1">${n}</span>
                             <span class="pt-0.5 sm:pt-1">${d}</span>
                         </div>`;
-                        
-                    // [수정됨] 분수 거듭제곱도 지수를 위쪽으로 끌어올림
                     qHtml = `<span class="flex items-start">
                                 <span class="flex items-center"><span>(</span><span>${sign}</span>${fracHTML}<span>)</span></span>
                                 <span class="text-[0.65em] font-bold ml-0.5 -mt-1 sm:-mt-2">${exp}</span>
                              </span>`;
-                             
                     let top = Math.pow(n, exp);
                     let bot = Math.pow(d, exp);
                     if (isNeg && exp % 2 !== 0) top = -top;
@@ -335,16 +323,14 @@ html_code='''
                 hintMsg.style.opacity = 1;
             } 
             else if (problemType === 4) {
-                // Lv.4 정수 및 분수의 나눗셈
+                // Lv.4 나눗셈
                 let type = Math.random() < 0.5 ? 'int' : 'frac';
                 if (type === 'int') {
                     let a = getRandomInt(-20, 20);
                     let b = getRandomInt(-10, 10);
                     if (a === 0) a = 8; if (b === 0) b = -4;
-                    
                     let signA = `${a}`;
                     let signB = b > 0 ? `${b}` : `(${b})`;
-                    
                     qHtml = `<span>${signA}</span> <span class="mx-1 text-blue-500">÷</span> <span>${signB}</span>`;
                     ansStr = simplify(a, b);
                 } else {
@@ -352,32 +338,90 @@ html_code='''
                     let d2 = getRandomInt(2, 6);
                     let n1 = getRandomInt(1, d1 - 1) * (Math.random() < 0.5 ? 1 : -1);
                     let n2 = getRandomInt(1, d2 - 1) * (Math.random() < 0.5 ? 1 : -1);
-
                     qHtml = `${createFractionHTML(n1, d1, true)} <span class="mx-1 text-blue-500">÷</span> ${createFractionHTML(n2, d2, false)}`;
                     ansStr = simplify(n1 * d2, d1 * n2);
                 }
                 hintMsg.style.opacity = 1;
             } 
             else if (problemType === 5) {
-                // Lv.5 유리수의 혼합 (곱셈/나눗셈 랜덤 섞임)
+                // ⭐ Lv.5 업그레이드! (거듭제곱 포함 혼합 계산)
                 hintMsg.style.opacity = 1;
                 
-                let d1 = getRandomInt(2, 6);
-                let d2 = getRandomInt(2, 6);
-                let n1 = getRandomInt(1, d1 - 1) * (Math.random() < 0.5 ? 1 : -1);
-                let n2 = getRandomInt(1, d2 - 1) * (Math.random() < 0.5 ? 1 : -1);
-                let isMul = Math.random() < 0.5;
+                // 각 항을 생성하는 헬퍼 함수
+                function genTerm(isPow, isFirst) {
+                    if (isPow) {
+                        // 1. 거듭제곱 항 생성
+                        let isFrac = Math.random() < 0.5;
+                        if (isFrac) { // 분수 거듭제곱
+                            let d = getRandomInt(2, 4);
+                            let n = getRandomInt(1, d - 1);
+                            let exp = 2; // 계산 복잡도 조절을 위해 제곱 고정
+                            let isNeg = Math.random() < 0.5;
+                            let sign = isNeg ? '-' : '';
+                            let fracHTML = `
+                                <div class="flex flex-col items-center text-[0.65em] leading-none mx-0.5 relative top-[-2px]">
+                                    <span class="frac-line w-full text-center pb-0.5 sm:pb-1">${n}</span>
+                                    <span class="pt-0.5 sm:pt-1">${d}</span>
+                                </div>`;
+                            let html = `<span class="flex items-start mx-0.5 sm:mx-1">
+                                        <span class="flex items-center"><span>(</span><span>${sign}</span>${fracHTML}<span>)</span></span>
+                                        <span class="text-[0.65em] font-bold ml-0.5 -mt-1 sm:-mt-2">${exp}</span>
+                                     </span>`;
+                            let valN = Math.pow(n, exp);
+                            let valD = Math.pow(d, exp);
+                            if (isNeg && exp % 2 !== 0) valN = -valN;
+                            return { html: html, valN: valN, valD: valD };
+                        } else { // 정수 거듭제곱
+                            let base = getRandomInt(2, 4);
+                            let exp = 2; 
+                            let isParens = Math.random() < 0.5; // (-3)^2 와 -3^2의 차이 학습
+                            let baseStr = isParens ? `(-${base})` : `-${base}`;
+                            let html = `<span class="flex items-start mx-0.5 sm:mx-1">
+                                        <span class="flex items-center">${baseStr}</span>
+                                        <span class="text-[0.65em] font-bold ml-0.5 -mt-1 sm:-mt-2">${exp}</span>
+                                     </span>`;
+                            let valN = (isParens && exp % 2 === 0) ? Math.pow(base, exp) : -Math.pow(base, exp);
+                            return { html: html, valN: valN, valD: 1 };
+                        }
+                    } else {
+                        // 2. 일반 분수/정수 항 생성
+                        let isFrac = Math.random() < 0.5;
+                        if (isFrac) {
+                            let d = getRandomInt(2, 5);
+                            let n = getRandomInt(1, d - 1) * (Math.random() < 0.5 ? 1 : -1);
+                            let html = createFractionHTML(n, d, isFirst);
+                            return { html: html, valN: n, valD: d };
+                        } else {
+                            let n = getRandomInt(-5, 5);
+                            if (n === 0) n = 2;
+                            let html = (n < 0 && !isFirst) ? `<span class="mx-0.5">(${n})</span>` : `<span class="mx-0.5">${n}</span>`;
+                            return { html: html, valN: n, valD: 1 };
+                        }
+                    }
+                }
 
-                qHtml = `${createFractionHTML(n1, d1, true)} <span class="mx-1 text-blue-500">${isMul ? '×' : '÷'}</span> ${createFractionHTML(n2, d2, false)}`;
-
-                if (isMul) {
-                    ansStr = simplify(n1 * n2, d1 * d2);
+                // 30% 확률로 이전 난이도의 기본 분수 연산 등장, 70% 확률로 거듭제곱 혼합식 등장
+                if (Math.random() < 0.3) {
+                    let d1 = getRandomInt(2, 6);
+                    let d2 = getRandomInt(2, 6);
+                    let n1 = getRandomInt(1, d1 - 1) * (Math.random() < 0.5 ? 1 : -1);
+                    let n2 = getRandomInt(1, d2 - 1) * (Math.random() < 0.5 ? 1 : -1);
+                    let isMul = Math.random() < 0.5;
+                    qHtml = `${createFractionHTML(n1, d1, true)} <span class="mx-1 text-blue-500">${isMul ? '×' : '÷'}</span> ${createFractionHTML(n2, d2, false)}`;
+                    ansStr = isMul ? simplify(n1 * n2, d1 * d2) : simplify(n1 * d2, d1 * n2);
                 } else {
-                    ansStr = simplify(n1 * d2, d1 * n2);
+                    let isPow1 = Math.random() < 0.5; // 하나를 거듭제곱으로 선택
+                    let term1 = genTerm(isPow1, true);
+                    let term2 = genTerm(!isPow1, false);
+                    let isMul = Math.random() < 0.5;
+                    
+                    qHtml = `${term1.html} <span class="mx-1 text-blue-500">${isMul ? '×' : '÷'}</span> ${term2.html}`;
+                    ansStr = isMul ? simplify(term1.valN * term2.valN, term1.valD * term2.valD) 
+                                   : simplify(term1.valN * term2.valD, term1.valD * term2.valN);
                 }
             }
             else if (problemType === 6) {
-                // Lv.6 덧셈의 귀환 (정수/음수와 유리수 덧셈·뺄셈 복습)
+                // Lv.6 덧셈의 귀환
                 let mode = Math.random();
                 if (mode < 0.4) {
                     let a = getRandomInt(-10, 10);
