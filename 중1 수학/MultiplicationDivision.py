@@ -159,7 +159,7 @@ html_code='''
         let isChecking = false;
 
         // 6단계 레벨로 세분화
-        const LEVEL_THRESHOLDS =[0, 10, 20, 30, 40, 50]; 
+        const LEVEL_THRESHOLDS =[0, 7, 14, 21, 28, 35]; 
         const LEVEL_TITLES =["Lv.1 정수 곱셈", "Lv.2 유리수 곱셈", "Lv.3 거듭제곱", "Lv.4 나눗셈", "Lv.5 혼합 계산", "Lv.6 덧셈의 귀환"];
         const PRAISES =["완벽해요! 🔥", "최고예요! ⭐", "천재인가요? 🚀", "잘하고 있어요! 👏", "정답입니다! 💯"];
 
