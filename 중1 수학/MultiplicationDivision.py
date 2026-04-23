@@ -158,9 +158,9 @@ html_code='''
         let questionStartTime = 0;
         let isChecking = false;
 
-        // 5단계 레벨로 세분화 (정수곱 -> 유리수곱 -> 거듭제곱 -> 나눗셈 -> 혼합)
-        const LEVEL_THRESHOLDS =[0, 10, 20, 30, 40]; 
-        const LEVEL_TITLES =["Lv.1 정수 곱셈", "Lv.2 유리수 곱셈", "Lv.3 거듭제곱", "Lv.4 나눗셈", "Lv.5 혼합 계산"];
+        // 6단계 레벨로 세분화 (정수곱 -> 유리수곱 -> 거듭제곱 -> 나눗셈 -> 혼합 -> 덧셈의 귀환)
+        const LEVEL_THRESHOLDS =[0, 10, 20, 30, 40, 50]; 
+        const LEVEL_TITLES =["Lv.1 정수 곱셈", "Lv.2 유리수 곱셈", "Lv.3 거듭제곱", "Lv.4 나눗셈", "Lv.5 혼합 계산", "Lv.6 덧셈의 귀환"];
         const PRAISES =["완벽해요! 🔥", "최고예요! ⭐", "천재인가요? 🚀", "잘하고 있어요! 👏", "정답입니다! 💯"];
 
         const scoreEl = document.getElementById('score');
@@ -247,7 +247,8 @@ html_code='''
             currentInput = ""; inputBox.innerText = ""; inputBox.classList.remove('shake');
             
             let newLevel = 1;
-            if (score >= LEVEL_THRESHOLDS[4]) newLevel = 5;
+            if (score >= LEVEL_THRESHOLDS[5]) newLevel = 6;
+            else if (score >= LEVEL_THRESHOLDS[4]) newLevel = 5;
             else if (score >= LEVEL_THRESHOLDS[3]) newLevel = 4;
             else if (score >= LEVEL_THRESHOLDS[2]) newLevel = 3;
             else if (score >= LEVEL_THRESHOLDS[1]) newLevel = 2;
@@ -375,6 +376,39 @@ html_code='''
                     ansStr = simplify(n1 * d2, d1 * n2);
                 }
             }
+            else if (problemType === 6) {
+                // Lv.6 덧셈의 귀환 (정수/음수와 유리수 덧셈·뺄셈 복습)
+                let mode = Math.random();
+                if (mode < 0.4) {
+                    let a = getRandomInt(-10, 10);
+                    let b = getRandomInt(1, 10);
+                    let isAdd = Math.random() < 0.5;
+                    qHtml = `<span>${a}</span> <span class="mx-1 text-blue-500">${isAdd ? '+' : '-'}</span> <span>${b}</span>`;
+                    ansStr = isAdd ? (a + b).toString() : (a - b).toString();
+                    hintMsg.style.opacity = 0;
+                } else if (mode < 0.75) {
+                    let a = getRandomInt(-10, 10);
+                    let b = getRandomInt(-10, 10);
+                    if (a === 0) a = 2; if (b === 0) b = -3;
+                    let isAdd = Math.random() < 0.5;
+                    let signA = `${a}`;
+                    let signB = b > 0 ? `${b}` : `(${b})`;
+                    qHtml = `<span>${signA}</span> <span class="mx-1 text-blue-500">${isAdd ? '+' : '-'}</span> <span>${signB}</span>`;
+                    ansStr = isAdd ? (a + b).toString() : (a - b).toString();
+                    hintMsg.style.opacity = 0;
+                } else {
+                    hintMsg.style.opacity = 1;
+                    let d1 = getRandomInt(2, 6);
+                    let d2 = getRandomInt(2, 6);
+                    let n1 = getRandomInt(1, d1 - 1) * (Math.random() < 0.5 ? 1 : -1);
+                    let n2 = getRandomInt(1, d2 - 1) * (Math.random() < 0.5 ? 1 : -1);
+                    let isAdd = Math.random() < 0.5;
+                    qHtml = `${createFractionHTML(n1, d1, true)} <span class="mx-1 text-blue-500">${isAdd ? '+' : '-'}</span> ${createFractionHTML(n2, d2, false)}`;
+                    let top = isAdd ? (n1 * d2 + n2 * d1) : (n1 * d2 - n2 * d1);
+                    let bottom = d1 * d2;
+                    ansStr = simplify(top, bottom);
+                }
+            }
 
             qHtml += `<span class="ml-1 sm:ml-2 text-gray-400">= ?</span>`;
             questionBox.innerHTML = qHtml;
@@ -468,11 +502,11 @@ html_code='''
             
             maxComboEl.innerText = `최고 콤보: ${maxCombo}`;
 
-            let maxScore = LEVEL_THRESHOLDS[level] || LEVEL_THRESHOLDS[4] + 10;
+            let maxScore = LEVEL_THRESHOLDS[level] !== undefined ? LEVEL_THRESHOLDS[level] : LEVEL_THRESHOLDS[LEVEL_THRESHOLDS.length - 1] + 10;
             let minScore = LEVEL_THRESHOLDS[level-1];
             let percent = ((score - minScore) / (maxScore - minScore)) * 100;
             if (percent > 100) percent = 100;
-            if (level === 5) percent = 100; 
+            if (level >= LEVEL_THRESHOLDS.length) percent = 100; 
             
             progressBarEl.style.width = `${percent}%`;
         }
