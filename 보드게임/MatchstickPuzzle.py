@@ -222,4 +222,4 @@ with left_col:
 
 with right_col:
     # 캔버스 560px + 상단 제목 + 하단 버튼이 넉넉히 보이도록 전체 높이를 700으로 설정했습니다.
-    components.html(DRAWING_HTML, height=560, scrolling=True)
+    components.html(DRAWING_HTML, height=650, scrolling=True)
