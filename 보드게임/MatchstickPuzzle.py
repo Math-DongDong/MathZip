@@ -35,25 +35,31 @@ DRAWING_HTML = '''
         box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1); 
     }
     
-    .canvas-buttons { margin-top: 15px; display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
+    /* 제목과 버튼을 양끝으로 배치하는 컨테이너 */
+    .canvas-header { 
+        display: flex; justify-content: space-between; align-items: center; 
+        width: 100%; margin-bottom: 10px; 
+    }
     
     .clear-btn { 
         background: #ef4444; color: white; border: none; border-radius: 8px; 
-        padding: 10px 24px; font-size: 1rem; font-weight: bold; cursor: pointer; 
+        padding: 8px 20px; font-size: 1rem; font-weight: bold; cursor: pointer; 
         transition: background 0.2s, transform 0.1s; box-shadow: 0 2px 4px rgba(0,0,0,0.1); 
     }
     .clear-btn:hover { background: #dc2626; transform: translateY(-1px); }
     .clear-btn:active { transform: translateY(1px); }
     
-    .canvas-title { font-size: 1.2rem; font-weight: bold; color: #334155; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+    /* margin-bottom 제거 (header에서 관리) */
+    .canvas-title { font-size: 1.2rem; font-weight: bold; color: #334155; margin: 0; display: flex; align-items: center; gap: 8px; }
 </style>
 
 <div class="canvas-wrapper">
-    <div class="canvas-title">✍️ 나만의 풀이장</div>
-    <canvas id="drawCanvas" width="1600" height="1200"></canvas> <!-- 내부 해상도 -->
-    <div class="canvas-buttons">
+    <!-- 버튼을 캔버스 아래에서 위로 끌어올려 나란히 배치했습니다 -->
+    <div class="canvas-header">
+        <div class="canvas-title">✍️ 나만의 풀이장</div>
         <button class="clear-btn" onclick="clearCanvas()">🗑️ 모두 지우기</button>
     </div>
+    <canvas id="drawCanvas" width="1600" height="1200"></canvas> <!-- 내부 해상도 -->
 </div>
 
 <script>
@@ -211,9 +217,9 @@ left_col, right_col = st.columns([1, 2.5])
 
 with left_col:
     st.subheader("💡 오늘의 문제")
-    st.info("📌 **Hint:** 오른쪽 풀이장에서 먼저 스케치해 보세요!")
+    st.info("📌 **Hint:** 풀이장에 먼저 스케치해 보세요!")
     st.image(st.session_state.current_problem, width='stretch')
 
 with right_col:
     # 캔버스 560px + 상단 제목 + 하단 버튼이 넉넉히 보이도록 전체 높이를 700으로 설정했습니다.
-    components.html(DRAWING_HTML, height=700, scrolling=True)
+    components.html(DRAWING_HTML, height=560, scrolling=True)
