@@ -13,7 +13,7 @@ BASE_DIR = Path(__file__).resolve().parents[1]
 IMAGE_DIR = BASE_DIR / "기타" / "성냥개비퍼즐(54문제)"
 
 # -----------------------------------------------------------------------------
-# 2. 그림판 HTML/CSS/JS (세로 길이 560px 고정)
+# 2. 그림판 HTML/CSS/JS (직선, 지우개 도구 추가)
 # -----------------------------------------------------------------------------
 DRAWING_HTML = '''
 <style>
@@ -24,7 +24,6 @@ DRAWING_HTML = '''
         padding: 10px; width: 100%; box-sizing: border-box; 
     }
     
-    /* ⬅️[세로 길이 고정] aspect-ratio를 지우고 height를 560px로 고정했습니다! */
     #drawCanvas { 
         width: 100%; 
         height: 560px; /* 세로 길이 고정 */
@@ -35,11 +34,21 @@ DRAWING_HTML = '''
         box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1); 
     }
     
-    /* 제목과 버튼을 양끝으로 배치하는 컨테이너 */
     .canvas-header { 
         display: flex; justify-content: space-between; align-items: center; 
-        width: 100%; margin-bottom: 10px; 
+        width: 100%; margin-bottom: 10px; flex-wrap: wrap; gap: 10px;
     }
+    
+    /* 도구 선택 버튼 스타일 */
+    .tool-group { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+    
+    .tool-btn {
+        background: #f1f5f9; color: #475569; border: 2px solid #cbd5e1; border-radius: 8px; 
+        padding: 8px 16px; font-size: 0.95rem; font-weight: bold; cursor: pointer; 
+        transition: all 0.2s;
+    }
+    .tool-btn:hover { background: #e2e8f0; }
+    .tool-btn.active { background: #3b82f6; color: white; border-color: #3b82f6; }
     
     .clear-btn { 
         background: #ef4444; color: white; border: none; border-radius: 8px; 
@@ -49,15 +58,19 @@ DRAWING_HTML = '''
     .clear-btn:hover { background: #dc2626; transform: translateY(-1px); }
     .clear-btn:active { transform: translateY(1px); }
     
-    /* margin-bottom 제거 (header에서 관리) */
     .canvas-title { font-size: 1.2rem; font-weight: bold; color: #334155; margin: 0; display: flex; align-items: center; gap: 8px; }
 </style>
 
 <div class="canvas-wrapper">
-    <!-- 버튼을 캔버스 아래에서 위로 끌어올려 나란히 배치했습니다 -->
     <div class="canvas-header">
         <div class="canvas-title">✍️ 나만의 풀이장</div>
-        <button class="clear-btn" onclick="clearCanvas()">🗑️ 모두 지우기</button>
+        <!-- ⬅️ 도구 선택 버튼들 추가 -->
+        <div class="tool-group">
+            <button id="btn-line" class="tool-btn active" onclick="setTool('line')">📏 직선</button>
+            <button id="btn-pen" class="tool-btn" onclick="setTool('pen')">✏️ 자유선</button>
+            <button id="btn-eraser" class="tool-btn" onclick="setTool('eraser')">🧽 지우개</button>
+            <button class="clear-btn" onclick="clearCanvas()">🗑️ 모두 지우기</button>
+        </div>
     </div>
     <canvas id="drawCanvas" width="1600" height="1200"></canvas> <!-- 내부 해상도 -->
 </div>
@@ -66,14 +79,21 @@ DRAWING_HTML = '''
     const canvas = document.getElementById('drawCanvas');
     const ctx = canvas.getContext('2d');
     let drawing = false;
+    let startX = 0;
+    let startY = 0;
     let lastX = 0;
     let lastY = 0;
+    let currentTool = 'line'; // 기본 도구: 직선
+    let savedImageData = null; // 직선 미리보기를 위한 캔버스 상태 저장 변수
 
-    ctx.lineWidth = 10;
-    ctx.lineCap = 'round';
-    ctx.strokeStyle = '#111';
+    function setTool(tool) {
+        currentTool = tool;
+        // 모든 툴 버튼의 active 클래스 제거
+        document.querySelectorAll('.tool-btn').forEach(btn => btn.classList.remove('active'));
+        // 선택된 버튼만 active 클래스 추가
+        document.getElementById('btn-' + tool).classList.add('active');
+    }
 
-    // 캔버스의 화면상 크기와 실제 내부 픽셀간의 비율을 계산하여 마우스/터치 위치 보정
     function setPosition(e) {
         const rect = canvas.getBoundingClientRect();
         const scaleX = canvas.width / rect.width;
@@ -96,18 +116,60 @@ DRAWING_HTML = '''
     function startDraw(e) {
         drawing = true;
         const pos = setPosition(e);
-        lastX = pos.x; lastY = pos.y;
+        startX = pos.x;
+        startY = pos.y;
+        lastX = pos.x;
+        lastY = pos.y;
+
+        // 직선 긋기일 경우, 선을 그리기 직전의 화면 상태를 복사해둡니다.
+        if (currentTool === 'line') {
+            savedImageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        }
     }
 
     function draw(e) {
         if (!drawing) return;
         e.preventDefault();
         const pos = setPosition(e);
-        ctx.beginPath();
-        ctx.moveTo(lastX, lastY);
-        ctx.lineTo(pos.x, pos.y);
-        ctx.stroke();
-        lastX = pos.x; lastY = pos.y;
+
+        ctx.lineCap = 'round';
+        ctx.lineJoin = 'round';
+
+        if (currentTool === 'eraser') {
+            // 지우개 모드: 그려진 것을 투명하게 지웁니다.
+            ctx.globalCompositeOperation = 'destination-out';
+            ctx.lineWidth = 40; // 지우개는 큼직하게
+            ctx.beginPath();
+            ctx.moveTo(lastX, lastY);
+            ctx.lineTo(pos.x, pos.y);
+            ctx.stroke();
+            lastX = pos.x;
+            lastY = pos.y;
+            
+        } else if (currentTool === 'pen') {
+            // 자유선 모드
+            ctx.globalCompositeOperation = 'source-over';
+            ctx.strokeStyle = '#111';
+            ctx.lineWidth = 10;
+            ctx.beginPath();
+            ctx.moveTo(lastX, lastY);
+            ctx.lineTo(pos.x, pos.y);
+            ctx.stroke();
+            lastX = pos.x;
+            lastY = pos.y;
+            
+        } else if (currentTool === 'line') {
+            // 직선 모드: 마우스를 드래그할 때마다 저장해둔 화면을 불러와 잔상을 없애고 새로 선을 긋습니다.
+            ctx.globalCompositeOperation = 'source-over';
+            ctx.strokeStyle = '#111';
+            ctx.lineWidth = 10;
+            
+            ctx.putImageData(savedImageData, 0, 0); // 이전 상태 복원
+            ctx.beginPath();
+            ctx.moveTo(startX, startY); // 시작점 고정
+            ctx.lineTo(pos.x, pos.y);   // 현재 마우스 위치까지 선 긋기
+            ctx.stroke();
+        }
     }
 
     function stopDraw() { drawing = false; }
@@ -187,7 +249,6 @@ with col1:
         initialize_problems()
         st.rerun()
 
-
 with col2:
     if st.button("❓ 잘 모르겠어요 (나중에 풀기)", type="secondary", use_container_width=True, key="unknown_matchstick"):
         st.session_state.unknown_count += 1
@@ -221,5 +282,5 @@ with left_col:
     st.info("📌 **Hint:** 풀이장에 먼저 스케치해 보세요!")
 
 with right_col:
-    # 캔버스 560px + 상단 제목 + 하단 버튼이 넉넉히 보이도록 전체 높이를 700으로 설정했습니다.
+    # 캔버스 560px + 상단 제목 + 하단 버튼이 넉넉히 보이도록 전체 높이를 650으로 설정했습니다.
     components.html(DRAWING_HTML, height=650, scrolling=True)
