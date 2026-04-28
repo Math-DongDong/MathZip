@@ -211,8 +211,8 @@ left_col, right_col = st.columns([1, 2.5])
 
 with left_col:
     st.subheader("💡 오늘의 문제")
-    st.image(st.session_state.current_problem, use_container_width=True)
     st.info("📌 **Hint:** 오른쪽 풀이장에서 먼저 스케치해 보세요!")
+    st.image(st.session_state.current_problem, width='stretch')
 
 with right_col:
     # 캔버스 560px + 상단 제목 + 하단 버튼이 넉넉히 보이도록 전체 높이를 700으로 설정했습니다.
