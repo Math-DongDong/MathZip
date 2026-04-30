@@ -170,9 +170,8 @@ with tabs[3]:
     def initialize_game_Q(joker=False):
         number_pool = []
         for i in range(1, 7): number_pool.append(f"\\frac{{{i}}}{{2}}"); number_pool.append(f"-\\frac{{{i}}}{{2}}")
-        for i in range(1, 3): number_pool.append(str(i)); number_pool.append(str(-i))
         number_pool.extend(["2.7", "-2.7"])
-        number_pool.extend(["\\frac{5}{3}", "-\\frac{5}{3}", "\\frac{4}{3}", "-\\frac{4}{3}", "\\frac{2}{3}", "-\\frac{2}{3}", "\\frac{1}{3}", "-\\frac{1}{3}", "0", "0"])
+        number_pool.extend(["\\frac{5}{3}", "-\\frac{5}{3}", "\\frac{4}{3}", "-\\frac{4}{3}", "\\frac{2}{3}", "-\\frac{2}{3}", "\\frac{1}{3}", "-\\frac{1}{3}", "0","\\frac{1}{2}","\\frac{3}{2}","\\frac{5}{2}","-\\frac{1}{2}","-\\frac{3}{2}","-\\frac{5}{2}"])
         if joker:
             number_pool.append("⭐")
         random.shuffle(number_pool)
@@ -218,9 +217,8 @@ with tabs[3]:
         <div class="info-panel">
                     
         ℹ️ **유리수 타일 구성(총 27개)**
-        - 절댓값이 $0,\ 1,\ 2$ 인 수
-        - 절댓값이 $2.7$ 인 수
-        - 절댓값이 $\frac{1}{2}, \dots, \frac{6}{2}$ 인 수
+        - 절댓값이 $0,\ 1,\ 2,\ 2.7$ 인 수
+        - 절댓값이 $\frac{1}{2},\ \frac{3}{2},\ \frac{5}{2}$ 인 수
         - 절댓값이 $\frac{1}{3},\ \frac{2}{3},\ \frac{4}{3},\ \frac{5}{3}$ 인 수
         </div>
         """, unsafe_allow_html=True)
