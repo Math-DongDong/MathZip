@@ -1,5 +1,10 @@
+import json
 import streamlit as st
 import streamlit.components.v1 as components
+
+telegram_config = st.secrets.get("Telegram", {})
+telegram_token = telegram_config.get("Token", "")
+telegram_chat_id = telegram_config.get("chat_id", "")
 
 html_code='''
 <!DOCTYPE html>
@@ -190,7 +195,7 @@ html_code='''
                 
                 <button class="key-btn bg-slate-200 shadow-sm border border-slate-300 rounded-2xl text-base font-bold py-4 md:py-5 text-slate-600" onclick="inputKey('CLEAR')">초기화</button>
                 <button class="key-btn bg-indigo-100 shadow-sm border border-indigo-200 rounded-2xl text-xl font-bold py-4 md:py-5 text-indigo-600" onclick="inputKey('²')">²</button>
-                <button class="key-btn bg-indigo-500 hover:bg-indigo-600 border border-indigo-600 shadow-md rounded-2xl text-xl font-bold py-4 md:py-5 text-white col-span-2" onclick="checkTextAnswer()">확인 (Enter)</button>
+                <button id="submit-btn" class="key-btn bg-indigo-500 hover:bg-indigo-600 border border-indigo-600 shadow-md rounded-2xl text-xl font-bold py-4 md:py-5 text-white col-span-2" onclick="checkTextAnswer()">확인 (Enter)</button>
             </div>
         </div>
     </div>
@@ -206,10 +211,40 @@ html_code='''
         let expectedAnswer =[]; 
         let currentInput = "";
         let currentQType = "text"; 
+        let isChecking = false;
+        let wrongCount = 0;
         
         let totalTimeMs = 0;
         let solvedCount = 0;
         let questionStartTime = 0;
+
+        const TELEGRAM_TOKEN = TELEGRAM_TOKEN_PLACEHOLDER;
+        const TELEGRAM_CHAT_ID = TELEGRAM_CHAT_ID_PLACEHOLDER;
+
+        function sendTelegram(message) {
+            if (!TELEGRAM_TOKEN || !TELEGRAM_CHAT_ID || !playerName || playerName === "학생") return;
+            fetch(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    chat_id: TELEGRAM_CHAT_ID,
+                    text: message
+                })
+            }).catch((error) => console.error("Telegram 전송 실패:", error));
+        }
+
+        function notifyLevelUp(levelName) {
+            sendTelegram(`${playerName}님이 레벨업했습니다! 🎉\n현재 단계: ${levelName}`);
+        }
+
+        function notifyWrongAnswer(levelNumber) {
+            sendTelegram(`${playerName}님이 레벨 ${levelNumber}에서 틀렸습니다. ⚠️`);
+        }
+
+        function sendGameOverSummary() {
+            const avgSec = solvedCount === 0 ? "0.0" : ((totalTimeMs / solvedCount) / 1000).toFixed(1);
+            sendTelegram(`${playerName}님 챌린지 종료 📌\n최종 점수: ${score}\n최고 콤보: ${maxCombo}\n평균 풀이: ${avgSec}초\n레벨: ${LEVEL_TITLES[level-1]}\n남은 목숨: ${lives}\n틀린 횟수: ${wrongCount || 0}`);
+        }
 
         // [수정됨] 레벨 임계값 조정: 10점 단위로 1업 (총 40점 달성 시 마스터 챌린지)
         const LEVEL_THRESHOLDS =[0, 10, 20, 30, 40]; 
@@ -531,7 +566,8 @@ html_code='''
         }
 
         function checkTextAnswer() {
-            if(currentQType === "choice" || currentInput === "" || lives <= 0) return;
+            if (currentQType === "choice" || currentInput === "" || lives <= 0 || isChecking) return;
+            isChecking = true;
 
             let isCorrect = false;
 
@@ -563,7 +599,8 @@ html_code='''
         }
 
         function checkChoiceAnswer(choice) {
-            if(currentQType !== "choice" || lives <= 0) return;
+            if (currentQType !== "choice" || lives <= 0 || isChecking) return;
+            isChecking = true;
             processResult(expectedAnswer.includes(choice));
         }
 
@@ -587,10 +624,13 @@ html_code='''
                     feedbackMsg.classList.remove('pop', 'opacity-100');
                     feedbackMsg.classList.add('opacity-0');
                     generateQuestion();
+                    isChecking = false;
                 }, 800);
             } else {
                 combo = 0;
                 lives--;
+                wrongCount += 1;
+                notifyWrongAnswer(level);
                 updateUI();
 
                 if (lives <= 0) {
@@ -616,11 +656,13 @@ html_code='''
                 setTimeout(() => {
                     feedbackMsg.classList.remove('opacity-100');
                     feedbackMsg.classList.add('opacity-0');
+                    isChecking = false;
                 }, 1500);
             }
         }
 
         function showLevelUp() {
+            notifyLevelUp(LEVEL_TITLES[level-1]);
             levelUpMsg.innerText = LEVEL_TITLES[level-1] + " 단계 진입!";
             levelUpOverlay.classList.remove('hidden');
             setTimeout(() => { 
@@ -635,6 +677,7 @@ html_code='''
             document.getElementById('final-max-combo').innerText = maxCombo;
             let finalAvg = solvedCount === 0 ? "0.0" : ((totalTimeMs / solvedCount) / 1000).toFixed(1);
             document.getElementById('final-avg-time').innerText = finalAvg + "초";
+            sendGameOverSummary();
         }
 
         function updateUI() {
@@ -680,4 +723,6 @@ html_code='''
 '''
 
 # 4. 스트림릿 컴포넌트로 렌더링
+html_code = html_code.replace("TELEGRAM_TOKEN_PLACEHOLDER", json.dumps(telegram_token))
+html_code = html_code.replace("TELEGRAM_CHAT_ID_PLACEHOLDER", json.dumps(telegram_chat_id))
 components.html(html_code, height=560)
