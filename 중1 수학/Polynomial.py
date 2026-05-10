@@ -55,6 +55,16 @@ html_code='''
 
         .frac-line { border-bottom: 2px solid currentColor; }
         
+        @media (max-width: 768px) {
+            #keypad-panel { padding: 0.75rem; }
+            .key-btn { padding: 0.75rem 0.65rem !important; font-size: 1.35rem !important; min-height: 3rem !important; }
+            #game-container { padding-bottom: 0.5rem; }
+            #expression-box { min-height: 50px; }
+            #input-box { font-size: 2rem; }
+            .text-6xl { font-size: 2.6rem; }
+            .text-5xl { font-size: 2.2rem; }
+        }
+
         ::-webkit-scrollbar { width: 0px; background: transparent; }
     </style>
 </head>
@@ -147,8 +157,6 @@ html_code='''
 
                 <!-- 수식 및 질문 컨테이너 -->
                 <div class="bg-slate-50/50 rounded-3xl p-4 sm:p-6 w-full max-w-md flex flex-col items-center">
-                    <div class="text-indigo-400 font-bold text-sm sm:text-base mb-4 bg-indigo-50 px-4 py-1 rounded-full">분석 대상 다항식</div>
-                    
                     <div id="expression-box" class="flex flex-wrap items-center justify-center gap-x-1 gap-y-2 text-4xl sm:text-5xl font-bold text-slate-800 mb-6 text-center min-h-[60px] w-full">
                         <!-- 다항식 렌더링 -->
                     </div>
@@ -171,7 +179,7 @@ html_code='''
         </div>
 
         <!--[오른쪽 영역 / 모바일 하단] 다항식 전용 키패드 -->
-        <div id="keypad-panel" class="w-full md:w-[340px] lg:w-[400px] bg-slate-50 p-3 sm:p-5 flex flex-col justify-center border-t md:border-t-0 md:border-l border-slate-200 z-10 shrink-0 rounded-t-3xl md:rounded-none">
+        <div id="keypad-panel" class="w-full md:w-[300px] lg:w-[340px] bg-slate-50 p-3 sm:p-4 flex flex-col justify-center border-t md:border-t-0 md:border-l border-slate-200 z-10 shrink-0 rounded-t-3xl md:rounded-none">
             <div class="grid grid-cols-4 gap-2 w-full h-full md:h-auto max-w-sm mx-auto">
                 <button class="key-btn bg-white shadow-sm border border-slate-200 rounded-2xl text-2xl font-bold py-4 md:py-5 text-slate-700" onclick="inputKey('1')">1</button>
                 <button class="key-btn bg-white shadow-sm border border-slate-200 rounded-2xl text-2xl font-bold py-4 md:py-5 text-slate-700" onclick="inputKey('2')">2</button>
@@ -280,6 +288,7 @@ html_code='''
             introScreen.classList.add('hidden');
             gameContainer.classList.remove('hidden');
             
+            sendTelegram(`${playerName}님이 다항식 챌린지를 시작하였습니다.`);
             init();
         }
 
