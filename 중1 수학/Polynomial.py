@@ -251,11 +251,11 @@ html_code='''
 
         function sendGameOverSummary() {
             const avgSec = solvedCount === 0 ? "0.0" : ((totalTimeMs / solvedCount) / 1000).toFixed(1);
-            sendTelegram(`${playerName}님 챌린지 종료 📌\n최종 점수: ${score}\n최고 콤보: ${maxCombo}\n평균 풀이: ${avgSec}초\n레벨: ${LEVEL_TITLES[level-1]}\n남은 목숨: ${lives}\n틀린 횟수: ${wrongCount || 0}`);
+            sendTelegram(`${playerName}님 챌린지 종료 📌\n최종 점수: ${score}\n최고 콤보: ${maxCombo}\n평균 풀이: ${avgSec}초\n레벨: ${LEVEL_TITLES[level-1]}`);
         }
 
-        // [수정됨] 레벨 임계값 조정: 10점 단위로 1업 (총 40점 달성 시 마스터 챌린지)
-        const LEVEL_THRESHOLDS =[0, 10, 20, 30, 40]; 
+        // [수정됨] 레벨 임계값 조정: 5, 15, 25, 35 기준으로 레벨업
+        const LEVEL_THRESHOLDS =[0, 5, 15, 25, 35]; 
         const LEVEL_TITLES =["Lv.1 항과 상수항", "Lv.2 계수 찾기", "Lv.3 차수 판별", "Lv.4 다항식 분류", "Lv.5 마스터 챌린지"];
         const PRAISES =["정확해요! 👏", "최고예요! ⭐", "완벽합니다! ✨", "나이스! 😊", "정답! 💯"];
 
