@@ -156,7 +156,7 @@ html_code='''
                 <div id="feedback-msg" class="text-xl sm:text-2xl font-bold text-emerald-500 h-8 transition-all opacity-0 mb-2">Great!</div>
 
                 <!-- 수식 및 질문 컨테이너 -->
-                <div class="bg-slate-50/50 rounded-3xl p-4 sm:p-6 w-full max-w-md flex flex-col items-center">
+                <div class="bg-slate-50/50 rounded-3xl p-0 w-full max-w-md flex flex-col items-center">
                     <div id="expression-box" class="flex flex-wrap items-center justify-center gap-x-1 gap-y-2 text-4xl sm:text-5xl font-bold text-slate-800 mb-6 text-center min-h-[60px] w-full">
                         <!-- 다항식 렌더링 -->
                     </div>
@@ -168,7 +168,7 @@ html_code='''
                 </div>
 
                 <!-- 텍스트 입력 칸 -->
-                <div id="input-box" class="w-full max-w-[260px] mt-6 text-center border-b-4 border-indigo-400 text-3xl sm:text-4xl text-indigo-600 font-bold py-3 h-16 sm:h-20 bg-indigo-50/30 rounded-t-2xl flex items-center justify-center overflow-hidden tracking-widest">
+                <div id="input-box" class="w-full max-w-[260px] text-center border-b-4 border-indigo-400 text-3xl sm:text-4xl text-indigo-600 font-bold py-0 h-16 sm:h-20 bg-indigo-50/30 rounded-t-2xl flex items-center justify-center overflow-hidden tracking-widest">
                 </div>
                 
                 <!-- 예/아니오 선택 버튼 -->
