@@ -289,6 +289,7 @@ html_code='''
         }
 
         function init() {
+            keypadPanel.style.display = '';
             score = 0; combo = 0; maxCombo = 0; level = 1; lives = 5;
             totalTimeMs = 0; solvedCount = 0;
             updateUI();
@@ -671,6 +672,7 @@ html_code='''
         }
 
         function showGameOver() {
+            keypadPanel.style.display = 'none';
             gameOverOverlay.classList.remove('hidden');
             document.getElementById('final-score').innerText = score;
             document.getElementById('final-max-combo').innerText = maxCombo;
