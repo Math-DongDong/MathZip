@@ -57,7 +57,7 @@ html_code='''
         
         @media (max-width: 768px) {
             #keypad-panel { padding: 0.75rem; }
-            .key-btn { padding: 0.75rem 0.65rem !important; font-size: 1.35rem !important; min-height: 3rem !important; }
+            .key-btn { padding: 0.75rem 0.65rem !important; font-size: 1.35rem !important; min-height: 1.875rem !important; }
             #game-container { padding-bottom: 0.5rem; }
             #expression-box { min-height: 50px; font-size: 1.95rem; line-height: 1.05; }
             #input-box { font-size: 1.9rem; line-height: 1.1; }
@@ -153,7 +153,7 @@ html_code='''
                 </div>
 
                 <!-- 피드백 메시지 -->
-                <div id="feedback-msg" class="text-xl sm:text-2xl font-bold text-emerald-500 h-8 transition-all opacity-0 mb-2">Great!</div>
+                <div id="feedback-msg" class="text-lg sm:text-xl font-bold text-emerald-500 h-8 transition-all opacity-0 mb-2">Great!</div>
 
                 <!-- 수식 및 질문 컨테이너 -->
                 <div class="bg-slate-50/50 rounded-3xl p-0 w-full max-w-md flex flex-col items-center">
