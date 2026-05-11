@@ -124,7 +124,7 @@ html_code='''
             </div>
 
             <!-- 게임 진행 화면 -->
-            <div class="flex flex-col items-center justify-center p-2 sm:p-4 relative overflow-y-auto max-h-[400px] sm:max-h-[450px]">
+            <div class="flex flex-col items-center justify-center p-2 sm:p-4 relative overflow-y-auto max-h-[380px] sm:max-h-[450px]">
                 
                 <!-- 레벨업 알림 -->
                 <div id="levelup-overlay" class="absolute inset-0 bg-white/90 flex items-center justify-center hidden z-20 backdrop-blur-sm">
@@ -157,7 +157,7 @@ html_code='''
 
                 <!-- 수식 및 질문 컨테이너 -->
                 <div class="bg-slate-50/50 rounded-3xl p-0 w-full max-w-md flex flex-col items-center">
-                    <div id="expression-box" class="flex flex-wrap items-center justify-center gap-x-1 gap-y-2 text-4xl sm:text-5xl font-bold text-slate-800 mb-6 text-center min-h-[60px] w-full">
+                    <div id="expression-box" class="flex flex-wrap items-center justify-center gap-x-1 gap-y-2 text-4xl sm:text-5xl font-bold text-slate-800 mb-5 text-center min-h-[60px] w-full">
                         <!-- 다항식 렌더링 -->
                     </div>
                     
