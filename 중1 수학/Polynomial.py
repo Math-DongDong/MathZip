@@ -59,10 +59,10 @@ html_code='''
             #keypad-panel { padding: 0.75rem; }
             .key-btn { padding: 0.75rem 0.65rem !important; font-size: 1.35rem !important; min-height: 3rem !important; }
             #game-container { padding-bottom: 0.5rem; }
-            #expression-box { min-height: 50px; }
-            #input-box { font-size: 2rem; }
-            .text-6xl { font-size: 2.6rem; }
-            .text-5xl { font-size: 2.2rem; }
+            #expression-box { min-height: 50px; font-size: 1.95rem; line-height: 1.05; }
+            #input-box { font-size: 1.9rem; line-height: 1.1; }
+            .text-6xl { font-size: 2.4rem; }
+            .text-5xl { font-size: 2rem; }
         }
 
         ::-webkit-scrollbar { width: 0px; background: transparent; }
@@ -184,7 +184,7 @@ html_code='''
                 <button class="key-btn bg-white shadow-sm border border-slate-200 rounded-2xl text-2xl font-bold py-4 md:py-5 text-slate-700" onclick="inputKey('1')">1</button>
                 <button class="key-btn bg-white shadow-sm border border-slate-200 rounded-2xl text-2xl font-bold py-4 md:py-5 text-slate-700" onclick="inputKey('2')">2</button>
                 <button class="key-btn bg-white shadow-sm border border-slate-200 rounded-2xl text-2xl font-bold py-4 md:py-5 text-slate-700" onclick="inputKey('3')">3</button>
-                <button class="key-btn bg-slate-200 shadow-sm border border-slate-300 rounded-2xl text-base font-bold py-4 md:py-5 text-slate-600" onclick="inputKey('CLEAR')">초기화</button>
+                <button class="key-btn bg-slate-200 shadow-sm border border-slate-300 rounded-2xl text-base font-bold py-4 md:py-5 text-slate-600" onclick="inputKey('CLEAR')">지움</button>
 
                 <button class="key-btn bg-white shadow-sm border border-slate-200 rounded-2xl text-2xl font-bold py-4 md:py-5 text-slate-700" onclick="inputKey('4')">4</button>
                 <button class="key-btn bg-white shadow-sm border border-slate-200 rounded-2xl text-2xl font-bold py-4 md:py-5 text-slate-700" onclick="inputKey('5')">5</button>
