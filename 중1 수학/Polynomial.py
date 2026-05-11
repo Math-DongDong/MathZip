@@ -138,9 +138,6 @@ html_code='''
                 <!-- 게임 오버 알림 -->
                 <div id="gameover-overlay" class="absolute inset-0 bg-white/95 flex items-center justify-center hidden z-30 backdrop-blur-md">
                     <div class="text-center pop bg-white p-6 sm:p-8 rounded-3xl shadow-2xl mx-4 w-11/12 max-w-sm border-2 border-slate-100">
-                        <div class="text-6xl mb-4">👻</div>
-                        <h2 class="text-3xl sm:text-4xl font-bold text-slate-800 mb-2">도전 종료</h2>
-                        <p class="text-base sm:text-lg text-slate-500 mb-6 font-bold">하트를 모두 잃었습니다.</p>
                         <div class="bg-indigo-50 rounded-2xl p-4 mb-6 border border-slate-200">
                             <p class="text-lg sm:text-xl text-slate-600 mb-2 font-bold">최종 점수: <span id="final-score" class="text-indigo-600 text-2xl sm:text-3xl">0</span></p>
                             <p class="text-lg sm:text-xl text-slate-600 font-bold">최고 콤보: <span id="final-max-combo" class="text-orange-500 text-xl sm:text-2xl">0</span></p>
@@ -291,7 +288,9 @@ html_code='''
         function init() {
             keypadPanel.style.display = '';
             const gamePlayArea = document.getElementById('game-play-area');
-            gamePlayArea.style.maxHeight = '';
+            if (window.innerWidth <= 768) {
+                gamePlayArea.style.maxHeight = '';
+            }
             score = 0; combo = 0; maxCombo = 0; level = 1; lives = 5;
             totalTimeMs = 0; solvedCount = 0;
             updateUI();
@@ -674,9 +673,12 @@ html_code='''
         }
 
         function showGameOver() {
-            keypadPanel.style.display = 'none';
-            const gamePlayArea = document.getElementById('game-play-area');
-            gamePlayArea.style.maxHeight = 'none';
+            // 모바일에서만 키패드 숨기기
+            if (window.innerWidth <= 768) {
+                keypadPanel.style.display = 'none';
+                const gamePlayArea = document.getElementById('game-play-area');
+                gamePlayArea.style.maxHeight = 'none';
+            }
             gameOverOverlay.classList.remove('hidden');
             document.getElementById('final-score').innerText = score;
             document.getElementById('final-max-combo').innerText = maxCombo;
