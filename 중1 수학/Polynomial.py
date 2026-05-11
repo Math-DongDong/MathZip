@@ -181,25 +181,25 @@ html_code='''
         <!--[오른쪽 영역 / 모바일 하단] 다항식 전용 키패드 -->
         <div id="keypad-panel" class="w-full md:w-[300px] lg:w-[340px] bg-slate-50 p-3 sm:p-4 flex flex-col justify-center border-t md:border-t-0 md:border-l border-slate-200 z-10 shrink-0 rounded-t-3xl md:rounded-none">
             <div class="grid grid-cols-4 gap-2 w-full h-full md:h-auto max-w-sm mx-auto">
-                <button class="key-btn bg-white shadow-sm border border-slate-200 rounded-2xl text-2xl font-bold py-4 md:py-5 text-slate-700" onclick="inputKey('1')">1</button>
-                <button class="key-btn bg-white shadow-sm border border-slate-200 rounded-2xl text-2xl font-bold py-4 md:py-5 text-slate-700" onclick="inputKey('2')">2</button>
-                <button class="key-btn bg-white shadow-sm border border-slate-200 rounded-2xl text-2xl font-bold py-4 md:py-5 text-slate-700" onclick="inputKey('3')">3</button>
-                <button class="key-btn bg-slate-200 shadow-sm border border-slate-300 rounded-2xl text-base font-bold py-4 md:py-5 text-slate-600" onclick="inputKey('DEL')">지움</button>
+                <button class="key-btn bg-white shadow-sm border border-slate-200 rounded-2xl text-2xl font-bold py-3 md:py-4 text-slate-700" onclick="inputKey('1')">1</button>
+                <button class="key-btn bg-white shadow-sm border border-slate-200 rounded-2xl text-2xl font-bold py-3 md:py-4 text-slate-700" onclick="inputKey('2')">2</button>
+                <button class="key-btn bg-white shadow-sm border border-slate-200 rounded-2xl text-2xl font-bold py-3 md:py-4 text-slate-700" onclick="inputKey('3')">3</button>
+                <button class="key-btn bg-slate-200 shadow-sm border border-slate-300 rounded-2xl text-base font-bold py-3 md:py-4 text-slate-600" onclick="inputKey('DEL')">지움</button>
 
-                <button class="key-btn bg-white shadow-sm border border-slate-200 rounded-2xl text-2xl font-bold py-4 md:py-5 text-slate-700" onclick="inputKey('4')">4</button>
-                <button class="key-btn bg-white shadow-sm border border-slate-200 rounded-2xl text-2xl font-bold py-4 md:py-5 text-slate-700" onclick="inputKey('5')">5</button>
-                <button class="key-btn bg-white shadow-sm border border-slate-200 rounded-2xl text-2xl font-bold py-4 md:py-5 text-slate-700" onclick="inputKey('6')">6</button>
-                <button class="key-btn bg-indigo-100 shadow-sm border border-indigo-200 rounded-2xl text-xl font-bold py-4 md:py-5 text-indigo-600" onclick="inputKey('²')">²</button>
+                <button class="key-btn bg-white shadow-sm border border-slate-200 rounded-2xl text-2xl font-bold py-3 md:py-4 text-slate-700" onclick="inputKey('4')">4</button>
+                <button class="key-btn bg-white shadow-sm border border-slate-200 rounded-2xl text-2xl font-bold py-3 md:py-4 text-slate-700" onclick="inputKey('5')">5</button>
+                <button class="key-btn bg-white shadow-sm border border-slate-200 rounded-2xl text-2xl font-bold py-3 md:py-4 text-slate-700" onclick="inputKey('6')">6</button>
+                <button class="key-btn bg-indigo-100 shadow-sm border border-indigo-200 rounded-2xl text-xl font-bold py-3 md:py-4 text-indigo-600" onclick="inputKey('²')">²</button>
 
-                <button class="key-btn bg-white shadow-sm border border-slate-200 rounded-2xl text-2xl font-bold py-4 md:py-5 text-slate-700" onclick="inputKey('7')">7</button>
-                <button class="key-btn bg-white shadow-sm border border-slate-200 rounded-2xl text-2xl font-bold py-4 md:py-5 text-slate-700" onclick="inputKey('8')">8</button>
-                <button class="key-btn bg-white shadow-sm border border-slate-200 rounded-2xl text-2xl font-bold py-4 md:py-5 text-slate-700" onclick="inputKey('9')">9</button>
-                <button class="key-btn bg-indigo-100 shadow-sm border border-indigo-200 rounded-2xl text-3xl font-bold py-4 md:py-5 text-indigo-600 pb-6" onclick="inputKey(',')">,</button>
+                <button class="key-btn bg-white shadow-sm border border-slate-200 rounded-2xl text-2xl font-bold py-3 md:py-4 text-slate-700" onclick="inputKey('7')">7</button>
+                <button class="key-btn bg-white shadow-sm border border-slate-200 rounded-2xl text-2xl font-bold py-3 md:py-4 text-slate-700" onclick="inputKey('8')">8</button>
+                <button class="key-btn bg-white shadow-sm border border-slate-200 rounded-2xl text-2xl font-bold py-3 md:py-4 text-slate-700" onclick="inputKey('9')">9</button>
+                <button class="key-btn bg-indigo-100 shadow-sm border border-indigo-200 rounded-2xl text-3xl font-bold py-3 md:py-4 text-indigo-600 pb-6" onclick="inputKey(',')">,</button>
 
-                <button class="key-btn bg-indigo-50 shadow-sm border border-indigo-100 rounded-2xl text-3xl font-bold py-4 md:py-5 text-indigo-500" onclick="inputKey('-')">-</button>
-                <button class="key-btn bg-indigo-100 shadow-sm border border-indigo-200 rounded-2xl text-2xl font-bold italic py-4 md:py-5 text-indigo-600" onclick="inputKey('x')">x</button>
-                <button class="key-btn bg-indigo-100 shadow-sm border border-indigo-200 rounded-2xl text-2xl font-bold italic py-4 md:py-5 text-indigo-600" onclick="inputKey('y')">y</button>
-                <button id="submit-btn" class="key-btn bg-indigo-500 hover:bg-indigo-600 border border-indigo-600 shadow-md rounded-2xl text-xl font-bold py-4 md:py-5 text-white" onclick="checkTextAnswer()">확인</button>
+                <button class="key-btn bg-indigo-50 shadow-sm border border-indigo-100 rounded-2xl text-3xl font-bold py-3 md:py-4 text-indigo-500" onclick="inputKey('-')">-</button>
+                <button class="key-btn bg-indigo-100 shadow-sm border border-indigo-200 rounded-2xl text-2xl font-bold italic py-3 md:py-4 text-indigo-600" onclick="inputKey('x')">x</button>
+                <button class="key-btn bg-indigo-100 shadow-sm border border-indigo-200 rounded-2xl text-2xl font-bold italic py-3 md:py-4 text-indigo-600" onclick="inputKey('y')">y</button>
+                <button id="submit-btn" class="key-btn bg-indigo-500 hover:bg-indigo-600 border border-indigo-600 shadow-md rounded-2xl text-xl font-bold py-3 md:py-4 text-white" onclick="checkTextAnswer()">확인</button>
             </div>
         </div>
     </div>
