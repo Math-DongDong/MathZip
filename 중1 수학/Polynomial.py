@@ -136,7 +136,7 @@ html_code='''
                 </div>
 
                 <!-- 게임 오버 알림 -->
-                <div id="gameover-overlay" class="absolute inset-0 bg-white/95 flex items-center justify-center hidden z-30 backdrop-blur-md">
+                <div id="gameover-overlay" class="absolute inset-0 bg-white flex items-center justify-center hidden z-50 backdrop-blur-md">
                     <div class="text-center pop bg-white p-6 sm:p-8 rounded-3xl shadow-2xl mx-4 w-11/12 max-w-sm border-2 border-slate-100">
                         <div class="bg-indigo-50 rounded-2xl p-4 mb-6 border border-slate-200">
                             <p class="text-lg sm:text-xl text-slate-600 mb-2 font-bold">최종 점수: <span id="final-score" class="text-indigo-600 text-2xl sm:text-3xl">0</span></p>
@@ -673,12 +673,11 @@ html_code='''
         }
 
         function showGameOver() {
-            // 모바일에서만 키패드 숨기기
-            if (window.innerWidth <= 768) {
-                keypadPanel.style.display = 'none';
-                const gamePlayArea = document.getElementById('game-play-area');
-                gamePlayArea.style.maxHeight = 'none';
-            }
+            // 상단 헤더 및 키패드 숨기기
+            const header = document.querySelector('.bg-indigo-50\\/70');
+            if (header) header.style.display = 'none';
+            keypadPanel.style.display = 'none';
+            
             gameOverOverlay.classList.remove('hidden');
             document.getElementById('final-score').innerText = score;
             document.getElementById('final-max-combo').innerText = maxCombo;
