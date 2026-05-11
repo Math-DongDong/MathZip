@@ -124,7 +124,7 @@ html_code='''
             </div>
 
             <!-- 게임 진행 화면 -->
-            <div class="flex-1 flex flex-col items-center justify-center p-2 sm:p-4 relative overflow-y-auto">
+            <div class="flex flex-col items-center justify-center p-2 sm:p-4 relative overflow-y-auto max-h-[400px] sm:max-h-[450px]">
                 
                 <!-- 레벨업 알림 -->
                 <div id="levelup-overlay" class="absolute inset-0 bg-white/90 flex items-center justify-center hidden z-20 backdrop-blur-sm">
@@ -184,7 +184,7 @@ html_code='''
                 <button class="key-btn bg-white shadow-sm border border-slate-200 rounded-2xl text-2xl font-bold py-4 md:py-5 text-slate-700" onclick="inputKey('1')">1</button>
                 <button class="key-btn bg-white shadow-sm border border-slate-200 rounded-2xl text-2xl font-bold py-4 md:py-5 text-slate-700" onclick="inputKey('2')">2</button>
                 <button class="key-btn bg-white shadow-sm border border-slate-200 rounded-2xl text-2xl font-bold py-4 md:py-5 text-slate-700" onclick="inputKey('3')">3</button>
-                <button class="key-btn bg-slate-200 shadow-sm border border-slate-300 rounded-2xl text-base font-bold py-4 md:py-5 text-slate-600" onclick="inputKey('CLEAR')">지움</button>
+                <button class="key-btn bg-slate-200 shadow-sm border border-slate-300 rounded-2xl text-base font-bold py-4 md:py-5 text-slate-600" onclick="inputKey('DEL')">지움</button>
 
                 <button class="key-btn bg-white shadow-sm border border-slate-200 rounded-2xl text-2xl font-bold py-4 md:py-5 text-slate-700" onclick="inputKey('4')">4</button>
                 <button class="key-btn bg-white shadow-sm border border-slate-200 rounded-2xl text-2xl font-bold py-4 md:py-5 text-slate-700" onclick="inputKey('5')">5</button>
