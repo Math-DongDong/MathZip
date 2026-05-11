@@ -157,7 +157,7 @@ html_code='''
 
                 <!-- 수식 및 질문 컨테이너 -->
                 <div class="bg-slate-50/50 rounded-3xl p-0 w-full max-w-md flex flex-col items-center">
-                    <div id="expression-box" class="flex flex-wrap items-center justify-center gap-x-1 gap-y-2 text-4xl sm:text-5xl font-bold text-slate-800 mb-5 text-center min-h-[60px] w-full">
+                    <div id="expression-box" class="flex flex-wrap items-center justify-center gap-x-1 gap-y-2 text-4xl sm:text-5xl font-bold text-slate-800 mb-[5px] text-center min-h-[60px] w-full">
                         <!-- 다항식 렌더링 -->
                     </div>
                     
