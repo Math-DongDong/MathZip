@@ -124,7 +124,7 @@ html_code='''
             </div>
 
             <!-- 게임 진행 화면 -->
-            <div class="flex flex-col items-center justify-center p-2 sm:p-4 relative overflow-y-auto max-h-[380px] sm:max-h-[450px]">
+            <div id="game-play-area" class="flex flex-col items-center justify-center p-2 sm:p-4 relative overflow-y-auto max-h-[380px] sm:max-h-[450px]">
                 
                 <!-- 레벨업 알림 -->
                 <div id="levelup-overlay" class="absolute inset-0 bg-white/90 flex items-center justify-center hidden z-20 backdrop-blur-sm">
@@ -290,6 +290,8 @@ html_code='''
 
         function init() {
             keypadPanel.style.display = '';
+            const gamePlayArea = document.getElementById('game-play-area');
+            gamePlayArea.style.maxHeight = '';
             score = 0; combo = 0; maxCombo = 0; level = 1; lives = 5;
             totalTimeMs = 0; solvedCount = 0;
             updateUI();
@@ -673,6 +675,8 @@ html_code='''
 
         function showGameOver() {
             keypadPanel.style.display = 'none';
+            const gamePlayArea = document.getElementById('game-play-area');
+            gamePlayArea.style.maxHeight = 'none';
             gameOverOverlay.classList.remove('hidden');
             document.getElementById('final-score').innerText = score;
             document.getElementById('final-max-combo').innerText = maxCombo;
