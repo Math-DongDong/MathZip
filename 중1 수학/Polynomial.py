@@ -86,6 +86,24 @@ html_code='''
         </div>
     </div>
 
+    <!--[게임 오버 화면] ⬅️ 여기로 꺼냈습니다! -->
+    <div id="gameover-screen" class="absolute inset-0 z-50 bg-white flex flex-col justify-center items-center p-6 hidden">
+        <div class="text-center pop w-full max-w-sm">
+            <div class="text-6xl mb-4 float">😭</div>
+            <h1 class="text-4xl sm:text-5xl font-bold text-indigo-500 mb-2">게임 종료!</h1>
+            <p class="text-base text-slate-500 mb-8">하트를 모두 소진했습니다.</p>
+            
+            <div class="bg-indigo-50/50 p-6 rounded-3xl w-full border border-indigo-100 mb-6 shadow-sm">
+                <p class="text-lg sm:text-xl text-slate-600 mb-3 font-bold">최종 점수: <span id="final-score" class="text-indigo-600 text-2xl sm:text-3xl">0</span></p>
+                <p class="text-lg sm:text-xl text-slate-600 mb-3 font-bold">최고 콤보: <span id="final-max-combo" class="text-orange-500 text-xl sm:text-2xl">0</span></p>
+                <p class="text-lg sm:text-xl text-slate-600 font-bold">평균 기록: <span id="final-avg-time" class="text-emerald-500 text-xl sm:text-2xl">0.0초</span></p>
+            </div>
+            <button onclick="location.reload()" class="w-full bg-indigo-500 hover:bg-indigo-600 text-white font-bold text-xl py-4 rounded-xl transition-all active:scale-95 shadow-md">
+                다시 도전하기
+            </button>
+        </div>
+    </div>
+
     <!-- 메인 컨테이너 -->
     <div id="game-container" class="w-full h-full bg-white flex flex-col md:flex-row relative hidden">
         
@@ -132,20 +150,6 @@ html_code='''
                         <div class="text-6xl mb-4">🌟</div>
                         <h2 class="text-3xl sm:text-4xl font-bold text-indigo-500">레벨 업!</h2>
                         <p id="levelup-msg" class="text-base sm:text-lg text-slate-500 mt-2 font-bold">새로운 챌린지가 열렸습니다.</p>
-                    </div>
-                </div>
-
-                <!-- 게임 오버 알림 -->
-                <div id="gameover-overlay" class="absolute inset-0 bg-white flex items-center justify-center hidden z-50 backdrop-blur-md">
-                    <div class="text-center pop bg-white p-6 sm:p-8 rounded-3xl shadow-2xl mx-4 w-11/12 max-w-sm border-2 border-slate-100">
-                        <div class="bg-indigo-50 rounded-2xl p-4 mb-6 border border-slate-200">
-                            <p class="text-lg sm:text-xl text-slate-600 mb-2 font-bold">최종 점수: <span id="final-score" class="text-indigo-600 text-2xl sm:text-3xl">0</span></p>
-                            <p class="text-lg sm:text-xl text-slate-600 font-bold">최고 콤보: <span id="final-max-combo" class="text-orange-500 text-xl sm:text-2xl">0</span></p>
-                            <p class="text-lg sm:text-xl text-slate-600 mt-2 font-bold">평균 기록: <span id="final-avg-time" class="text-emerald-500 text-xl sm:text-2xl">0.0초</span></p>
-                        </div>
-                        <button onclick="location.reload()" class="bg-indigo-500 hover:bg-indigo-600 text-white font-bold text-xl py-4 px-8 w-full rounded-2xl transition-transform active:scale-95 shadow-md">
-                            다시 도전하기
-                        </button>
                     </div>
                 </div>
 
@@ -235,7 +239,7 @@ html_code='''
         }
 
         function notifyLevelUp(levelName) {
-            sendTelegram(`${playerName}님이 레벨업했습니다! 🎉\n현재 단계: ${levelName}`);
+            sendTelegram(`${playerName}님이 레벨업했습니다! 🎉\\n현재 단계: ${levelName}`);
         }
 
         function notifyWrongAnswer(levelNumber) {
@@ -244,16 +248,18 @@ html_code='''
 
         function sendGameOverSummary() {
             const avgSec = solvedCount === 0 ? "0.0" : ((totalTimeMs / solvedCount) / 1000).toFixed(1);
-            sendTelegram(`${playerName}님 챌린지 종료 📌\n최종 점수: ${score}\n최고 콤보: ${maxCombo}\n평균 풀이: ${avgSec}초\n레벨: ${LEVEL_TITLES[level-1]}`);
+            sendTelegram(`${playerName}님 챌린지 종료 📌\\n최종 점수: ${score}\\n최고 콤보: ${maxCombo}\\n평균 풀이: ${avgSec}초\\n레벨: ${LEVEL_TITLES[level-1]}`);
         }
 
-        // [수정됨] 레벨 임계값 조정: 5, 15, 25, 35 기준으로 레벨업
         const LEVEL_THRESHOLDS =[0, 5, 15, 25, 35]; 
         const LEVEL_TITLES =["Lv.1 항과 상수항", "Lv.2 계수 찾기", "Lv.3 차수 판별", "Lv.4 다항식 분류", "Lv.5 마스터 챌린지"];
         const PRAISES =["정확해요! 👏", "최고예요! ⭐", "완벽합니다! ✨", "나이스! 😊", "정답! 💯"];
 
         const introScreen = document.getElementById('intro-screen');
         const gameContainer = document.getElementById('game-container');
+        // ⬅️ 새로운 게임오버 화면 불러오기
+        const gameOverScreen = document.getElementById('gameover-screen'); 
+        
         const scoreEl = document.getElementById('score');
         const comboEl = document.getElementById('combo-display');
         const maxComboEl = document.getElementById('max-combo');
@@ -271,7 +277,6 @@ html_code='''
         const feedbackMsg = document.getElementById('feedback-msg');
         const levelUpOverlay = document.getElementById('levelup-overlay');
         const levelUpMsg = document.getElementById('levelup-msg');
-        const gameOverOverlay = document.getElementById('gameover-overlay');
 
         function startGame() {
             const nameInput = document.getElementById('player-name-input').value.trim();
@@ -367,22 +372,6 @@ html_code='''
             return `<span class="flex items-center mx-1"><span>${sign}</span>${coefHtml}${varHtml}</span>`;
         }
 
-        function getRawTermString(coef, denom, v, exp) {
-            let res = "";
-            let num = Math.abs(coef);
-            let sign = coef < 0 ? "-" : "";
-            
-            if (num === 1 && denom === 1 && v !== '') res = sign; 
-            else if (denom === 1) res = `${sign}${num}`;
-            else res = `${sign}${num}/${denom}`;
-            
-            if(v) {
-                res += v;
-                if(exp === 2) res += '²';
-            }
-            return res === "-" ? "-1" : res; 
-        }
-
         function getValidTermRepresentations(coef, denom, v, exp) {
             let valids =[];
             let num = Math.abs(coef);
@@ -465,13 +454,10 @@ html_code='''
             if (newLevel > level) { level = newLevel; isLevelUp = true; }
             updateUI();
 
-            // [수정됨] 누적 복습 (스파이럴 학습) 적용
             let problemType = level;
             if (level === 5) {
-                // 마스터 챌린지는 전체 랜덤
                 problemType = getRandomInt(1, 4); 
             } else if (level > 1 && Math.random() < 0.4) {
-                // 레벨 2~4 진행 중에도 40% 확률로 이전 레벨 복습 문제 등장
                 problemType = getRandomInt(1, level - 1);
             }
 
@@ -487,7 +473,6 @@ html_code='''
             });
             expressionBox.innerHTML = exprHtml;
 
-            // UI 초기화 세팅
             inputBox.classList.remove('hidden');
             choicePanel.classList.add('hidden');
             keypadPanel.style.opacity = "1";
@@ -521,7 +506,7 @@ html_code='''
                         let target = varTerms[Math.floor(Math.random() * varTerms.length)];
                         let repStr = getValidTermRepresentations(target.coef, target.denom, target.v, target.exp)[0]; 
                         questionBox.innerHTML = `항 <span class="bg-indigo-100 text-indigo-600 px-2 rounded">[ ${repStr} ]</span> 의 차수는?`;
-                        expectedAnswer = [target.exp.toString()];
+                        expectedAnswer =[target.exp.toString()];
                     } else {
                         questionBox.innerText = `다항식의 차수는?`;
                         expectedAnswer = ["0"];
@@ -611,7 +596,6 @@ html_code='''
                 totalTimeMs += timeTaken;
                 solvedCount++;
                 
-                // 점수 1점씩 고정 상승
                 score += 1; 
                 combo += 1;
                 maxCombo = Math.max(maxCombo, combo);
@@ -662,27 +646,19 @@ html_code='''
             }
         }
 
-        function showLevelUp() {
-            notifyLevelUp(LEVEL_TITLES[level-1]);
-            levelUpMsg.innerText = LEVEL_TITLES[level-1] + " 단계 진입!";
-            levelUpOverlay.classList.remove('hidden');
-            setTimeout(() => { 
-                levelUpOverlay.classList.add('hidden'); 
-                questionStartTime = Date.now(); 
-            }, 2000);
-        }
-
+        // ⬅️ [중요] 게임 오버 처리가 수정된 부분
         function showGameOver() {
-            // 상단 헤더 및 키패드 숨기기
-            const header = document.querySelector('.bg-indigo-50\\/70');
-            if (header) header.style.display = 'none';
-            keypadPanel.style.display = 'none';
+            // 게임 컨테이너 자체를 완전히 숨깁니다 (CSS 충돌 원천 차단)
+            gameContainer.classList.add('hidden');
             
-            gameOverOverlay.classList.remove('hidden');
+            // 바깥으로 빼낸 게임오버 스크린을 표시합니다.
+            gameOverScreen.classList.remove('hidden');
+            
             document.getElementById('final-score').innerText = score;
             document.getElementById('final-max-combo').innerText = maxCombo;
             let finalAvg = solvedCount === 0 ? "0.0" : ((totalTimeMs / solvedCount) / 1000).toFixed(1);
             document.getElementById('final-avg-time').innerText = finalAvg + "초";
+            
             sendGameOverSummary();
         }
 
