@@ -734,4 +734,4 @@ html_code='''
 # 4. 스트림릿 컴포넌트로 렌더링
 html_code = html_code.replace("TELEGRAM_TOKEN_PLACEHOLDER", json.dumps(telegram_token))
 html_code = html_code.replace("TELEGRAM_CHAT_ID_PLACEHOLDER", json.dumps(telegram_chat_id))
-components.html(html_code, height=560)
+components.html(html_code, height=600)
