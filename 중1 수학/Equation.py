@@ -104,7 +104,7 @@ with tab1:
     t1_col_left, t1_col_mid, t1_col_right = st.columns([1, 2.5, 1])
 
     with t1_col_left:
-        st.subheader("왼쪽 접시")
+        st.subheader("저울 왼쪽")
         st.write("🔺 삼각형 (무게 5)")
         c1, c2 = st.columns(2)
         c1.button("➕ 추가", key="t1_l_add_tri", on_click=modify_shape, args=('t1_left', 'tri', 1), use_container_width=True)
@@ -121,7 +121,7 @@ with tab1:
         c2.button("➖ 빼기", key="t1_l_sub_cir", on_click=modify_shape, args=('t1_left', 'cir', -1), use_container_width=True)
 
     with t1_col_right:
-        st.subheader("오른쪽 접시")
+        st.subheader("저울 오른쪽")
         st.write("🔺 삼각형 (무게 5)")
         c1, c2 = st.columns(2)
         c1.button("➕ 추가", key="t1_r_add_tri", on_click=modify_shape, args=('t1_right', 'tri', 1), use_container_width=True)
@@ -163,35 +163,35 @@ with tab2:
     t2_col_left, t2_col_mid, t2_col_right = st.columns([1, 2.5, 1])
 
     with t2_col_left:
-        st.subheader("왼쪽 접시")
-        st.write("🔺 삼각형 (무게 ?)")
+        st.subheader("저울 왼쪽")
+        st.write("🔺 삼각형")
         c1, c2 = st.columns(2)
         c1.button("➕ 추가", key="t2_l_add_tri", on_click=modify_shape, args=('t2_left', 'tri', 1), use_container_width=True)
         c2.button("➖ 빼기", key="t2_l_sub_tri", on_click=modify_shape, args=('t2_left', 'tri', -1), use_container_width=True)
         
-        st.write("🟩 사각형 (무게 ?)")
+        st.write("🟩 사각형")
         c1, c2 = st.columns(2)
         c1.button("➕ 추가", key="t2_l_add_sq", on_click=modify_shape, args=('t2_left', 'sq', 1), use_container_width=True)
         c2.button("➖ 빼기", key="t2_l_sub_sq", on_click=modify_shape, args=('t2_left', 'sq', -1), use_container_width=True)
         
-        st.write("🟣 원 (무게 ?)")
+        st.write("🟣 원")
         c1, c2 = st.columns(2)
         c1.button("➕ 추가", key="t2_l_add_cir", on_click=modify_shape, args=('t2_left', 'cir', 1), use_container_width=True)
         c2.button("➖ 빼기", key="t2_l_sub_cir", on_click=modify_shape, args=('t2_left', 'cir', -1), use_container_width=True)
 
     with t2_col_right:
-        st.subheader("오른쪽 접시")
-        st.write("🔺 삼각형 (무게 ?)")
+        st.subheader("저울 오른쪽")
+        st.write("🔺 삼각형")
         c1, c2 = st.columns(2)
         c1.button("➕ 추가", key="t2_r_add_tri", on_click=modify_shape, args=('t2_right', 'tri', 1), use_container_width=True)
         c2.button("➖ 빼기", key="t2_r_sub_tri", on_click=modify_shape, args=('t2_right', 'tri', -1), use_container_width=True)
         
-        st.write("🟩 사각형 (무게 ?)")
+        st.write("🟩 사각형")
         c1, c2 = st.columns(2)
         c1.button("➕ 추가", key="t2_r_add_sq", on_click=modify_shape, args=('t2_right', 'sq', 1), use_container_width=True)
         c2.button("➖ 빼기", key="t2_r_sub_sq", on_click=modify_shape, args=('t2_right', 'sq', -1), use_container_width=True)
         
-        st.write("🟣 원 (무게 ?)")
+        st.write("🟣 원")
         c1, c2 = st.columns(2)
         c1.button("➕ 추가", key="t2_r_add_cir", on_click=modify_shape, args=('t2_right', 'cir', 1), use_container_width=True)
         c2.button("➖ 빼기", key="t2_r_sub_cir", on_click=modify_shape, args=('t2_right', 'cir', -1), use_container_width=True)
