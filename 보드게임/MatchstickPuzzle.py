@@ -208,7 +208,7 @@ def initialize_problems():
     st.session_state.total_count = len(problems)
     st.session_state.current_problem = st.session_state.problem_pool.pop(0) if st.session_state.problem_pool else None
 
-if "problem_pool" not in st.session_state or "current_problem" not in st.session_state:
+if "problem_pool" not in st.session_state or "current_problem" not in st.session_state or "total_count" not in st.session_state:
     initialize_problems()
 
 # -----------------------------------------------------------------------------
