@@ -150,8 +150,8 @@ with tab1:
 # [TAB 2] 등식의 성질 (미지수)
 # =============================================================================
 with tab2:
-    # 학생들은 모르는 '숨겨진 무게' 설정 (임의로 삼각형=2, 사각형=3, 원=1 로 설정)
-    T2_HIDDEN_WEIGHTS = {'tri': 2, 'sq': 3, 'cir': 1}
+    # 학생들은 모르는 '숨겨진 무게' 설정 (임의로 삼각형=2, 사각형=3, 원=-2 로 설정)
+    T2_HIDDEN_WEIGHTS = {'tri': 2, 'sq': 3, 'cir': -2}
     
     if 't2_left' not in st.session_state: st.session_state.t2_left =[]  
     if 't2_right' not in st.session_state: st.session_state.t2_right =[]
