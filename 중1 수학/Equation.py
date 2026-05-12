@@ -6,7 +6,9 @@ import math
 # -----------------------------------------------------------------------------
 # 1. 페이지 및 기본 설정
 # -----------------------------------------------------------------------------
-st.title("⚖️ 균형을 잡아라")
+col1, col2 = st.columns([4,  1])
+with col1:
+    st.title("⚖️ 균형을 잡아라")
 
 # 도형 기본 시각화 설정 (무게는 제외)
 SHAPES = {
@@ -61,7 +63,7 @@ def draw_balance_scale(left_wt, right_wt, left_list, right_list):
     right_y = pivot_y + arm_length * math.sin(angle_rad)
 
     ax.plot([0, 0],[5, 12], color=beam_color, lw=4, zorder=1) 
-    ax.plot([left_x, right_x], [left_y, right_y], color=beam_color, lw=6, zorder=2)
+    ax.plot([left_x, right_x],[left_y, right_y], color=beam_color, lw=6, zorder=2)
     ax.scatter([pivot_x, left_x, right_x],[pivot_y, left_y, right_y], color=beam_color, s=100, zorder=3)
 
     def draw_pan(start_x, start_y, pan_list):
@@ -69,7 +71,7 @@ def draw_balance_scale(left_wt, right_wt, left_list, right_list):
             ax.plot([start_x, start_x],[start_y, start_y - 1.5], color='gray', lw=3, zorder=1)
             return
         bottom_y = start_y - 1.5 - (len(pan_list) - 1) * 1.5
-        ax.plot([start_x, start_x], [start_y, bottom_y], color='gray', lw=3, zorder=1)
+        ax.plot([start_x, start_x],[start_y, bottom_y], color='gray', lw=3, zorder=1)
         current_y = start_y - 1.5
         for shape in pan_list:
             props = SHAPES[shape]
@@ -147,10 +149,10 @@ with tab1:
         draw_balance_scale(t1_l_wt, t1_r_wt, st.session_state.t1_left, st.session_state.t1_right)
 
 # =============================================================================
-# [TAB 2] 등식의 성질 (미지수)
+#[TAB 2] 등식의 성질 (미지수)
 # =============================================================================
 with tab2:
-    # 학생들은 모르는 '숨겨진 무게' 설정 (임의로 삼각형=1, 사각형=2, 원=-2 로 설정)
+    # ⭐ 선생님이 짚어주신 정확한 수학적 비율 (삼각형=1, 사각형=2, 원=-2)
     T2_HIDDEN_WEIGHTS = {'tri': 1, 'sq': 2, 'cir': -2}
     
     if 't2_left' not in st.session_state: st.session_state.t2_left =[]  
