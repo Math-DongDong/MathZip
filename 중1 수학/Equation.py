@@ -6,9 +6,7 @@ import math
 # -----------------------------------------------------------------------------
 # 1. 페이지 및 기본 설정
 # -----------------------------------------------------------------------------
-col1, col2 = st.columns([4,  1])
-with col1:
-    st.title("⚖️ 균형을 잡아라")
+st.title("⚖️ 균형을 잡아라")
 
 # 도형 기본 시각화 설정 (무게는 제외)
 SHAPES = {
@@ -139,8 +137,6 @@ with tab1:
         c1.button("➕", key="t1_r_add_cir", on_click=modify_shape, args=('t1_right', 'cir', 1), use_container_width=True)
         c2.button("➖", key="t1_r_sub_cir", on_click=modify_shape, args=('t1_right', 'cir', -1), use_container_width=True)
 
-        st.write("") 
-        st.write("") 
         if st.button("🔄 초기화", key="t1_reset", use_container_width=True):
             reset_scale('t1_left', 't1_right')
             st.rerun()
@@ -197,8 +193,6 @@ with tab2:
         c1.button("➕", key="t2_r_add_cir", on_click=modify_shape, args=('t2_right', 'cir', 1), use_container_width=True)
         c2.button("➖", key="t2_r_sub_cir", on_click=modify_shape, args=('t2_right', 'cir', -1), use_container_width=True)
 
-        st.write("") 
-        st.write("") 
         if st.button("🔄 초기화", key="t2_reset", use_container_width=True):
             reset_scale('t2_left', 't2_right')
             st.rerun()
