@@ -454,11 +454,6 @@ html_code='''
             if (newLevel > level) { level = newLevel; isLevelUp = true; }
             updateUI();
 
-            if (isLevelUp) {
-                showLevelUp();
-                return;
-            }
-
             let problemType = level;
             if (level === 5) {
                 problemType = getRandomInt(1, 4); 
@@ -483,7 +478,6 @@ html_code='''
             keypadPanel.style.opacity = "1";
             keypadPanel.style.pointerEvents = "auto";
             currentQType = "text";
-            questionStartTime = Date.now();
 
             if (problemType === 1) {
                 let constTermIdx = terms.findIndex(t => t.v === '');
@@ -669,6 +663,9 @@ html_code='''
         }
 
         function showLevelUp() {
+            // ⬅️ 레벨업 시 텔레그램 전송 함수 호출 추가!
+            notifyLevelUp(LEVEL_TITLES[level-1]);
+            
             levelUpMsg.innerText = LEVEL_TITLES[level-1] + " 등장!";
             levelUpOverlay.classList.remove('hidden');
             setTimeout(() => { 
