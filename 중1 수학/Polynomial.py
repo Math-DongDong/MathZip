@@ -454,6 +454,11 @@ html_code='''
             if (newLevel > level) { level = newLevel; isLevelUp = true; }
             updateUI();
 
+            if (isLevelUp) {
+                showLevelUp();
+                return;
+            }
+
             let problemType = level;
             if (level === 5) {
                 problemType = getRandomInt(1, 4); 
@@ -478,6 +483,7 @@ html_code='''
             keypadPanel.style.opacity = "1";
             keypadPanel.style.pointerEvents = "auto";
             currentQType = "text";
+            questionStartTime = Date.now();
 
             if (problemType === 1) {
                 let constTermIdx = terms.findIndex(t => t.v === '');
@@ -660,6 +666,16 @@ html_code='''
             document.getElementById('final-avg-time').innerText = finalAvg + "초";
             
             sendGameOverSummary();
+        }
+
+        function showLevelUp() {
+            levelUpMsg.innerText = LEVEL_TITLES[level-1] + " 등장!";
+            levelUpOverlay.classList.remove('hidden');
+            setTimeout(() => { 
+                levelUpOverlay.classList.add('hidden'); 
+                questionStartTime = Date.now();
+                generateQuestion();
+            }, 2000);
         }
 
         function updateUI() {
