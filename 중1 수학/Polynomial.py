@@ -218,6 +218,7 @@ html_code='''
         let currentQType = "text"; 
         let isChecking = false;
         let wrongCount = 0;
+        let hasSent45PointAlert = false;
         
         let totalTimeMs = 0;
         let solvedCount = 0;
@@ -286,7 +287,6 @@ html_code='''
             introScreen.classList.add('hidden');
             gameContainer.classList.remove('hidden');
             
-            sendTelegram(`${playerName}님이 다항식 챌린지를 시작하였습니다.`);
             init();
         }
 
@@ -298,6 +298,7 @@ html_code='''
             }
             score = 0; combo = 0; maxCombo = 0; level = 1; lives = 5;
             totalTimeMs = 0; solvedCount = 0;
+            hasSent45PointAlert = false;
             updateUI();
             generateQuestion();
         }
@@ -604,6 +605,11 @@ html_code='''
                 feedbackMsg.classList.remove('opacity-0', 'text-rose-500');
                 feedbackMsg.classList.add('opacity-100', 'text-emerald-500', 'pop');
                 updateUI();
+
+                if (score === 45 && !hasSent45PointAlert) {
+                    hasSent45PointAlert = true;
+                    sendTelegram(`${playerName}님이 45점을 달성했습니다! \n현재 점수: ${score}점\n레벨: ${LEVEL_TITLES[level-1]}\n남은 목숨: ${lives}개\n현재 콤보: ${combo}개`);
+                }
                 
                 setTimeout(() => {
                     feedbackMsg.classList.remove('pop', 'opacity-100');
@@ -615,7 +621,6 @@ html_code='''
                 combo = 0;
                 lives--;
                 wrongCount += 1;
-                notifyWrongAnswer(level);
                 updateUI();
 
                 if (lives <= 0) {
