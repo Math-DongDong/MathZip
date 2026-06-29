@@ -32,8 +32,8 @@ HTML = '''
 
             @media (max-width: 768px) {
                 #drawCanvas {
-                    max-height: 500px;
-                    min-height: 500px;
+                    max-height: 470px;
+                    min-height: 470px;
                     aspect-ratio: auto;
                 }
             }
