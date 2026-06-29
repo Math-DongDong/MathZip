@@ -1,14 +1,13 @@
 import streamlit as st
 import streamlit.components.v1 as components
 
-st.markdown("<h1 style='text-align: center; color: #d97706;'>🧩 성냥개비 퍼즐</h1>", unsafe_allow_html=True)
+st.markdown("<h1 style='text-align: center; color: #d97706;'>성냥개비 퍼즐</h1>", unsafe_allow_html=True)
 HTML = '''
     <!DOCTYPE html>
     <html lang="ko">
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>🧩 성냥개비 퍼즐</title>
         <!-- Tailwind CSS -->
         <script src="https://cdn.tailwindcss.com"></script>
         <style>
@@ -29,6 +28,14 @@ HTML = '''
                 background-repeat: no-repeat;
                 box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05);
                 cursor: crosshair;
+            }
+
+            @media (max-width: 768px) {
+                #drawCanvas {
+                    max-height: 600px;
+                    min-height: 600px;
+                    aspect-ratio: auto;
+                }
             }
 
             .tool-btn {
