@@ -1,286 +1,352 @@
 import streamlit as st
 import streamlit.components.v1 as components
-import random
-from pathlib import Path
 
-# -----------------------------------------------------------------------------
-# 1. 페이지 기본 설정 및 헤더
-# -----------------------------------------------------------------------------
 st.markdown("<h1 style='text-align: center; color: #d97706;'>🧩 성냥개비 퍼즐</h1>", unsafe_allow_html=True)
+HTML = '''
+    <!DOCTYPE html>
+    <html lang="ko">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>🧩 성냥개비 퍼즐</title>
+        <!-- Tailwind CSS -->
+        <script src="https://cdn.tailwindcss.com"></script>
+        <style>
+            /* 배경을 완벽한 흰색으로 지정하여 스트림릿과 일체감 형성 */
+            body { font-family: 'Segoe UI', sans-serif; background-color: #ffffff; color: #334155; margin: 0; }
+            
+            /* [핵심 수정] 캔버스 최대 높이를 기존 630에서 3/4 수준인 470px로 축소 */
+            #drawCanvas {
+                width: 100%;
+                max-height: 470px;
+                aspect-ratio: 4 / 3; /* 이미지 비율에 맞춰 찌그러지지 않게 유지 */
+                border: 2px solid #cbd5e1;
+                border-radius: 12px;
+                touch-action: none; 
+                background-color: #ffffff;
+                background-size: contain; 
+                background-position: center;
+                background-repeat: no-repeat;
+                box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05);
+                cursor: crosshair;
+            }
 
-# 경로 설정
-BASE_DIR = Path(__file__).resolve().parents[1]
-IMAGE_DIR = BASE_DIR / "기타" / "성냥개비퍼즐(54문제)"
+            .tool-btn {
+                background: #f8fafc; color: #475569; border: 1px solid #cbd5e1; border-radius: 6px; 
+                padding: 6px 12px; font-size: 0.9rem; font-weight: bold; cursor: pointer; 
+                transition: all 0.2s;
+            }
+            .tool-btn:hover { background: #e2e8f0; }
+            .tool-btn.active { background: #3b82f6; color: white; border-color: #3b82f6; }
+        </style>
+    </head>
+    <body class="p-2 md:p-6">
 
-# -----------------------------------------------------------------------------
-# 2. 그림판 HTML/CSS/JS (직선, 지우개 도구 추가)
-# -----------------------------------------------------------------------------
-DRAWING_HTML = '''
-<style>
-    /* 스크롤바가 생기지 않도록 overflow: hidden 적용 */
-    body { font-family: 'Segoe UI', sans-serif; margin: 0; background: transparent; overflow: hidden; }
-    .canvas-wrapper { 
-        display: flex; flex-direction: column; align-items: center; justify-content: center; 
-        padding: 10px; width: 100%; box-sizing: border-box; 
-    }
-    
-    #drawCanvas { 
-        width: 100%; 
-        height: 560px; /* 세로 길이 고정 */
-        border: 2px solid #cbd5e1; 
-        border-radius: 16px; 
-        touch-action: none; 
-        background: #ffffff; 
-        box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1); 
-    }
-    
-    .canvas-header { 
-        display: flex; justify-content: space-between; align-items: center; 
-        width: 100%; margin-bottom: 10px; flex-wrap: wrap; gap: 10px;
-    }
-    
-    /* 도구 선택 버튼 스타일 */
-    .tool-group { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
-    
-    .tool-btn {
-        background: #f1f5f9; color: #475569; border: 2px solid #cbd5e1; border-radius: 8px; 
-        padding: 8px 16px; font-size: 0.95rem; font-weight: bold; cursor: pointer; 
-        transition: all 0.2s;
-    }
-    .tool-btn:hover { background: #e2e8f0; }
-    .tool-btn.active { background: #3b82f6; color: white; border-color: #3b82f6; }
-    
-    .clear-btn { 
-        background: #ef4444; color: white; border: none; border-radius: 8px; 
-        padding: 8px 20px; font-size: 1rem; font-weight: bold; cursor: pointer; 
-        transition: background 0.2s, transform 0.1s; box-shadow: 0 2px 4px rgba(0,0,0,0.1); 
-    }
-    .clear-btn:hover { background: #dc2626; transform: translateY(-1px); }
-    .clear-btn:active { transform: translateY(1px); }
-    
-    .canvas-title { font-size: 1.2rem; font-weight: bold; color: #334155; margin: 0; display: flex; align-items: center; gap: 8px; }
-</style>
+        <!-- 가장 바깥 컨테이너 -->
+        <div class="max-w-6xl mx-auto bg-white p-2 md:p-4">
+            
+            <!-- [로딩 화면] -->
+            <div id="loading-section" class="text-center p-10 md:p-16 border-2 border-dashed border-slate-200 rounded-xl bg-slate-50 mb-6 flex flex-col items-center justify-center">
+                <div class="animate-spin rounded-full h-12 w-12 border-t-4 border-b-4 border-blue-600 mb-4"></div>
+                <h2 id="loading-text" class="text-xl md:text-2xl font-bold text-slate-700">깃허브에서 문제를 불러오는 중입니다...</h2>
+                <p class="text-slate-500 mt-2">잠시만 기다려주세요 (총 54문제)</p>
+            </div>
 
-<div class="canvas-wrapper">
-    <div class="canvas-header">
-        <div class="canvas-title">✍️ 나만의 풀이장</div>
-        <!-- ⬅️ 도구 선택 버튼들 추가 -->
-        <div class="tool-group">
-            <button id="btn-line" class="tool-btn active" onclick="setTool('line')">📏 직선</button>
-            <button id="btn-pen" class="tool-btn" onclick="setTool('pen')">✏️ 자유선</button>
-            <button id="btn-eraser" class="tool-btn" onclick="setTool('eraser')">🧽 지우개</button>
-            <button class="clear-btn" onclick="clearCanvas()">🗑️ 모두 지우기</button>
+            <!-- [게임 화면] -->
+            <div id="game-section" class="hidden flex flex-col md:flex-row gap-6">
+                
+                <!-- [좌측 영역 (모바일: 상단)] 대시보드 및 버튼 -->
+                <!-- [핵심 수정] md:mt-12 를 추가하여 우측 툴바만큼 아래로 내려가 캔버스 상단과 일치하도록 배치 -->
+                <div class="w-full md:w-64 lg:w-72 flex flex-col gap-4 shrink-0 md:mt-12">
+                    
+                    <!-- 대시보드 -->
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 flex flex-row md:flex-col justify-around md:justify-center gap-2 md:gap-6 text-center shadow-sm">
+                        <div>
+                            <span class="text-xs sm:text-sm text-slate-500">총 문제</span><br>
+                            <span id="total-cnt" class="text-lg sm:text-2xl font-bold text-slate-900">0</span>
+                        </div>
+                        <div>
+                            <span class="text-xs sm:text-sm text-slate-500">해결한 문제</span><br>
+                            <span id="solved-cnt" class="text-lg sm:text-2xl font-bold text-green-600">0</span>
+                        </div>
+                        <div>
+                            <span class="text-xs sm:text-sm text-slate-500">다시 볼 문제</span><br>
+                            <span id="unknown-cnt" class="text-lg sm:text-2xl font-bold text-orange-500">0</span>
+                        </div>
+                        <div>
+                            <span class="text-xs sm:text-sm text-slate-500">남은 문제</span><br>
+                            <span id="remain-cnt" class="text-lg sm:text-2xl font-bold text-blue-600">0</span>
+                        </div>
+                    </div>
+
+                    <!-- 조작 버튼 -->
+                    <div class="grid grid-cols-2 md:grid-cols-1 gap-2 md:gap-3">
+                        <button onclick="markUnknown()" class="bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-700 font-bold py-2 md:py-3 rounded-lg transition text-xs sm:text-sm shadow-sm flex items-center justify-center gap-1">
+                            ❓ 나중에 풀기
+                        </button>
+                        <button onclick="markSolved()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 md:py-3 rounded-lg transition shadow-sm text-xs sm:text-sm flex items-center justify-center gap-1">
+                            ✅ 해결했습니다!
+                        </button>
+                    </div>
+                </div>
+
+                <!-- [우측 영역 (모바일: 하단)] 캔버스 -->
+                <div class="flex-1 flex flex-col min-w-0">
+                    
+                    <!-- 캔버스 툴바 -->
+                    <div class="flex justify-between items-center flex-wrap gap-3 mb-3">
+                        <div class="font-bold text-sm md:text-base text-slate-700">💡 화면에 바로 그려서 풀어보세요!</div>
+                        <div class="flex gap-2 flex-wrap">
+                            <button id="btn-line" class="tool-btn active" onclick="setTool('line')">📏 직선</button>
+                            <button id="btn-pen" class="tool-btn" onclick="setTool('pen')">✏️ 자유선</button>
+                            <button id="btn-eraser" class="tool-btn" onclick="setTool('eraser')">🧽 지우개</button>
+                            <button onclick="clearCanvas()" class="bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 font-bold py-1 px-3 rounded-lg transition text-sm">🗑️ 모두 지우기</button>
+                        </div>
+                    </div>
+
+                    <!-- 캔버스 -->
+                    <canvas id="drawCanvas" width="1600" height="1200"></canvas>
+                </div>
+
+            </div>
+
+            <!-- [종료 화면] -->
+            <div id="end-section" class="hidden text-center p-10 bg-green-50 border border-green-200 rounded-2xl mt-6">
+                <div class="text-5xl mb-4">🎉</div>
+                <h2 class="text-xl md:text-2xl font-bold text-green-700 mb-4">모든 문제를 완료했습니다! 정말 수고하셨습니다.</h2>
+                <button onclick="restartGame()" class="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg shadow-md transition transform active:scale-95">
+                    🔄 처음부터 다시하기
+                </button>
+            </div>
+
         </div>
-    </div>
-    <canvas id="drawCanvas" width="1600" height="1200"></canvas> <!-- 내부 해상도 -->
-</div>
 
-<script>
-    const canvas = document.getElementById('drawCanvas');
-    const ctx = canvas.getContext('2d');
-    let drawing = false;
-    let startX = 0;
-    let startY = 0;
-    let lastX = 0;
-    let lastY = 0;
-    let currentTool = 'line'; // 기본 도구: 직선
-    let savedImageData = null; // 직선 미리보기를 위한 캔버스 상태 저장 변수
+        <script>
+            // --- 게임 상태 관리 변수 ---
+            let originalProblems = []; 
+            let problemPool = [];      
+            let solvedCount = 0;
+            let unknownCount = 0;
+            let currentProblemUrl = null;
 
-    function setTool(tool) {
-        currentTool = tool;
-        // 모든 툴 버튼의 active 클래스 제거
-        document.querySelectorAll('.tool-btn').forEach(btn => btn.classList.remove('active'));
-        // 선택된 버튼만 active 클래스 추가
-        document.getElementById('btn-' + tool).classList.add('active');
-    }
+            // 깃허브 API 폴더 경로 설정 (Math-DongDong/MathZip 레포지토리)
+            const GITHUB_API_URL = "https://api.github.com/repos/Math-DongDong/MathZip/contents/기타/성냥개비퍼즐(54문제)";
 
-    function setPosition(e) {
-        const rect = canvas.getBoundingClientRect();
-        const scaleX = canvas.width / rect.width;
-        const scaleY = canvas.height / rect.height;
-        
-        let clientX = e.clientX;
-        let clientY = e.clientY;
-
-        if (e.touches && e.touches.length > 0) {
-            clientX = e.touches[0].clientX;
-            clientY = e.touches[0].clientY;
-        }
-
-        return { 
-            x: (clientX - rect.left) * scaleX, 
-            y: (clientY - rect.top) * scaleY 
-        };
-    }
-
-    function startDraw(e) {
-        drawing = true;
-        const pos = setPosition(e);
-        startX = pos.x;
-        startY = pos.y;
-        lastX = pos.x;
-        lastY = pos.y;
-
-        // 직선 긋기일 경우, 선을 그리기 직전의 화면 상태를 복사해둡니다.
-        if (currentTool === 'line') {
-            savedImageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-        }
-    }
-
-    function draw(e) {
-        if (!drawing) return;
-        e.preventDefault();
-        const pos = setPosition(e);
-
-        ctx.lineCap = 'round';
-        ctx.lineJoin = 'round';
-
-        if (currentTool === 'eraser') {
-            // 지우개 모드: 그려진 것을 투명하게 지웁니다.
-            ctx.globalCompositeOperation = 'destination-out';
-            ctx.lineWidth = 40; // 지우개는 큼직하게
-            ctx.beginPath();
-            ctx.moveTo(lastX, lastY);
-            ctx.lineTo(pos.x, pos.y);
-            ctx.stroke();
-            lastX = pos.x;
-            lastY = pos.y;
+            // --- DOM 요소 ---
+            const loadingSection = document.getElementById('loading-section');
+            const loadingText = document.getElementById('loading-text');
+            const gameSection = document.getElementById('game-section');
+            const endSection = document.getElementById('end-section');
             
-        } else if (currentTool === 'pen') {
-            // 자유선 모드
-            ctx.globalCompositeOperation = 'source-over';
-            ctx.strokeStyle = '#111';
-            ctx.lineWidth = 10;
-            ctx.beginPath();
-            ctx.moveTo(lastX, lastY);
-            ctx.lineTo(pos.x, pos.y);
-            ctx.stroke();
-            lastX = pos.x;
-            lastY = pos.y;
-            
-        } else if (currentTool === 'line') {
-            // 직선 모드: 마우스를 드래그할 때마다 저장해둔 화면을 불러와 잔상을 없애고 새로 선을 긋습니다.
-            ctx.globalCompositeOperation = 'source-over';
-            ctx.strokeStyle = '#111';
-            ctx.lineWidth = 10;
-            
-            ctx.putImageData(savedImageData, 0, 0); // 이전 상태 복원
-            ctx.beginPath();
-            ctx.moveTo(startX, startY); // 시작점 고정
-            ctx.lineTo(pos.x, pos.y);   // 현재 마우스 위치까지 선 긋기
-            ctx.stroke();
-        }
-    }
+            const totalCntEl = document.getElementById('total-cnt');
+            const solvedCntEl = document.getElementById('solved-cnt');
+            const unknownCntEl = document.getElementById('unknown-cnt');
+            const remainCntEl = document.getElementById('remain-cnt');
 
-    function stopDraw() { drawing = false; }
-    function clearCanvas() { ctx.clearRect(0, 0, canvas.width, canvas.height); }
+            // --- 1. 깃허브에서 이미지 목록 자동 불러오기 ---
+            async function fetchProblemsFromGitHub() {
+                try {
+                    const response = await fetch(GITHUB_API_URL);
+                    if (!response.ok) throw new Error('네트워크 응답이 실패했습니다.');
 
-    canvas.addEventListener('mousedown', startDraw);
-    canvas.addEventListener('mousemove', draw);
-    canvas.addEventListener('mouseup', stopDraw);
-    canvas.addEventListener('mouseout', stopDraw);
-    canvas.addEventListener('touchstart', startDraw, {passive: false});
-    canvas.addEventListener('touchmove', draw, {passive: false});
-    canvas.addEventListener('touchend', stopDraw);
-    canvas.addEventListener('touchcancel', stopDraw);
-</script>
+                    const data = await response.json();
+                    
+                    const imageFiles = data.filter(file => file.name.match(/\.(png|jpg|jpeg|webp)$/i));
+                    originalProblems = imageFiles.map(file => file.download_url);
+
+                    if (originalProblems.length === 0) {
+                        throw new Error("폴더에 이미지 파일이 없습니다.");
+                    }
+
+                    loadingSection.classList.add('hidden');
+                    gameSection.classList.remove('hidden');
+                    // flex 컨테이너 클래스 복구 (Tailwind hidden 클래스와 충돌 방지)
+                    gameSection.classList.add('flex'); 
+                    
+                    restartGame();
+
+                } catch (error) {
+                    console.error('Error fetching data:', error);
+                    loadingText.innerText = "❌ 문제를 불러오는데 실패했습니다.";
+                    loadingText.classList.replace('text-slate-700', 'text-red-600');
+                    document.querySelector('.animate-spin').classList.add('hidden');
+                }
+            }
+
+            window.onload = fetchProblemsFromGitHub;
+
+            // --- 2. 게임 흐름 제어 로직 ---
+            function shuffle(array) {
+                for (let i = array.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [array[i], array[j]] = [array[j], array[i]];
+                }
+                return array;
+            }
+
+            function restartGame() {
+                problemPool = [...originalProblems];
+                shuffle(problemPool);
+                
+                solvedCount = 0;
+                unknownCount = 0;
+                
+                endSection.classList.add('hidden');
+                gameSection.classList.remove('hidden');
+
+                nextProblem();
+            }
+
+            function nextProblem() {
+                if (problemPool.length === 0) {
+                    gameSection.classList.add('hidden');
+                    endSection.classList.remove('hidden');
+                    return;
+                }
+
+                currentProblemUrl = problemPool.shift();
+                
+                canvas.style.backgroundImage = `url('${currentProblemUrl}')`;
+                clearCanvas(); 
+                updateDashboard();
+            }
+
+            function markSolved() {
+                solvedCount++;
+                nextProblem();
+            }
+
+            function markUnknown() {
+                unknownCount++;
+                problemPool.push(currentProblemUrl);
+                shuffle(problemPool); 
+                nextProblem();
+            }
+
+            function updateDashboard() {
+                totalCntEl.innerText = originalProblems.length;
+                solvedCntEl.innerText = solvedCount;
+                unknownCntEl.innerText = unknownCount;
+                remainCntEl.innerText = problemPool.length + 1; 
+            }
+
+            // --- 3. 캔버스 그림판 로직 ---
+            const canvas = document.getElementById('drawCanvas');
+            const ctx = canvas.getContext('2d', { willReadFrequently: true });
+            
+            let drawing = false;
+            let startX = 0, startY = 0;
+            let lastX = 0, lastY = 0;
+            let currentTool = 'line';
+            let savedImageData = null;
+
+            function setTool(tool) {
+                currentTool = tool;
+                document.querySelectorAll('.tool-btn').forEach(btn => btn.classList.remove('active', 'bg-blue-600', 'text-white'));
+                const activeBtn = document.getElementById('btn-' + tool);
+                activeBtn.classList.add('active');
+                
+                activeBtn.style.backgroundColor = '#3b82f6'; 
+                activeBtn.style.color = 'white';
+                activeBtn.style.borderColor = '#3b82f6';
+                
+                document.querySelectorAll('.tool-btn:not(.active)').forEach(btn => {
+                    btn.style.backgroundColor = ''; 
+                    btn.style.color = '';
+                    btn.style.borderColor = '';
+                });
+            }
+            setTool('line');
+
+            function setPosition(e) {
+                const rect = canvas.getBoundingClientRect();
+                const scaleX = canvas.width / rect.width;
+                const scaleY = canvas.height / rect.height;
+                
+                let clientX = e.clientX;
+                let clientY = e.clientY;
+
+                if (e.touches && e.touches.length > 0) {
+                    clientX = e.touches[0].clientX;
+                    clientY = e.touches[0].clientY;
+                }
+
+                return { 
+                    x: (clientX - rect.left) * scaleX, 
+                    y: (clientY - rect.top) * scaleY 
+                };
+            }
+
+            function startDraw(e) {
+                drawing = true;
+                const pos = setPosition(e);
+                startX = pos.x; startY = pos.y;
+                lastX = pos.x; lastY = pos.y;
+
+                if (currentTool === 'line') {
+                    savedImageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                }
+            }
+
+            function draw(e) {
+                if (!drawing) return;
+                e.preventDefault(); 
+                const pos = setPosition(e);
+
+                ctx.lineCap = 'round';
+                ctx.lineJoin = 'round';
+
+                if (currentTool === 'eraser') {
+                    ctx.globalCompositeOperation = 'destination-out';
+                    ctx.lineWidth = 50; 
+                    ctx.beginPath();
+                    ctx.moveTo(lastX, lastY);
+                    ctx.lineTo(pos.x, pos.y);
+                    ctx.stroke();
+                    lastX = pos.x; lastY = pos.y;
+                    
+                } else if (currentTool === 'pen') {
+                    ctx.globalCompositeOperation = 'source-over';
+                    ctx.strokeStyle = 'rgba(239, 68, 68, 0.8)'; 
+                    ctx.lineWidth = 12;
+                    ctx.beginPath();
+                    ctx.moveTo(lastX, lastY);
+                    ctx.lineTo(pos.x, pos.y);
+                    ctx.stroke();
+                    lastX = pos.x; lastY = pos.y;
+                    
+                } else if (currentTool === 'line') {
+                    ctx.globalCompositeOperation = 'source-over';
+                    ctx.strokeStyle = '#2563eb'; 
+                    ctx.lineWidth = 15;
+                    
+                    ctx.putImageData(savedImageData, 0, 0); 
+                    ctx.beginPath();
+                    ctx.moveTo(startX, startY);
+                    ctx.lineTo(pos.x, pos.y);
+                    ctx.stroke();
+                }
+            }
+
+            function stopDraw() { drawing = false; }
+            
+            function clearCanvas() { 
+                ctx.clearRect(0, 0, canvas.width, canvas.height); 
+            }
+
+            canvas.addEventListener('mousedown', startDraw);
+            canvas.addEventListener('mousemove', draw);
+            canvas.addEventListener('mouseup', stopDraw);
+            canvas.addEventListener('mouseout', stopDraw);
+            
+            canvas.addEventListener('touchstart', startDraw, {passive: false});
+            canvas.addEventListener('touchmove', draw, {passive: false});
+            canvas.addEventListener('touchend', stopDraw);
+            canvas.addEventListener('touchcancel', stopDraw);
+        </script>
+    </body>
+    </html>
 '''
 
-# -----------------------------------------------------------------------------
-# 3. 로직 함수 정의
-# -----------------------------------------------------------------------------
-def load_problem_files():
-    if not IMAGE_DIR.exists():
-        return []
-    problems =[
-        path for path in sorted(IMAGE_DIR.iterdir(), key=lambda p: (p.suffix.lower(), p.name))
-        if path.is_file() and path.suffix.lower() in {".png", ".jpg", ".jpeg", ".webp"}
-    ]
-    problems =[str(path) for path in problems]
-    random.shuffle(problems)
-    return problems
-
-def initialize_problems():
-    problems = load_problem_files()
-    st.session_state.problem_pool = problems
-    st.session_state.solved_count = 0
-    st.session_state.unknown_count = 0
-    st.session_state.total_count = len(problems)
-    st.session_state.current_problem = st.session_state.problem_pool.pop(0) if st.session_state.problem_pool else None
-
-if "problem_pool" not in st.session_state or "current_problem" not in st.session_state or "total_count" not in st.session_state:
-    initialize_problems()
-
-# -----------------------------------------------------------------------------
-# 4. 화면 레이아웃 구성
-# -----------------------------------------------------------------------------
-
-if not st.session_state.current_problem:
-    st.balloons()
-    st.success("🎉 모든 문제를 완료했습니다! 정말 수고하셨습니다.")
-    st.info("성냥개비 퍼즐 폴더에 이미지 파일이 있는지 확인해 주세요.")
-    if st.button("🔄 처음부터 다시하기", type="primary", key="restart_empty"):
-        initialize_problems()
-        st.rerun()
-    st.stop()
-
-# ==========================================
-# [상단 영역] 대시보드
-# ==========================================
-remaining = len(st.session_state.problem_pool)
-st.markdown(f"""
-<div style='background-color: #f8fafc; padding: 15px; border-radius: 10px; border: 1px solid #e2e8f0; display: flex; justify-content: space-around; text-align: center;'>
-    <div><span style='font-size: 0.9rem; color: #64748b;'>총 문제</span><br><span style='font-size: 1.2rem; font-weight: bold; color: #0f172a;'>{st.session_state.total_count}</span></div>
-    <div><span style='font-size: 0.9rem; color: #64748b;'>해결한 문제</span><br><span style='font-size: 1.2rem; font-weight: bold; color: #16a34a;'>{st.session_state.solved_count}</span></div>
-    <div><span style='font-size: 0.9rem; color: #64748b;'>다시 볼 문제</span><br><span style='font-size: 1.2rem; font-weight: bold; color: #ea580c;'>{st.session_state.unknown_count}</span></div>
-    <div><span style='font-size: 0.9rem; color: #64748b;'>남은 문제</span><br><span style='font-size: 1.2rem; font-weight: bold; color: #2563eb;'>{remaining + 1}</span></div>
-</div>
-""", unsafe_allow_html=True)
-
-st.markdown("<br>", unsafe_allow_html=True)
-
-# ==========================================
-# [중단 영역] 조작 버튼 
-# ==========================================
-col1, col2, col3 = st.columns(3)
-
-with col1:
-    if st.button("🔄 처음부터 다시", type="secondary", use_container_width=True, key="restart_matchstick"):
-        initialize_problems()
-        st.rerun()
-
-with col2:
-    if st.button("❓ 잘 모르겠어요 (나중에 풀기)", type="secondary", use_container_width=True, key="unknown_matchstick"):
-        st.session_state.unknown_count += 1
-        st.session_state.problem_pool.append(st.session_state.current_problem)
-        random.shuffle(st.session_state.problem_pool)
-        if st.session_state.problem_pool:
-            st.session_state.current_problem = st.session_state.problem_pool.pop(0)
-        else:
-            st.session_state.current_problem = None
-        st.rerun()
-
-with col3:
-    if st.button("✅ 해결했습니다!", type="primary", use_container_width=True, key="solve_matchstick"):
-        st.session_state.solved_count += 1
-        if st.session_state.problem_pool:
-            st.session_state.current_problem = st.session_state.problem_pool.pop(0)
-        else:
-            st.session_state.current_problem = None
-        st.rerun()
-
-st.divider() 
-
-# ==========================================
-#[하단 영역] 메인 문제 & 그림판 (1 : 2.5 비율)
-# ==========================================
-left_col, right_col = st.columns([1, 2.5])
-
-with left_col:
-    st.subheader("💡 오늘의 문제")
-    st.image(st.session_state.current_problem, width='stretch')
-    st.info("📌 **Hint:** 풀이장에 먼저 스케치해 보세요!")
-
-with right_col:
-    # 캔버스 560px + 상단 제목 + 하단 버튼이 넉넉히 보이도록 전체 높이를 650으로 설정했습니다.
-    components.html(DRAWING_HTML, height=650, scrolling=True)
+# 캔버스 560px + 상단 제목 + 하단 버튼이 넉넉히 보이도록 전체 높이를 650으로 설정했습니다.
+components.html(HTML, height=650, scrolling=True)
