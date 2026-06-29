@@ -48,7 +48,7 @@ HTML = '''
             <!-- [로딩 화면] -->
             <div id="loading-section" class="text-center p-10 md:p-16 border-2 border-dashed border-slate-200 rounded-xl bg-slate-50 mb-6 flex flex-col items-center justify-center">
                 <div class="animate-spin rounded-full h-12 w-12 border-t-4 border-b-4 border-blue-600 mb-4"></div>
-                <h2 id="loading-text" class="text-xl md:text-2xl font-bold text-slate-700">깃허브에서 문제를 불러오는 중입니다...</h2>
+                <h2 id="loading-text" class="text-xl md:text-2xl font-bold text-slate-700">문제를 불러오는 중입니다...</h2>
                 <p class="text-slate-500 mt-2">잠시만 기다려주세요 (총 54문제)</p>
             </div>
 
