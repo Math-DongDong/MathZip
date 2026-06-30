@@ -9,8 +9,8 @@ st.markdown("<h1 style='text-align: center; color: #d97706;'>성냥개비 퍼즐
 # -------------------------------------------------------------------
 GITHUB_RAW_BASE = "https://raw.githubusercontent.com/Math-DongDong/MathZip/main/기타/성냥개비퍼즐(54문제)"
 
-# 1.jpg 부터 54.jpg 까지의 주소를 파이썬 리스트로 미리 만듭니다. 
-image_urls = [f"{GITHUB_RAW_BASE}/{i}.jpg" for i in range(1, 55)]
+# 1.PNG 부터 54.PNG 까지의 주소를 파이썬 리스트로 미리 만듭니다. 
+image_urls = [f"{GITHUB_RAW_BASE}/{i}.PNG" for i in range(1, 55)]
 
 # 파이썬 리스트를 자바스크립트 배열 형식의 문자열로 변환합니다.
 js_image_urls = str(image_urls)
