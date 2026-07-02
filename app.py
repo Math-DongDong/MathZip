@@ -21,6 +21,9 @@ pages = {
     "중2 수학": [
         st.Page("./중2 수학/Exponents.py", title="지수법칙"),
     ],
+    "체험수학": [
+        st.Page("./체험수학/VoronoiDiagram.py", title="보로노이 다이어그램"),
+    ],
     "보드게임": [
         st.Page("./보드게임/Streams.py", title="스트림스"),
         st.Page("./보드게임/PigGame.py", title="Pig Game"), 
